@@ -135,7 +135,7 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
                 Intent intent = new Intent(getBaseContext(), PaperActivity.class);
                 intent.putExtra("paperTitle", paper.getTitle());
                 intent.putExtra("paperAbstract", paper.getAbstract());
-                intent.putExtra("paperAuthor", paper.getAuthorWithAff());
+                intent.putExtra("paperAuthor", paper.getAuthorWithAffiliation());
                 intent.putExtra("sessionKey",sessionKey);
                 startActivity(intent);
             }

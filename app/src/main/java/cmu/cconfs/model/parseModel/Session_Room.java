@@ -12,44 +12,60 @@ public class Session_Room extends ParseObject {
 
     public static final String PIN_TAG = "ALL_SESSION_ROOMS";
 
-    public void setChair(String chair) {
-        put("chair", chair);
-    }
-
     public String getChair() {
-        return getString("chair");
+        return getString("chair") == null ? "" : getString("chair");
     }
 
-    public void setPapers(String papers) {
-        put("papers", papers);
+    public void setChair(String c) {
+        put("chair", c);
     }
 
     public String getPapers() {
-        return getString("papers");
+        return getString("papers") == null ? "" : getString("papers");
     }
 
-    public void setRoomId(int id) {
-        put("room_id", id);
+    public void setPapers(String ps) {
+        put("papers", ps);
+    }
+
+    public String getTimeslot() {
+        return getString("timeslot") == null ? "" : getString("timeslot");
+    }
+
+    public void setTimeslot(String t) {
+        put("timeslot", t);
+    }
+
+    public String getSessionTitle() {
+        return getString("session_title") == null ? "" : getString("session_title");
+    }
+
+    public void setSessionTitle(String st) {
+        put("session_title", st);
+    }
+
+    public String getSessionName() {
+        return getString("value") == null ? "" : getString("value");
+    }
+
+    public void setSessionName(String v) {
+        put("value", v);
     }
 
     public int getRoomId() {
         return getInt("room_id");
     }
 
-    public void setSelected(int selected) {
-        put("selected", selected);
+    public void setRoomId(int id) {
+        put("room_id", id);
     }
-    public String getSessionTitle() {
-        return getString("session_title");
-    }
-    public String getValue() {
-        return getString("value");
-    }
-
-
 
     public int getSelected() {
         return getInt("selected");
+    }
+
+    public void setSelected(int selected) {
+        put("selected", selected);
     }
 
     public void setSessionId(int id) {
@@ -58,9 +74,6 @@ public class Session_Room extends ParseObject {
 
     public int getSessionId() {
         return getInt("session_id");
-    }
-    public String getTimeslot() {
-        return getString("timeslot");
     }
 
     public static ParseQuery<Session_Room> getQuery() {

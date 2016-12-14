@@ -133,10 +133,6 @@ public class DataProvider {
                     final long childId = group.generateNewChildId();
                     Session_Timeslot sessionResult = sessionResults.get(k);
                     if(sessionResult.getSessionTitle()!= null && sessionResult.getSessionTitle().length()>0) {
-//                        Log.e("Session_title", sessionResult.getSessionTitle());
-//                        Log.e("val:", sessionResult.getValue());
-//                        Log.e("pp:", sessionResult.getPapers());
-//                        Log.e("val:", sessionResult.getValue());
 
                         children.add(new UnityDataProvider.ConcreteChildData(childId, sessionResult));
                     }

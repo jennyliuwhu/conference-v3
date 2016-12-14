@@ -12,60 +12,60 @@ import com.parse.ParseQuery;
 public class Paper extends ParseObject {
     public static final String PIN_TAG = "ALL_PAPERS";
 
-    public void setPaperId(int id) {
-        put("paper_id", id);
+    public String getAbstract() {
+        return getString("abstract") == null ? "" : getString("abstract");
+    }
+
+    public void setAbstract(String s) {
+        put("abstract", s);
+    }
+
+    public String getUniqueId() {
+        return getString("unique_id") == null ? "" : getString("unique_id");
+    }
+
+    public void setUniqueId(String id) {
+        put("unique_id", id);
+    }
+
+    public String getAuthor() {
+        return getString("author") == null ? "" : getString("author");
+    }
+
+    public void setAuthor(String author) {
+        put("author", author);
     }
 
     public int getPaperId() {
         return getInt("paper_id");
     }
 
-    public void setUniqueId(String uniqueId) {
-        put("unique_id", uniqueId);
-    }
-
-    public String getUniqueId() {
-        return getString("unique_id");
-    }
-
-    public void setAffiliation(String aff) {
-        put("affiliation", aff);
+    public void setPaperId(int id) {
+        put("paper_id", id);
     }
 
     public String getAffiliation() {
-        return getString("affiliation");
+        return getString("affiliation") == null ? "" : getString("affiliation");
     }
 
-    public void setAuhtor(String author) {
-        put("author", author);
-    }
-
-    public String getAuthor() {
-        return getString("author");
-    }
-
-    public void setAuthorWithAff(String authorWithAff) {
-        put("authorwithaffiliation", authorWithAff);
-    }
-
-    public String getAuthorWithAff() {
-        return getString("authorwithaffiliation");
-    }
-
-    public void setTitle(String title) {
-        put("title", title);
+    public void setAffiliation(String a) {
+        put("affiliation", a);
     }
 
     public String getTitle() {
-        return getString("title");
+        return getString("title") == null ? "" : getString("title");
     }
 
-    public void setAbstract(String abs) {
-        put("abstract", abs);
+    public void setTitle(String t) {
+        put("title", t);
     }
 
-    public String getAbstract() {
-        return getString("abstract");
+    public String getAuthorWithAffiliation() {
+        return getString("authorwithaffiliation") == null ? "" : getString("authorwithaffiliation");
+    }
+
+    public void setAuthorWithAffiliation(String aa) {
+        put("authorwithaffiliation", aa);
     }
 
     public static ParseQuery<Paper> getQuery() {

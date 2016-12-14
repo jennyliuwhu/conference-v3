@@ -24,7 +24,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = HomeActivity.class.getName();
     private DynamicGridView gridView;
-    private String[] titles = {"Agenda", "My Schedule", "Room Schedule","Map", "Floor Guide", "Sponsor", "Notification", "About", "Setting", "Chat"};
+    private String[] titles = {"Agenda", "My Schedule", "Room Schedule","Map", "Floor Guide", "Sponsor", "Notification", "About", "Setting", "Chat", "Transfer"};
     PreferencesManager mPreferencesManager;
 
     @Override
@@ -112,11 +112,16 @@ public class HomeActivity extends AppCompatActivity {
 //                        startActivity(intent);
 //                        break;
 
+                    // chat
                     case 9:
                         intent.setClass(getApplicationContext(), IMActivity.class);
                         startActivity(intent);
                         break;
-
+                    // schedule data import/export
+                    case 10:
+                        intent.setClass(getApplicationContext(), TransferActivity.class);
+                        startActivity(intent);
+                        break;
                     default:
                         break;
                 }

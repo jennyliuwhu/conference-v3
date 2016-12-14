@@ -36,6 +36,14 @@ public class Room extends ParseObject {
         return getString("value");
     }
 
+    public String getRoom() {
+        return getString("value") == null ? "" : getString("value");
+    }
+
+    public void setRoom(String r) {
+        put("value", r);
+    }
+
     public static ParseQuery<Room> getQuery() {
         ParseQuery<Room> parseQuery = ParseQuery.getQuery(Room.class);
         parseQuery.setLimit(1000);

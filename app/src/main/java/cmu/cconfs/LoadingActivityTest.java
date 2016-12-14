@@ -42,7 +42,7 @@ public class LoadingActivityTest extends Activity {
 
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < results.size(); i++) {
-            sb.append(((Program) (results.get(i))).getValue());
+            sb.append(((Program) (results.get(i))).getDate());
             sb.append("\n");
         }
         textView.setText(sb.toString());
@@ -55,7 +55,7 @@ public class LoadingActivityTest extends Activity {
         Program program = null;
         try {
             program = (Program) query.get("OXakPF2Y19");
-            program.setValue("XXXXXX");
+            program.setDate("XXXXXX");
             program.pin(Program.PIN_TAG);
         } catch (ParseException e) {
             e.printStackTrace();

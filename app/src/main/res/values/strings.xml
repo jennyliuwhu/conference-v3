@@ -416,6 +416,7 @@
     <string name="sign_out_label">Sign out</string>
     <string name="title_activity_send_notification">SendNotificationActivity</string>
     <string name="send_label">Send</string>
+    <string name="title_activity_transfer">TransferActivity</string>
 
      <string-array name="admin_mail_address">
          <item>gqw1992@gmail.com</item>

@@ -21,14 +21,13 @@ public class Program extends ParseObject {
         return getInt("program_id");
     }
 
-    public void setValue(String value) {
-        put("value", value);
+    public String getDate() {
+        return getString("value") == null ? "" : getString("value");
     }
 
-    public String getValue() {
-        return getString("value");
+    public void setDate(String d) {
+        put("value", d);
     }
-
 
     public static ParseQuery<Program> getQuery() {
         return ParseQuery.getQuery(Program.class);

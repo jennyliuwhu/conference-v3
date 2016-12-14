@@ -64,6 +64,8 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
             case 9:
                 imageResource = R.drawable.ic_supervisor_account_black_48dp;
                 break;
+            case 10:
+                imageResource = R.drawable.ic_cloud_upload_black_48dp;
 
         }
         holder.build(getItem(position).toString(), imageResource);
@@ -72,7 +74,7 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
 
     @Override
     public int getCount() {
-        return 10;
+        return 11;
     }
 
 
