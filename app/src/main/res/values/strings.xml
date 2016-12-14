@@ -421,4 +421,10 @@
          <item>gqw1992@gmail.com</item>
 
      </string-array>
+
+
+    <!-- Parse Server Info -->
+    <string name="parse_app_id">sciconfAppId</string>
+    <string name="parse_master_key">sciconfMasterKey</string>
+    <string name="parse_server_endpoint">https://cmusvsciconfapp.herokuapp.com/parse</string>
 </resources>

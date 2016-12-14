@@ -193,6 +193,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
     private void postError(String error){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 

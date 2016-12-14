@@ -11,6 +11,7 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
+import com.parse.interceptors.ParseLogInterceptor;
 
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
 import cmu.cconfs.model.parseModel.Sponsor;
@@ -94,9 +95,13 @@ public class CConfsApplication extends Application {
         ParseObject.registerSubclass(FloorPlan.class);
         ParseObject.registerSubclass(Sponsor.class);
 
-        // enable the Local Datastore
-        Parse.enableLocalDatastore(getApplicationContext());
-        Parse.initialize(this, "XHVlAsAd6VC4VcL0FaTuRO3HuhpDlN7AlkWoJgLE", "kjyUc3p4BTrb2MRBwz6IrsohhTW3EyPtAoXaAXFu");
+        // set application id and connect to server
+        Parse.initialize(new Parse.Configuration.Builder(this)
+                .applicationId(getString(R.string.parse_app_id))
+                .clientKey(null)
+                .addNetworkInterceptor(new ParseLogInterceptor())
+                .server(getString(R.string.parse_server_endpoint)).enableLocalDataStore().build());
+
 //        Parse.initialize(this,ParseAppID,ParseClientKey);
         ParseInstallation.getCurrentInstallation().saveInBackground();
         ParsePush.subscribeInBackground("CConfs");
