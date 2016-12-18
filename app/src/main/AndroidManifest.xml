@@ -90,7 +90,6 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -492,8 +491,9 @@
         </activity>
 
         <activity android:name=".TransferActivity"
-            android:label="@string/abc_action_bar_home_description">
-        </activity>
+                  android:label="@string/abc_action_bar_home_description"
+                  android:screenOrientation="portrait"/>
+
         <!-- google api services -->
         <meta-data
             android:name="com.google.android.gms.version"

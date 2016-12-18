@@ -1,6 +1,9 @@
 package cmu.cconfs;
 
 import android.content.res.TypedArray;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -105,5 +108,17 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void setDummyDataWithHeader(RecyclerView recyclerView, View headerView) {
         recyclerView.setAdapter(new SimpleHeaderRecyclerAdapter(this, getDummyData(), headerView));
+    }
+
+    public int dimen(@DimenRes int resId) {
+        return (int) getResources().getDimension(resId);
+    }
+
+    public int color(@ColorRes int resId) {
+        return getResources().getColor(resId);
+    }
+
+    public int integer(@IntegerRes int resId) {
+        return getResources().getInteger(resId);
     }
 }

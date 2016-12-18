@@ -22,6 +22,7 @@ import cmu.cconfs.model.parseModel.Timeslot;
  * Created by zmhbh on 8/25/15.
  */
 public class DataProvider {
+    private final static String TAG = DataProvider.class.getSimpleName();
     private final int days = 6;
 
     private List<UnityDataProvider> programsData;
@@ -37,6 +38,7 @@ public class DataProvider {
             UnityDataProvider list = new UnityDataProvider();
             programsData.add(list);
         }
+        Log.d(TAG, "Start initialize Data provider");
         initialize();
     }
 

@@ -4,20 +4,20 @@ package cmu.cconfs;
  * Created by qiuzhexin on 12/13/16.
  */
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
-import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.morphingbutton.MorphingButton;
+import com.dd.morphingbutton.impl.IndeterminateProgressButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,19 +32,19 @@ import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.OpenFileActivityBuilder;
-import com.parse.FindCallback;
+import com.google.android.gms.drive.query.Query;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -69,87 +69,41 @@ import cmu.cconfs.utils.csv.SessionCSVEntry;
  * in Google Drive. The user is prompted with a pre-made dialog which allows
  * them to choose the file location.
  */
-public class TransferActivity extends Activity implements ConnectionCallbacks,
+public class TransferActivity extends BaseActivity implements ConnectionCallbacks,
         OnConnectionFailedListener {
 
     private static final String TAG = "drive-quickstart";
-    private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
-    private static final int REQUEST_CODE_CREATOR = 2;
-    private static final int REQUEST_CODE_RESOLUTION = 3;
-    private static final int REQUEST_CODE_OPEN_FILE_LIST_1 = 4;
-    private static final int REQUEST_CODE_OPEN_FILE_LIST_2 = 5;
-    private static final int REQUEST_CODE_READ_FILE = 6;
-    private static final int REQUEST_CODE_CREATE_CSV = 7;
+    private static final String FILE_TYPE_EXTRA = "export-file-type";
 
+    private static final int REQUEST_CODE_RESOLUTION = 1;
+    private static final int REQUEST_CODE_OPEN_FILE_LIST_1 = 2;
+    private static final int REQUEST_CODE_OPEN_FILE_LIST_2 = 3;
+    private static final int REQUEST_CODE_CREATE_CSV_1 = 4;
+    private static final int REQUEST_CODE_CREATE_CSV_2 = 5;
 
     private GoogleApiClient mGoogleApiClient;
-    private Bitmap mBitmapToSave;
 
     private DriveId mPaperCSVFileDriveId = null;
     private DriveId mSessionCSVFileDriveId = null;
 
     private TextView mPaperFileName;
     private TextView mSessionFileName;
-    private Button mSelectPaperButton;
-    private Button mSelectSessionButton;
-    private Button mExportPaperDataButton;
-    private Button mExportSessionDataButton;
-    private Button mImportDataButton;
 
-    /**
-     * Create a new file and save it to Drive.
-     */
-    private void saveFileToDrive() {
-        // Start by creating a new contents, and setting a callback.
-        Log.i(TAG, "Creating new contents.");
-        final Bitmap image = mBitmapToSave;
-        Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                .setResultCallback(new ResultCallback<DriveContentsResult>() {
+    private IndeterminateProgressButton mExpPaperBtn;
+    private IndeterminateProgressButton mExpSessionBtn;
+    private IndeterminateProgressButton mImpBtn;
 
-                    @Override
-                    public void onResult(DriveContentsResult result) {
-                        // If the operation was not successful, we cannot do anything
-                        // and must
-                        // fail.
-                        if (!result.getStatus().isSuccess()) {
-                            Log.i(TAG, "Failed to create new contents.");
-                            return;
-                        }
-                        // Otherwise, we can write our data to the new contents.
-                        Log.i(TAG, "New contents created.");
-                        // Get an output stream for the contents.
-                        OutputStream outputStream = result.getDriveContents().getOutputStream();
-
-                        // Write the bitmap data from it.
-                        ByteArrayOutputStream bitmapStream = new ByteArrayOutputStream();
-                        image.compress(Bitmap.CompressFormat.PNG, 100, bitmapStream);
-                        try {
-                            outputStream.write(bitmapStream.toByteArray());
-                        } catch (IOException e1) {
-                            Log.i(TAG, "Unable to write file contents.");
-                        }
-                        // Create the initial metadata - MIME type and title.
-                        // Note that the user will be able to change the title later.
-                        MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                                .setMimeType("image/jpeg").setTitle("Android Photo.png").build();
-                        // Create an intent for the file chooser, and start it.
-                        IntentSender intentSender = Drive.DriveApi
-                                .newCreateFileActivityBuilder()
-                                .setInitialMetadata(metadataChangeSet)
-                                .setInitialDriveContents(result.getDriveContents())
-                                .build(mGoogleApiClient);
-                        try {
-                            startIntentSenderForResult(
-                                    intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
-                        } catch (SendIntentException e) {
-                            Log.i(TAG, "Failed to launch file chooser.");
-                        }
-                    }
-                });
-    }
+    private static final int MORPH_BUTTON_SUC = 0;
+    private static final int MORPH_BUTTON_INIT = 1;
 
     // show a list of files in google drive
     private void displayDriveFiles(int requestCode) {
+        if (!mGoogleApiClient.isConnected()) { // restart the activity if account not connected
+            Log.e(TAG, "Google API client not connected!");
+            finish();
+            startActivity(getIntent());
+            return;
+        }
         Log.i(TAG, "Open a file in google drive");
         IntentSender intentSender = Drive.DriveApi
                 .newOpenFileActivityBuilder()
@@ -162,32 +116,32 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
         }
     }
 
+    /**
+     * EXPORT SECTION
+     */
     // export data from parse and create paper.csv
     private void exportPaperDataFromParse() {
+        Log.i(TAG, "Export paper data start...");
         ParseQuery<Paper> query = ParseQuery.getQuery(Paper.class);
         query.setLimit(1000);
-        query.findInBackground(new FindCallback<Paper>() {
-            @Override
-            public void done(final List<Paper> papers, ParseException e) {
-                if (e == null) { // received paper data
-                    List<PaperCSVEntry> paperCSVEntries = new ArrayList<PaperCSVEntry>();
-                    for (Paper p : papers) {
-                        PaperCSVEntry entry = new PaperCSVEntry();
-                        entry.map(p);
-                        paperCSVEntries.add(entry);
-                    }
-
-                    Log.i(TAG, "load " + paperCSVEntries.size() + " paper entries");
-                    saveCSVToDrive(paperCSVEntries);
-                } else {
-                    Log.w(TAG, "Error: " + e.getMessage());
-                }
+        try {
+            List<Paper> papers = query.find();
+            List<PaperCSVEntry> paperCSVEntries = new ArrayList<PaperCSVEntry>();
+            for (Paper p : papers) {
+                PaperCSVEntry entry = new PaperCSVEntry();
+                entry.map(p);
+                paperCSVEntries.add(entry);
             }
-        });
+            Log.i(TAG, "load " + paperCSVEntries.size() + " paper entries");
+            saveCSVToDrive(paperCSVEntries, REQUEST_CODE_CREATE_CSV_1);
+        } catch (ParseException e) {
+            Log.w(TAG, "Error: " + e.getMessage());
+        }
     }
 
     // export session data from parse
     private void exportSessionDataFromParse() {
+        Log.i(TAG, "Export session data start...");
         ParseQuery<Session_Room> query1 = ParseQuery.getQuery(Session_Room.class).setLimit(1000);
         ParseQuery<Room> query2 = ParseQuery.getQuery(Room.class).setLimit(1000);
         ParseQuery<Program> query3 = ParseQuery.getQuery(Program.class).setLimit(1000);
@@ -213,7 +167,6 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
                 programIdToDate.put(p.getProgramId(), p.getDate());
             }
 
-
             Log.i(TAG, "roomIdToProgramId: " + roomIdToProgramId);
             Log.i(TAG, "programIdToDate: " + programIdToDate);
 
@@ -231,14 +184,14 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
             }
 
             Log.i(TAG, "load " + sessions.size() + " session entries");
-            saveCSVToDrive(sessions);
+            saveCSVToDrive(sessions, REQUEST_CODE_CREATE_CSV_2);
         } catch (ParseException e) {
             Log.w(TAG, "Error: " + e.getMessage());
         }
     }
 
     // convert models to csv file to google drive
-    private void saveCSVToDrive(final List<? extends CSVAbstractEntry> entries) {
+    private void saveCSVToDrive(final List<? extends CSVAbstractEntry> entries, final int requestCode) {
         if (entries.isEmpty()) { // no data to write
             return;
         }
@@ -273,8 +226,10 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
                         .setInitialMetadata(metadataChangeSet)
                         .setInitialDriveContents(driveContentsResult.getDriveContents())
                         .build(mGoogleApiClient);
+                // inform the saved file type when come back
+                Intent extra = new Intent().putExtra(FILE_TYPE_EXTRA, 9527);
                 try {
-                    startIntentSenderForResult(intentSender, REQUEST_CODE_CREATE_CSV, null, 0, 0, 0);
+                    startIntentSenderForResult(intentSender, requestCode, extra, 0, 0, 0);
                 } catch (SendIntentException e) {
                     Log.i(TAG, "Failed to open file chooser");
                 }
@@ -282,237 +237,240 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
         });
     }
 
+    /**
+     * IMPORT SECTION
+     */
     // import paper.csv and session.csv file into parse backend
     private void importData() {
-        if (mPaperCSVFileDriveId != null && mSessionCSVFileDriveId != null) {
-            importPaperData();
-//            importSessionData();
-        } else {
-            Toast.makeText(this, "Please choose both files!", Toast.LENGTH_SHORT).show();
+        // wipe all schedule backend data before import
+        List<Class> parseClasses = Arrays.asList(new Class[] {Paper.class, Session_Room.class, Session_Timeslot.class, Timeslot.class, Room.class, Program.class});
+        for (Class parseClass : parseClasses) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(parseClass).setLimit(1000);
+            try {
+                List<ParseObject> objects = query.find();
+                Log.d(TAG, "Get " + objects.size() + " parse objects");
+                ParseObject.deleteAll(objects);
+            } catch (ParseException e) {
+                Log.e(TAG, "Error delete parse objects: " + e.getMessage());
+                return;
+            }
         }
+        // start to import the data
+        importPaperData();
+        importSessionData();
+    }
+
+    private boolean validateFileFormat() {
+        DriveContents paperContents = getDriveContents(mPaperCSVFileDriveId);
+        DriveContents sessionContents = getDriveContents(mSessionCSVFileDriveId);
+        return validateCSVFile(new PaperCSVEntry(), paperContents) && validateCSVFile(new SessionCSVEntry(), sessionContents);
+    }
+
+    private boolean validateCSVFile(CSVAbstractEntry e, DriveContents contents) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
+        try {
+            String header = reader.readLine();
+            String[] columns = header.split(",");
+            Set<String> cols = new HashSet<>();
+
+            for (String field : columns) {
+                cols.add(field);
+            }
+            for (String c : e.getColumns()) {
+                if (!cols.contains(c)) {
+                    return false;
+                }
+            }
+            return cols.size() == e.getColumns().length;
+        } catch (IOException err) {
+            Log.e(TAG, "Read paper file header error: " + err.getMessage());
+        }
+        Log.d(TAG, "Validate " + e.getFileType() + " completed");
+        return false;
+    }
+
+    private DriveContents getDriveContents(DriveId driveId) {
+        DriveFile file = Drive.DriveApi.getFile(mGoogleApiClient, driveId);
+        return file.open(mGoogleApiClient,  DriveFile.MODE_READ_ONLY, null).await().getDriveContents();
     }
 
     private void importPaperData() {
+        long startTime = System.currentTimeMillis();
         // read paper.csv and save to Parse
         DriveFile file = Drive.DriveApi.getFile(mGoogleApiClient, mPaperCSVFileDriveId);
-        file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, new DriveFile.DownloadProgressListener() {
-            @Override
-            public void onProgress(long bytesDownloaded, long bytesExpected) {
+        DriveContents contents = file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null).await().getDriveContents();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
+        try {
+            String header = reader.readLine();
+            String[] columns = header.split(",");
+            // loading entries to parse
+            String line = null;
+            int paperId = 1;
+            List<Paper> papers = new ArrayList<Paper>();
+            while((line = reader.readLine()) != null) {
+                List<String> values = CSVUtils.parseLine(line);
+                Paper paper = new Paper();
+                paper.setPaperId(paperId++);
+                for (int i = 0; i < values.size(); i++) {
+                    paper.put(columns[i], values.get(i));
+                }
+                papers.add(paper);
+            }
+            // save all paper data to parse in foreground
+            ParseObject.saveAll(papers);
+            reader.close();
+        } catch (Exception e) {
+            Log.w(TAG, "Error to read data from drive: " + e.getMessage());
+        }
 
-            }
-        }).setResultCallback(new ResultCallback<DriveContentsResult>() {
-            @Override
-            public void onResult(@NonNull DriveContentsResult driveContentsResult) {
-                if (!driveContentsResult.getStatus().isSuccess()) {
-                    Log.w(TAG, "Reading google drive file error");
-                }
-                DriveContents contents = driveContentsResult.getDriveContents();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
-                try {
-                    String header = reader.readLine();
-                    String[] columns = header.split(",");
-                    // verify the format is correct
-                    if (!validateCSVFile(columns, new PaperCSVEntry())) {
-                        Toast.makeText(getApplicationContext(), "csv file format not valid", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    // loading entries to parse
-                    String line = null;
-                    int paperId = 1;
-                    List<Paper> papers = new ArrayList<Paper>();
-                    while((line = reader.readLine()) != null) {
-                        List<String> values = CSVUtils.parseLine(line);
-                        Paper paper = new Paper();
-                        paper.setPaperId(paperId++);
-                        for (int i = 0; i < values.size(); i++) {
-                            paper.put(columns[i], values.get(i));
-                        }
-                        papers.add(paper);
-                    }
-                    // save all paper data to parse in foreground
-                    ParseObject.saveAll(papers);
-                    reader.close();
-                } catch (Exception e) {
-                    Log.w(TAG, "Error to read data from drive: " + e.getMessage());
-                }
-            }
-        });
+        Log.d(TAG, "Import paper finish in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds.");
     }
 
     private void importSessionData() {
+        long startTime = System.currentTimeMillis();
         // read session.csv, construct program, timeslot, session_timeslot, room, session_room tables, and save to Parse
         DriveFile file = Drive.DriveApi.getFile(mGoogleApiClient, mSessionCSVFileDriveId);
-        file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, new DriveFile.DownloadProgressListener() {
-            @Override
-            public void onProgress(long l, long l1) {
+        DriveContents contents = file.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null).await().getDriveContents();
 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
+        try {
+            String header = reader.readLine();
+            String[] columns = header.split(",");
+            Map<String, Integer> columnToPos = new HashMap<String, Integer>();
+            // map column name to csv position
+            for (int i = 0; i < columns.length; i++) {
+                columnToPos.put(columns[i], i);
             }
-        }).setResultCallback(new ResultCallback<DriveContentsResult>() {
-            @Override
-            public void onResult(@NonNull DriveContentsResult driveContentsResult) {
-                if (!driveContentsResult.getStatus().isSuccess()) {
-                    Log.w(TAG, "Reading google drive file error");
-                }
-                DriveContents contents = driveContentsResult.getDriveContents();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(contents.getInputStream()));
-                try {
-                    String header = reader.readLine();
-                    String[] columns = header.split(",");
-                    Map<String, Integer> columnToPos = new HashMap<String, Integer>();
-                    // map column name to csv position
-                    for (int i = 0; i < columns.length; i++) {
-                        columnToPos.put(columns[i], i);
-                    }
-                    // verify the format is correct
-                    if (!validateCSVFile(columns, new SessionCSVEntry())) {
-                        Toast.makeText(getApplicationContext(), "csv file format not valid", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    // cache the all files first
-                    List<List<String>> lines = new ArrayList<List<String>>();
-                    String line = null;
-                    while((line = reader.readLine()) != null) {
-                        lines.add(CSVUtils.parseLine(line));
-                    }
-                    reader.close();
-                    Log.i(TAG, "Read " + lines.size() + " sessions.");
+            // cache the all files first
+            List<List<String>> lines = new ArrayList<List<String>>();
+            String line = null;
+            while((line = reader.readLine()) != null) {
+                lines.add(CSVUtils.parseLine(line));
+            }
+            reader.close();
+            Log.i(TAG, "Read " + lines.size() + " sessions.");
 
-                    // populate program table
-                    Set<String> dates = new HashSet<>();
-                    for (List<String> l : lines) {
-                        String date = l.get(columnToPos.get("date"));
-                        if (!date.trim().isEmpty()) {
-                            dates.add(date.trim());
-                        }
-                    }
-                    List<String> sortedDates = new ArrayList<String>(dates);
-                    Collections.sort(sortedDates, new Comparator<String>() {
-                        @Override
-                        public int compare(String s1, String s2) {
-                            try {
-                                SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy");
-                                return sdf.parse(s2).compareTo(sdf.parse(s1));
-                            } catch (java.text.ParseException e) {
-                                Log.w(TAG, "Parse dates error");
-                                return 0;
-                            }
-                        }
-                    });
-                    Map<String, Integer> dateToProgramId = new HashMap<String, Integer>();
-                    List<Program> programs = new ArrayList<Program>();
-                    for (int i = 1; i <= sortedDates.size(); i++) {
-                        dateToProgramId.put(sortedDates.get(i-1), i);
-                        Program p = new Program();
-                        p.setDate(sortedDates.get(i-1));
-                        p.setProgramId(i);
-                        programs.add(p);
-                    }
-                    // save all program data to Parse
-                    ParseObject.saveAll(programs);
-                    Log.i(TAG, "Populate " + programs.size() + " programs.");
-
-                    // populate timeslot table
-                    List<Timeslot> timeslots = new ArrayList<Timeslot>();
-                    for (int i = 0; i < lines.size(); i++) {
-                        List<String> fields = lines.get(i);
-                        Timeslot t = new Timeslot();
-                        t.setTimeslotId(i+1);
-                        String date = fields.get(columnToPos.get("date"));
-                        if (dateToProgramId.get(date) != null) {
-                            t.setProgramId(dateToProgramId.get(date));
-                        }
-                        t.setValue(fields.get(columnToPos.get("timeslot")));
-                        timeslots.add(t);
-                    }
-                    // save timeslot data into parse
-                    ParseObject.saveAll(timeslots);
-                    Log.i(TAG, "Populate " + timeslots.size() + " timeslots.");
-
-                    // populate session_timeslot table
-                    List<Session_Timeslot> sessionTimeslots = new ArrayList<Session_Timeslot>();
-                    for (int i = 0; i < lines.size(); i++) {
-                        List<String> fields = lines.get(i);
-                        Session_Timeslot st = new Session_Timeslot();
-                        st.setSessionId(i+1);
-                        st.setTimeslotId(i+1);
-                        st.setChair(fields.get(columnToPos.get("chair")));
-                        st.setValue(fields.get(columnToPos.get("session_name")));
-                        st.setPapers(fields.get(columnToPos.get("papers")));
-                        st.setRoom(fields.get(columnToPos.get("room")));
-                        st.setSelected(0);
-                        st.setSessionTitle(fields.get(columnToPos.get("session_title")));
-                        sessionTimeslots.add(st);
-                    }
-                    // save session_timeslot to Parse
-                    ParseObject.saveAll(sessionTimeslots);
-                    Log.i(TAG, "Populate " + timeslots.size() + " timeslots.");
-
-                    // populate room table
-                    Map<String, Integer> roomIds = new HashMap<String, Integer>();
-                    List<Room> rooms = new ArrayList<Room>();
-                    int roomId = 1;
-                    for (int i = 0; i < lines.size(); i++) {
-                        List<String> fields = lines.get(i);
-                        String room = fields.get(columnToPos.get("room"));
-                        String date = fields.get(columnToPos.get("date"));
-                        String key = room + "!" + date;
-                        if (roomIds.containsKey(key)) {
-                            continue;
-                        } else {
-                            roomIds.put(key, roomId++);
-                            Room r = new Room();
-                            r.setRoom(room);
-                            if (dateToProgramId.get(date) != null) {
-                                r.setProgramId(dateToProgramId.get(date));
-                            }
-                            r.setRoomId(roomIds.get(key));
-                            rooms.add(r);
-                        }
-                    }
-                    // save room to parse
-                    ParseObject.saveAll(rooms);
-
-                    // populate session_room table
-                    List<Session_Room> sessionRooms = new ArrayList<Session_Room>();
-                    for (int i = 0; i < lines.size(); i++) {
-                        List<String> fields = lines.get(i);
-                        Session_Room sr = new Session_Room();
-                        String room = fields.get(columnToPos.get("room"));
-                        sr.setRoomId(roomIds.get(room + "!" + fields.get(columnToPos.get("date"))));
-                        sr.setSessionTitle(fields.get(columnToPos.get("session_title")));
-                        sr.setChair(fields.get(columnToPos.get("chair")));
-                        sr.setPapers(fields.get(columnToPos.get("papers")));
-                        sr.setSessionName(fields.get(columnToPos.get("session_name")));
-                        sr.setTimeslot(fields.get(columnToPos.get("timeslot")));
-                        sr.setSelected(0);
-                        sr.setSessionId(i+1);
-                        sessionRooms.add(sr);
-                    }
-                    // save all session_room to Parse
-                    ParseObject.saveAll(sessionRooms);
-                } catch (IOException e) {
-                    Log.w(TAG, "Error to read data from drive: " + e.getMessage());
-                } catch (ParseException e) {
-                    Log.w(TAG, "Error saving data to parse: " + e.getMessage());
+            // populate program table
+            Set<String> dates = new HashSet<>();
+            for (List<String> l : lines) {
+                String date = l.get(columnToPos.get("date"));
+                if (!date.trim().isEmpty()) {
+                    dates.add(date.trim());
                 }
             }
-        });
-    }
-
-    private boolean validateCSVFile(String[] columns, CSVAbstractEntry e) {
-        Set<String> cols = new HashSet<>();
-
-        for (String field : columns) {
-            cols.add(field);
-        }
-        for (String c : e.getColumns()) {
-            if (!cols.contains(c)) {
-                return false;
+            List<String> sortedDates = new ArrayList<String>(dates);
+            Collections.sort(sortedDates, new Comparator<String>() {
+                @Override
+                public int compare(String s1, String s2) {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd, yyyy");
+                        return sdf.parse(s2).compareTo(sdf.parse(s1));
+                    } catch (java.text.ParseException e) {
+                        Log.w(TAG, "Parse dates error");
+                        return 0;
+                    }
+                }
+            });
+            Map<String, Integer> dateToProgramId = new HashMap<String, Integer>();
+            List<Program> programs = new ArrayList<Program>();
+            for (int i = 1; i <= sortedDates.size(); i++) {
+                dateToProgramId.put(sortedDates.get(i-1), i);
+                Program p = new Program();
+                p.setDate(sortedDates.get(i-1));
+                p.setProgramId(i);
+                programs.add(p);
             }
-        }
-        return cols.size() == e.getColumns().length;
-    }
+            // save all program data to Parse
+            ParseObject.saveAll(programs);
+            Log.i(TAG, "Populate " + programs.size() + " programs.");
 
+            // populate timeslot table
+            List<Timeslot> timeslots = new ArrayList<Timeslot>();
+            for (int i = 0; i < lines.size(); i++) {
+                List<String> fields = lines.get(i);
+                Timeslot t = new Timeslot();
+                t.setTimeslotId(i+1);
+                String date = fields.get(columnToPos.get("date"));
+                if (dateToProgramId.get(date) != null) {
+                    t.setProgramId(dateToProgramId.get(date));
+                }
+                t.setValue(fields.get(columnToPos.get("timeslot")));
+                timeslots.add(t);
+            }
+            // save timeslot data into parse
+            ParseObject.saveAll(timeslots);
+            Log.i(TAG, "Populate " + timeslots.size() + " timeslots.");
+
+            // populate session_timeslot table
+            List<Session_Timeslot> sessionTimeslots = new ArrayList<Session_Timeslot>();
+            for (int i = 0; i < lines.size(); i++) {
+                List<String> fields = lines.get(i);
+                Session_Timeslot st = new Session_Timeslot();
+                st.setSessionId(i+1);
+                st.setTimeslotId(i+1);
+                st.setChair(fields.get(columnToPos.get("chair")));
+                st.setValue(fields.get(columnToPos.get("session_name")));
+                st.setPapers(fields.get(columnToPos.get("papers")));
+                st.setRoom(fields.get(columnToPos.get("room")));
+                st.setSelected(0);
+                st.setSessionTitle(fields.get(columnToPos.get("session_title")));
+                sessionTimeslots.add(st);
+            }
+            // save session_timeslot to Parse
+            ParseObject.saveAll(sessionTimeslots);
+            Log.i(TAG, "Populate " + timeslots.size() + " timeslots.");
+
+            // populate room table
+            Map<String, Integer> roomIds = new HashMap<String, Integer>();
+            List<Room> rooms = new ArrayList<Room>();
+            int roomId = 1;
+            for (int i = 0; i < lines.size(); i++) {
+                List<String> fields = lines.get(i);
+                String room = fields.get(columnToPos.get("room"));
+                String date = fields.get(columnToPos.get("date"));
+                String key = room + "!" + date;
+                if (roomIds.containsKey(key)) {
+                    continue;
+                } else {
+                    roomIds.put(key, roomId++);
+                    Room r = new Room();
+                    r.setRoom(room);
+                    if (dateToProgramId.get(date) != null) {
+                        r.setProgramId(dateToProgramId.get(date));
+                    }
+                    r.setRoomId(roomIds.get(key));
+                    rooms.add(r);
+                }
+            }
+            // save room to parse
+            ParseObject.saveAll(rooms);
+
+            // populate session_room table
+            List<Session_Room> sessionRooms = new ArrayList<Session_Room>();
+            for (int i = 0; i < lines.size(); i++) {
+                List<String> fields = lines.get(i);
+                Session_Room sr = new Session_Room();
+                String room = fields.get(columnToPos.get("room"));
+                sr.setRoomId(roomIds.get(room + "!" + fields.get(columnToPos.get("date"))));
+                sr.setSessionTitle(fields.get(columnToPos.get("session_title")));
+                sr.setChair(fields.get(columnToPos.get("chair")));
+                sr.setPapers(fields.get(columnToPos.get("papers")));
+                sr.setSessionName(fields.get(columnToPos.get("session_name")));
+                sr.setTimeslot(fields.get(columnToPos.get("timeslot")));
+                sr.setSelected(0);
+                sr.setSessionId(i+1);
+                sessionRooms.add(sr);
+            }
+            // save all session_room to Parse
+            ParseObject.saveAll(sessionRooms);
+        } catch (IOException e) {
+            Log.w(TAG, "Error to read data from drive: " + e.getMessage());
+        } catch (ParseException e) {
+            Log.w(TAG, "Error saving data to parse: " + e.getMessage());
+        }
+
+        Log.d(TAG, "Import session finish in " + (System.currentTimeMillis() - startTime) / 1000 + " seconds.");
+    }
 
     @Override
     protected void onStart() {
@@ -559,24 +517,8 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Log.e(TAG, "intent passed: " + data);
         switch (requestCode) {
-            case REQUEST_CODE_CAPTURE_IMAGE:
-                // Called after a photo has been taken.
-                if (resultCode == Activity.RESULT_OK) {
-                    // Store the image data as a bitmap for writing later.
-                    mBitmapToSave = (Bitmap) data.getExtras().get("data");
-                }
-                break;
-            case REQUEST_CODE_CREATOR:
-                // Called after a file is saved to Drive.
-                if (resultCode == RESULT_OK) {
-                    Log.i(TAG, "Image successfully saved.");
-                    mBitmapToSave = null;
-                    // Just start the camera again for another photo.
-                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-                            REQUEST_CODE_CAPTURE_IMAGE);
-                }
-                break;
             case REQUEST_CODE_OPEN_FILE_LIST_1:
                 if (resultCode == RESULT_OK) {
                     mPaperCSVFileDriveId = (DriveId) data.getParcelableExtra(OpenFileActivityBuilder.EXTRA_RESPONSE_DRIVE_ID);
@@ -607,12 +549,27 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
                             mSessionFileName.setText(filename);
                         }
                     });
-
                 }
                 break;
-            case REQUEST_CODE_CREATE_CSV:
+            case REQUEST_CODE_CREATE_CSV_1:
                 if (resultCode == RESULT_OK) {
                     Log.i(TAG, "CSV file saved in google drive");
+                    // change the exp button status correspondingly
+                    Log.i(TAG, "morph exp paper button to success.");
+                    morphToSuccess(mExpPaperBtn);
+                } else {
+                    Log.i(TAG, "morph exp paper button to init.");
+                    morphToSquare(mExpPaperBtn, integer(R.integer.mb_animation), R.string.export_paper_btn);
+                }
+                break;
+            case REQUEST_CODE_CREATE_CSV_2:
+                if (resultCode == RESULT_OK) {
+                    Log.i(TAG, "CSV file saved in google drive");
+                    Log.i(TAG, "morph exp session button to success.");
+                    morphToSuccess(mExpSessionBtn);
+                } else {
+                    Log.i(TAG, "morph exp session button to init.");
+                    morphToSquare(mExpSessionBtn, integer(R.integer.mb_animation), R.string.export_session_btn);
                 }
                 break;
         }
@@ -642,13 +599,6 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "API client connected.");
-//        if (mBitmapToSave == null) {
-//            // This activity has no UI of its own. Just start the camera.
-//            startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-//                    REQUEST_CODE_CAPTURE_IMAGE);
-//            return;
-//        }
-//        saveFileToDrive();
     }
 
     @Override
@@ -664,47 +614,148 @@ public class TransferActivity extends Activity implements ConnectionCallbacks,
 
         mPaperFileName = (TextView) findViewById(R.id.paper_file_name);
         mSessionFileName = (TextView) findViewById(R.id.session_file_name);
-        mSelectPaperButton = (Button) findViewById(R.id.paper_file_select_btn);
-        mSelectSessionButton = (Button) findViewById(R.id.session_file_select_btn);
-        mExportPaperDataButton = (Button) findViewById(R.id.export_paper_data_btn);
-        mExportSessionDataButton = (Button) findViewById(R.id.export_session_data_btn);
-        mImportDataButton = (Button) findViewById(R.id.import_btn);
+        mExpPaperBtn = (IndeterminateProgressButton) findViewById(R.id.export_paper_data_btn);
+        mExpSessionBtn = (IndeterminateProgressButton) findViewById(R.id.export_session_data_btn);
+        mImpBtn = (IndeterminateProgressButton) findViewById(R.id.import_data_btn);
 
-        mSelectPaperButton.setOnClickListener(new View.OnClickListener() {
+        mPaperFileName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 displayDriveFiles(REQUEST_CODE_OPEN_FILE_LIST_1);
             }
         });
 
-        mSelectSessionButton.setOnClickListener(new View.OnClickListener() {
+        mSessionFileName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 displayDriveFiles(REQUEST_CODE_OPEN_FILE_LIST_2);
             }
         });
 
-        mExportPaperDataButton.setOnClickListener(new View.OnClickListener() {
+        mExpPaperBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                exportPaperDataFromParse();
+                onMorphButtonClicked(mExpPaperBtn, R.string.export_paper_btn, 1);
+
             }
         });
 
-        mExportSessionDataButton.setOnClickListener(new View.OnClickListener() {
+        mExpSessionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                exportSessionDataFromParse();
+                onMorphButtonClicked(mExpSessionBtn, R.string.export_session_btn, 2);
+
             }
         });
 
-        mImportDataButton.setOnClickListener(new View.OnClickListener() {
+        mImpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                importData();
+                if (mPaperCSVFileDriveId == null || mSessionCSVFileDriveId == null) {
+                    Toast.makeText(view.getContext(), "Files supplied error!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                onMorphButtonClicked(mImpBtn, R.string.import_btn, 3);
             }
         });
-
     }
 
+    private void onMorphButtonClicked(IndeterminateProgressButton btn, int resId, int btnType) {
+        if (btn.getTag() != null && (int) btn.getTag() == MORPH_BUTTON_SUC) {
+            morphToSquare(btn, integer(R.integer.mb_animation), resId);
+        } else {
+            setButtonInProgress(btn);
+            switch (btnType) {
+                case 1:
+                    new AsyncTask<Void, Void, Void>() { // export paper async task
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            exportPaperDataFromParse();
+                            return null;
+                        }
+                    }.execute();
+                    break;
+                case 2:
+                    new AsyncTask<Void, Void, Void>() { // export session async task
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            exportSessionDataFromParse();
+                            return null;
+                        }
+                    }.execute();
+                    break;
+                case 3:
+                    new AsyncTask<Void, Void, Boolean>() { // import async task
+                        @Override
+                        protected Boolean doInBackground(Void... voids) {
+                            Log.d(TAG, "validate import data format...");
+                            if (!validateFileFormat()) {
+                                return false;
+                            }
+                            Log.d(TAG, "start import data task...");
+                            importData();
+                            return true;
+                        }
+                        @Override
+                        protected void onPostExecute(Boolean success) {
+                            if (success) {
+                                Log.d(TAG, "finish import data task.");
+                                morphToSuccess(mImpBtn);
+                            } else {
+                                Log.d(TAG, "import data task failed.");
+                                morphToSquare(mImpBtn, integer(R.integer.mb_animation), R.string.import_btn);
+                                Toast.makeText(getApplicationContext(), "Import file format invalid! Please select file with correct format.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    break;
+            }
+        }
+    }
+
+    private void morphToSquare(final IndeterminateProgressButton btnMorph, int duration, int resId) {
+        btnMorph.unblockTouch();
+        btnMorph.setTag(MORPH_BUTTON_INIT);
+        MorphingButton.Params square = MorphingButton.Params.create()
+                .duration(duration)
+                .cornerRadius(dimen(R.dimen.mb_corner_radius_2))
+                .color(color(R.color.mb_blue))
+                .colorPressed(color(R.color.mb_blue_dark))
+                .width(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .height(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .text(getString(resId));
+        btnMorph.morph(square);
+    }
+
+    private void morphToSuccess(final IndeterminateProgressButton btnMorph) {
+        btnMorph.setTag(MORPH_BUTTON_SUC);
+        MorphingButton.Params circle = MorphingButton.Params.create()
+                .duration(integer(R.integer.mb_animation))
+                .cornerRadius(dimen(R.dimen.mb_height_56))
+                .width(dimen(R.dimen.mb_height_56))
+                .height(dimen(R.dimen.mb_height_56))
+                .color(color(R.color.mb_green))
+                .colorPressed(color(R.color.mb_green_dark))
+                .icon(R.drawable.ic_done);
+        btnMorph.morph(circle);
+        btnMorph.unblockTouch();
+    }
+
+    private IndeterminateProgressButton setButtonInProgress(@NonNull final IndeterminateProgressButton button) {
+        int progressColor1 = color(R.color.holo_blue_bright);
+        int progressColor2 = color(R.color.holo_green_light);
+        int progressColor3 = color(R.color.holo_orange_light);
+        int progressColor4 = color(R.color.holo_red_light);
+        int color = color(R.color.mb_gray);
+        int progressCornerRadius = dimen(R.dimen.mb_corner_radius_4);
+        int width = dimen(R.dimen.mb_width_200);
+        int height = dimen(R.dimen.mb_height_8);
+        int duration = integer(R.integer.mb_animation);
+
+        button.blockTouch(); // prevent user from clicking while button is in progress
+        button.morphToProgress(color, progressCornerRadius, width, height, duration, progressColor1, progressColor2,
+                progressColor3, progressColor4);
+
+        return button;
+    }
 }

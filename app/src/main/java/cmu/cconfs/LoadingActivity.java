@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.github.jlmd.animatedcircleloadingview.AnimatedCircleLoadingView;
 import com.parse.ParseException;
@@ -43,9 +44,7 @@ public class LoadingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_loading);
         animatedCircleLoadingView = (AnimatedCircleLoadingView) findViewById(R.id.circle_loading_view);
         animatedCircleLoadingView.startIndeterminate();
-
         startProcessingThread();
-
     }
 
     private void startProcessingThread() {
@@ -84,7 +83,6 @@ public class LoadingActivity extends AppCompatActivity {
                 }
 
             }
-
         };
         task.execute((Void[]) null);
     }
@@ -92,18 +90,20 @@ public class LoadingActivity extends AppCompatActivity {
 
     private void preProcessing() {
         if (hasNetworkConnection()) {
-            if (!isUpToDate())
+            if (!isLocalStoreUpToDate()) {
+                Log.w(TAG, "Current local parse store version is out of sync");
                 loadFromParse();
-        } else {
-            if (!hasLocalStore()) {
-                animatedCircleLoadingView.stopFailure();
-                return;
             }
+        } else if (getLocalStoreVersion() == null) {
+            Log.w(TAG, "No parse local store available!");
+            animatedCircleLoadingView.stopFailure();
+            return;
         }
 
         success = true;
         populateDataProvider();
         populateRoomProvider();
+        Log.i(TAG, "Load data complete");
         animatedCircleLoadingView.stopOk();
     }
 
@@ -123,51 +123,44 @@ public class LoadingActivity extends AppCompatActivity {
                     Log.e(TAG, e.getMessage());
                 }
             }
-
         }
         return reachable;
     }
 
-    private boolean hasLocalStore() {
-        Version local = null;
+    private String getLocalStoreVersion() {
+        String local = null;
         ParseQuery<Version> query = Version.getQuery();
-        query.fromLocalDatastore();
-        query.fromPin(Version.PIN_TAG);
         try {
-            local = query.getFirst();
+            local = query.fromLocalDatastore().fromPin(Version.PIN_TAG).getFirst().getVersion();
+            Log.d(TAG, "Local parse version: " + local);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return local != null;
+        return local;
     }
 
-    private boolean isUpToDate() {
-        if (!hasLocalStore()) {
+    private String getRemoteStoreVersion() {
+        String remote = null;
+        ParseQuery<Version> query = Version.getQuery();
+        try {
+            remote = query.getFirst().getVersion();
+            Log.d(TAG, "Remote parse version: " + remote);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return remote;
+    }
+
+    private boolean isLocalStoreUpToDate() {
+        String local = getLocalStoreVersion();
+        if (local == null) {
+            Log.w(TAG, "No parse local store available!");
             return false;
         }
-        Version local = null;
-        Version remote = null;
 
-        ParseQuery<Version> query = Version.getQuery();
-        query.fromLocalDatastore();
-        query.fromPin(Version.PIN_TAG);
-        try {
-            local = query.getFirst();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        query = Version.getQuery();
-        try {
-            remote = query.getFirst();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        CheckVersion checkVersion = new CheckVersion(local);
-
-        return checkVersion.equals(remote);
+        String remote = getRemoteStoreVersion();
+        return local.equals(remote);
     }
 
 

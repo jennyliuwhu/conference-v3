@@ -2,4 +2,6 @@
 <resources>
     <integer name="column_count">3</integer>
     <integer name="google_play_services_version">6587000</integer>
+    <integer name="mb_animation">500</integer>
+
 </resources>

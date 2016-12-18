@@ -428,4 +428,10 @@
     <string name="parse_app_id">sciconfAppId</string>
     <string name="parse_master_key">sciconfMasterKey</string>
     <string name="parse_server_endpoint">https://cmusvsciconfapp.herokuapp.com/parse</string>
+
+    // transfer strings
+    <string name="import_btn">import</string>
+    <string name="export_paper_btn">export paper</string>
+    <string name="export_session_btn">export session</string>
+
 </resources>

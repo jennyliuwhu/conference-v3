@@ -17,13 +17,17 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cmu.cconfs.adapter.NotificationAdapter;
 import cmu.cconfs.model.parseModel.Message;
 import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
 public class NotificationActivity extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
+    private final static String TAG = NotificationActivity.class.getSimpleName();
 
     private ListView mListview;
     private Toolbar toolbar;
@@ -61,36 +65,34 @@ public class NotificationActivity extends AppCompatActivity implements WaveSwipe
         mListview = (ListView) findViewById(R.id.main_list);
         adapter = new NotificationAdapter(this, messages);
         mListview.setAdapter(adapter);
-
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item= menu.findItem(R.id.action_sending);
         ParseUser currentUser = ParseUser.getCurrentUser();
-        String[] list = getResources().getStringArray(R.array.admin_mail_address);
-        item.setVisible(false);
-        if(currentUser != null) {
-            Log.e("Name",currentUser.getUsername() );
-            Log.e("Name",currentUser.getEmail());
 
+        Set<String> admins = new HashSet<>(Arrays.asList(getResources().getStringArray(R.array.admin_mail_address)));
+        item.setVisible(false);
+
+        if(currentUser != null) {
+            Log.i(TAG,"User name: " + currentUser.getUsername() );
+            Log.i(TAG,"User email: " + currentUser.getEmail());
+            if (admins.contains(currentUser.getEmail())) {
+                item.setVisible(true);
+                Log.i(TAG, "Set the admin send notification button visible");
+            }
         }
         else {
-            Log.e("NULL USER","NOT LOGGED IN");
-        }
-        if (currentUser != null) {
-            for (String s : list) {
-                if (currentUser.getEmail().equals(s)) {
-                    item.setVisible(true);
-                    Log.e("Vis", "TRUE");
-                    break;
-                }
-            }
+            Log.w(TAG, "No parse user cached");
+            // ask the user to sign in
+            Intent i = new Intent();
+            i.setClass(NotificationActivity.this, LoginActivity.class);
+            startActivity(i);
         }
         super.onPrepareOptionsMenu(menu);
         return true;
     }
-
 
     private void refresh() {
         new Handler().postDelayed(new Runnable() {
