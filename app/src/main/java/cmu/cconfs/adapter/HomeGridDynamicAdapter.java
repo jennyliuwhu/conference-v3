@@ -7,9 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseUser;
+
 import org.askerov.dynamicgrid.BaseDynamicGridAdapter;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cmu.cconfs.R;
 
@@ -65,16 +70,24 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
                 imageResource = R.drawable.ic_supervisor_account_black_48dp;
                 break;
             case 10:
+                imageResource = R.drawable.ic_location_on_black_48dp;
+                break;
+            case 11:
                 imageResource = R.drawable.ic_cloud_upload_black_48dp;
-
+                break;
         }
         holder.build(getItem(position).toString(), imageResource);
+
+        // only admin can export/import
+        if (position == 11 && !isAdmin()) {
+            convertView.setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 
     @Override
     public int getCount() {
-        return 11;
+        return 12;
     }
 
 
@@ -91,7 +104,13 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
             titleText.setText(title);
             image.setImageResource(imageResource);
         }
-
-
     }
+
+    private boolean isAdmin() {
+        ParseUser user = ParseUser.getCurrentUser();
+        Set<String> admins = new HashSet<>(Arrays.asList(getContext().getResources().getStringArray(R.array.admin_mail_address)));
+        return admins.contains(user.getEmail());
+    }
+
+
 }

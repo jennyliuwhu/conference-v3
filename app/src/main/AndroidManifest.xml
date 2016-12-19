@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="cmu.cconfs" >
+          xmlns:tools="http://schemas.android.com/tools"
+          package="cmu.cconfs">
 
-    <uses-sdk tools:overrideLibrary="com.wnafee.vector" />
+    <uses-sdk tools:overrideLibrary="com.wnafee.vector"/>
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <!--
   IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
@@ -37,127 +37,132 @@
     -->
     <permission
         android:name="cmu.cconfs.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature"/>
 
-    <uses-permission android:name="cmu.cconfs.permission.C2D_MESSAGE" />
+    <uses-permission android:name="cmu.cconfs.permission.C2D_MESSAGE"/>
 
-    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera"/>
 
     <application
         android:name=".CConfsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
         <!-- configuration of easemob appkey -->
         <meta-data
             android:name="EASEMOB_APPKEY"
-            android:value="sv-cmu#cconfs" />
+            android:value="sv-cmu#cconfs"/>
         <!-- 声明sdk所需的service -->
-        <service android:name="com.easemob.chat.EMChatService" />
+        <service android:name="com.easemob.chat.EMChatService"/>
         <!-- 声明sdk所需的receiver -->
-        <receiver android:name="com.easemob.chat.EMMonitorReceiver" >
+        <receiver android:name="com.easemob.chat.EMMonitorReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
 
-                <data android:scheme="package" />
+                <data android:scheme="package"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
             </intent-filter>
         </receiver>
 
         <!-- configuration of baidu maps api -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="DpEDKx17DhY1wB5iZHreiB1H" />
+            android:value="DpEDKx17DhY1wB5iZHreiB1H"/>
+
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote" />
+            android:process=":remote"/>
         <!-- configuration of google maps api -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCBMAG51AGpH-eFQ04gV5l0g8yy0zkDtBY" />
+            android:value="AIzaSyCBMAG51AGpH-eFQ04gV5l0g8yy0zkDtBY"/>
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCp99Gqqc0u6RfZzvYpsreYrLgCJ48uQ4c"/>
 
         <activity
             android:name=".LoadingActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".LoadingActivityTest"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main_activity"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" />
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
         <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home" />
+            android:label="@string/title_activity_home"/>
         <activity
             android:name=".AgendaActivity"
-            android:label="@string/title_activity_agenda" />
+            android:label="@string/title_activity_agenda"/>
         <activity
             android:name=".SessionActivity"
             android:label="@string/title_activity_session"
-            android:theme="@style/Toolbar" />
+            android:theme="@style/Toolbar"/>
         <activity
             android:name=".PaperActivity"
-            android:label="@string/title_activity_paper" />
+            android:label="@string/title_activity_paper"/>
         <activity
             android:name=".FloorGuideActivity"
-            android:label="@string/title_activity_floor_guide" />
+            android:label="@string/title_activity_floor_guide"/>
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_map" />
+            android:label="@string/title_activity_map"/>
         <activity
             android:name=".NotificationActivity"
-            android:label="@string/title_activity_notification" />
+            android:label="@string/title_activity_notification"/>
         <activity
             android:name=".SponsorActivity"
-            android:label="@string/title_activity_sponsor" />
+            android:label="@string/title_activity_sponsor"/>
         <activity
             android:name=".AboutActivity"
-            android:label="@string/title_activity_about" />
+            android:label="@string/title_activity_about"/>
         <activity
             android:name=".ScheduleActivity"
-            android:label="@string/title_activity_schedule" />
+            android:label="@string/title_activity_schedule"/>
         <activity
             android:name=".ImageDetailsActivity"
-            android:label="ImageDetailsActivity" />
+            android:label="ImageDetailsActivity"/>
         <activity
             android:name=".ImageGridViewActivity"
-            android:label="ImageGridViewActivity" />
+            android:label="ImageGridViewActivity"/>
 
         <!-- instant message -->
         <activity
             android:name=".IMActivity"
             android:label="@string/title_activity_im"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <activity
             android:name=".instantMessage.activities.IMMainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <!-- 登陆 -->
         <activity
             android:name=".instantMessage.activities.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
 
         <!-- 注册 -->
@@ -165,7 +170,7 @@
             android:name=".instantMessage.activities.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:windowSoftInputMode="adjustResize|stateVisible">
         </activity>
         <!-- 聊天页面 -->
         <activity
@@ -173,39 +178,39 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustResize" >
+            android:windowSoftInputMode="adjustResize">
         </activity>
         <!-- 添加好友 -->
         <activity
             android:name=".instantMessage.activities.AddContactActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateVisible" >
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <!-- 群组详情 -->
         <activity
             android:name=".instantMessage.activities.GroupDetailsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <!-- 群组列表 -->
         <activity
             android:name=".instantMessage.activities.GroupsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".instantMessage.activities.ChatRoomActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <!-- 聊天室详情 -->
         <activity
             android:name=".instantMessage.activities.ChatRoomDetailsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
 
         <!-- 新建群组 -->
@@ -213,70 +218,70 @@
             android:name=".instantMessage.activities.NewGroupActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <!-- 退出群组提示框 -->
         <activity
             android:name=".instantMessage.activities.ExitGroupDialog"
             android:screenOrientation="portrait"
-            android:theme="@style/MyDialogStyleBottom" >
+            android:theme="@style/MyDialogStyleBottom">
         </activity>
         <!-- 群组选人 -->
         <activity
             android:name=".instantMessage.activities.GroupPickContactsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <!-- 地图 -->
         <activity
             android:name=".instantMessage.activities.BaiduMapActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
 
         <!-- 新的朋友邀请消息页面 -->
         <activity
             android:name=".instantMessage.activities.NewFriendsMsgActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <!-- 转发消息用户列表页面 -->
         <activity
             android:name=".instantMessage.activities.ForwardMessageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <!-- 自定义的contextmenu -->
         <activity
             android:name=".instantMessage.activities.ContextMenu"
             android:screenOrientation="portrait"
-            android:theme="@style/MyDialogStyle" >
+            android:theme="@style/MyDialogStyle">
         </activity>
         <!-- 自定义的alertdialog -->
         <activity
             android:name=".instantMessage.activities.AlertDialog"
             android:screenOrientation="portrait"
-            android:theme="@style/MyDialogStyle" >
+            android:theme="@style/MyDialogStyle">
         </activity>
         <!-- 显示下载大图页面 -->
         <activity
             android:name=".instantMessage.activities.ShowBigImage"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <!-- 下载文件 -->
         <activity
             android:name=".instantMessage.activities.ShowNormalFileActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <!-- 黑名单 -->
         <activity
             android:name=".instantMessage.activities.BlacklistActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
 
         <!-- 公开的群聊列表 -->
@@ -284,13 +289,13 @@
             android:name=".instantMessage.activities.PublicGroupsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".instantMessage.activities.PublicChatRoomsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
         </activity>
 
         <!-- 语音通话 -->
@@ -298,7 +303,7 @@
             android:name=".instantMessage.activities.VoiceCallActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/nornal_style" >
+            android:theme="@style/nornal_style">
         </activity>
         <!-- 视频通话 -->
         <activity
@@ -306,56 +311,56 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <!-- 群聊简单信息 -->
         <activity
             android:name=".instantMessage.activities.GroupSimpleDetailActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <!-- 群组黑名单用户列表 -->
         <activity
             android:name=".instantMessage.activities.GroupBlacklistActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <activity
             android:name=".instantMessage.activities.PublicGroupsSeachActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" >
+            android:theme="@style/horizontal_slide">
         </activity>
         <activity
             android:name=".instantMessage.activities.EditActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateVisible" >
+            android:windowSoftInputMode="stateVisible">
         </activity>
         <activity
             android:name=".instantMessage.activities.ShowVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <!-- choose video -->
         <activity
             android:name=".instantMessage.activities.ImageGridActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <activity
             android:name=".instantMessage.activities.RecorderVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <!-- upload error log -->
         <activity
             android:name=".instantMessage.activities.DiagnoseActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
 
         <!-- iOS offline push nick -->
@@ -363,27 +368,27 @@
             android:name=".instantMessage.activities.OfflinePushNickActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden" >
+            android:windowSoftInputMode="stateAlwaysHidden">
         </activity>
         <!-- robots list -->
         <activity
             android:name=".instantMessage.activities.RobotsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/horizontal_slide"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <!-- user profile -->
         <activity
             android:name=".instantMessage.activities.UserProfileActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/horizontal_slide" />
+            android:theme="@style/horizontal_slide"/>
 
         <!-- 开机自启动服务 -->
-        <receiver android:name="com.easemob.chat.StartServiceReceiver" >
-            <intent-filter android:priority="1000" >
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+        <receiver android:name="com.easemob.chat.StartServiceReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </receiver>
 
@@ -391,26 +396,26 @@
         <receiver
             android:name="com.easemob.chat.EMGCMBroadcastReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
 
-                <category android:name="cmu.cconfs.instantMessage" />
+                <category android:name="cmu.cconfs.instantMessage"/>
             </intent-filter>
         </receiver>
 
         <service
             android:name="com.easemob.chat.EMGCMListenerService"
-            android:exported="false" >
+            android:exported="false">
         </service>
 
         <receiver
             android:name=".instantMessage.receiver.GCMPushBroadCast"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.easemob.sdk.push" />
+                <action android:name="com.easemob.sdk.push"/>
 
-                <category android:name="cmu.cconfs.instantMessage" />
+                <category android:name="cmu.cconfs.instantMessage"/>
             </intent-filter>
         </receiver>
         <!-- gcm end -->
@@ -418,86 +423,89 @@
 
         <!-- Parse backend -->
 
-        <service android:name="com.parse.PushService" />
+        <service android:name="com.parse.PushService"/>
 
-        <receiver android:name="com.parse.ParseBroadcastReceiver" >
+        <receiver android:name="com.parse.ParseBroadcastReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name=".parseUtils.receiver.CustomPushReceiver"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-                <action android:name="com.parse.push.intent.RECEIVE" />
-                <action android:name="com.parse.push.intent.DELETE" />
-                <action android:name="com.parse.push.intent.OPEN" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+                <action android:name="com.parse.push.intent.RECEIVE"/>
+                <action android:name="com.parse.push.intent.DELETE"/>
+                <action android:name="com.parse.push.intent.OPEN"/>
             </intent-filter>
         </receiver>
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
 
                 <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
 
-                <category android:name="cmu.cconfs" />
+                <category android:name="cmu.cconfs"/>
             </intent-filter>
         </receiver>
 
         <meta-data
             android:name="com.parse.push.notification_icon"
-            android:resource="@drawable/ic_alarm_on_black_48dp" />
+            android:resource="@drawable/ic_alarm_on_black_48dp"/>
 
         <activity
             android:name=".RoomScheduleActivity"
-            android:label="@string/title_activity_room_schedule" >
+            android:label="@string/title_activity_room_schedule">
         </activity>
         <activity
             android:name=".SignUpActivity"
-            android:label="@string/title_activity_sign_up" >
+            android:label="@string/title_activity_sign_up">
         </activity>
         <activity
             android:name=".Login"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login">
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" >
+            android:label="@string/title_activity_login">
         </activity>
         <activity
             android:name=".ResetPasswordActivity"
-            android:label="@string/title_activity_reset_password" >
+            android:label="@string/title_activity_reset_password">
         </activity>
         <activity
             android:name=".UserActivity"
-            android:label="@string/title_activity_user" >
+            android:label="@string/title_activity_user">
         </activity>
 
         <receiver
             android:name=".adapter.NotificationPublisher"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
         </receiver>
 
         <activity
             android:name=".SendNotificationActivity"
-            android:label="@string/title_activity_send_notification" >
+            android:label="@string/title_activity_send_notification">
         </activity>
-
-        <activity android:name=".TransferActivity"
-                  android:label="@string/abc_action_bar_home_description"
-                  android:screenOrientation="portrait"/>
+        <activity
+            android:name=".TransferActivity"
+            android:label="@string/abc_action_bar_home_description"
+            android:screenOrientation="portrait"/>
 
         <!-- google api services -->
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+            android:value="@integer/google_play_services_version"/>
+
+        <activity android:name=".NearbyActivity">
+        </activity>
     </application>
 
 </manifest>

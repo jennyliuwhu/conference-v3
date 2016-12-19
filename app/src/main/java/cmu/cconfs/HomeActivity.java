@@ -5,10 +5,16 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.parse.ParsePush;
 
 import org.askerov.dynamicgrid.DynamicGridView;
@@ -24,15 +30,16 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = HomeActivity.class.getName();
     private DynamicGridView gridView;
-    private String[] titles = {"Agenda", "My Schedule", "Room Schedule","Map", "Floor Guide", "Sponsor", "Notification", "About", "Setting", "Chat", "Transfer"};
+    private String[] titles = {"Agenda", "My Schedule", "Room Schedule","Map", "Floor Guide", "Sponsor", "Notification", "About", "Setting", "Chat", "Nearby", "Transfer"};
     PreferencesManager mPreferencesManager;
+
+    private final static int REQUEST_SIGN_IN = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         mPreferencesManager = new PreferencesManager(this);
-
 
         gridView = (DynamicGridView) findViewById(R.id.dynamic_grid);
         gridView.setAdapter(new HomeGridDynamicAdapter(this
@@ -101,13 +108,11 @@ public class HomeActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                         if(loggedIn == false) {
                             intent.setClass(getApplicationContext(), LoginActivity.class);
-                            startActivity(intent);
                         } else {
                             intent.setClass(getApplicationContext(), UserActivity.class);
-                            startActivity(intent);
                         }
+                        startActivityForResult(intent, REQUEST_SIGN_IN);
                         break;
-
 //                        intent.setClass(getApplicationContext(),PaperActivity.class);
 //                        startActivity(intent);
 //                        break;
@@ -115,10 +120,15 @@ public class HomeActivity extends AppCompatActivity {
                     // chat
                     case 9:
                         intent.setClass(getApplicationContext(), IMActivity.class);
+                        startActivityForResult(intent, REQUEST_SIGN_IN);
+                        break;
+                    // show nearby places
+                    case 10:
+                        intent.setClass(getApplicationContext(), NearbyActivity.class);
                         startActivity(intent);
                         break;
                     // schedule data import/export
-                    case 10:
+                    case 11:
                         intent.setClass(getApplicationContext(), TransferActivity.class);
                         startActivity(intent);
                         break;
@@ -138,7 +148,14 @@ public class HomeActivity extends AppCompatActivity {
         actionBar.setDisplayUseLogoEnabled(false);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setTitle("Home");
+
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SIGN_IN) {
+            finish();
+            startActivity(getIntent());
+        }
+    }
 }

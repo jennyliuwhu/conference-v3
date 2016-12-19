@@ -4,6 +4,7 @@ package cmu.cconfs;
  * Created by qiuzhexin on 12/13/16.
  */
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
@@ -53,12 +54,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import cmu.cconfs.instantMessage.activities.AlertDialog;
 import cmu.cconfs.model.parseModel.Paper;
 import cmu.cconfs.model.parseModel.Program;
 import cmu.cconfs.model.parseModel.Room;
 import cmu.cconfs.model.parseModel.Session_Room;
 import cmu.cconfs.model.parseModel.Session_Timeslot;
 import cmu.cconfs.model.parseModel.Timeslot;
+import cmu.cconfs.model.parseModel.TransferJob;
+import cmu.cconfs.model.parseModel.Version;
 import cmu.cconfs.utils.csv.CSVAbstractEntry;
 import cmu.cconfs.utils.csv.CSVUtils;
 import cmu.cconfs.utils.csv.PaperCSVEntry;
@@ -258,6 +262,16 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
         // start to import the data
         importPaperData();
         importSessionData();
+        // update the backend version
+        try {
+            Version version = Version.getQuery().getFirst();
+            double v2 = Double.parseDouble(version.getVersion());
+            version.setVersion("" + (v2 + 1));
+            version.save();
+            Version.unpinAll();
+        } catch (ParseException e) {
+            Log.e(TAG, "Error update db version");
+        }
     }
 
     private boolean validateFileFormat() {
@@ -660,13 +674,13 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
         });
     }
 
-    private void onMorphButtonClicked(IndeterminateProgressButton btn, int resId, int btnType) {
+    private void onMorphButtonClicked(final IndeterminateProgressButton btn, int resId, int btnType) {
         if (btn.getTag() != null && (int) btn.getTag() == MORPH_BUTTON_SUC) {
             morphToSquare(btn, integer(R.integer.mb_animation), resId);
         } else {
-            setButtonInProgress(btn);
             switch (btnType) {
                 case 1:
+                    setButtonInProgress(btn);
                     new AsyncTask<Void, Void, Void>() { // export paper async task
                         @Override
                         protected Void doInBackground(Void... voids) {
@@ -676,6 +690,7 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
                     }.execute();
                     break;
                 case 2:
+                    setButtonInProgress(btn);
                     new AsyncTask<Void, Void, Void>() { // export session async task
                         @Override
                         protected Void doInBackground(Void... voids) {
@@ -685,29 +700,41 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
                     }.execute();
                     break;
                 case 3:
-                    new AsyncTask<Void, Void, Boolean>() { // import async task
+                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(TransferActivity.this, R.style.MyDialogTheme);
+                    builder.setTitle(getString(R.string.import_dialog_title));
+                    builder.setMessage(getString(R.string.import_dialog_msg));
+                    builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                         @Override
-                        protected Boolean doInBackground(Void... voids) {
-                            Log.d(TAG, "validate import data format...");
-                            if (!validateFileFormat()) {
-                                return false;
-                            }
-                            Log.d(TAG, "start import data task...");
-                            importData();
-                            return true;
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            setButtonInProgress(btn);
+                            new AsyncTask<Void, Void, Boolean>() { // import async task
+                                @Override
+                                protected Boolean doInBackground(Void... voids) {
+                                    Log.d(TAG, "validate import data format...");
+                                    if (!validateFileFormat()) {
+                                        return false;
+                                    }
+                                    Log.d(TAG, "start import data task...");
+                                    importData();
+                                    return true;
+                                }
+                                @Override
+                                protected void onPostExecute(Boolean success) {
+                                    if (success) {
+                                        Log.d(TAG, "finish import data task.");
+                                        morphToSuccess(mImpBtn);
+                                    } else {
+                                        Log.d(TAG, "import data task failed.");
+                                        morphToSquare(mImpBtn, integer(R.integer.mb_animation), R.string.import_btn);
+                                        Toast.makeText(getApplicationContext(), "Import file format invalid! Please select file with correct format.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                         }
-                        @Override
-                        protected void onPostExecute(Boolean success) {
-                            if (success) {
-                                Log.d(TAG, "finish import data task.");
-                                morphToSuccess(mImpBtn);
-                            } else {
-                                Log.d(TAG, "import data task failed.");
-                                morphToSquare(mImpBtn, integer(R.integer.mb_animation), R.string.import_btn);
-                                Toast.makeText(getApplicationContext(), "Import file format invalid! Please select file with correct format.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    });
+                    builder.setNegativeButton(getString(android.R.string.cancel), null);
+                    android.support.v7.app.AlertDialog dialog = builder.create();
+                    dialog.show();
                     break;
             }
         }

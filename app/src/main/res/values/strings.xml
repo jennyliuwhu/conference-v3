@@ -352,7 +352,7 @@
     <string name="add_public_group_chat">Add public group</string>
     <string name="add_public_chat_room">Add public chatroom</string>
     <string name="gorup_not_found">Can not find this group</string>
-    <string name= "no_more_messages">no more messages</string>
+    <string name="no_more_messages">no more messages</string>
     <string name="join_public_group">Join public group</string>
     <string name="chatroom_allow_owner_leave">Allow chatroom owner leave</string>
     <string name="group_id">Group ID</string>
@@ -394,7 +394,7 @@
     <string name="update_groups">update groups</string>
     <string name="title_activity_room_schedule">RoomScheduleActivity</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_sign_up">SignUpActivity</string>
     <string name="sign_up">Sign up</string>
@@ -418,10 +418,10 @@
     <string name="send_label">Send</string>
     <string name="title_activity_transfer">TransferActivity</string>
 
-     <string-array name="admin_mail_address">
-         <item>gqw1992@gmail.com</item>
+    <string-array name="admin_mail_address">
+        <item>gqw1992@gmail.com</item>
 
-     </string-array>
+    </string-array>
 
 
     <!-- Parse Server Info -->
@@ -429,9 +429,26 @@
     <string name="parse_master_key">sciconfMasterKey</string>
     <string name="parse_server_endpoint">https://cmusvsciconfapp.herokuapp.com/parse</string>
 
-    // transfer strings
+    <!-- transfer strings -->
     <string name="import_btn">import</string>
     <string name="export_paper_btn">export paper</string>
     <string name="export_session_btn">export session</string>
+    <string name="import_dialog_title">Import schedule data?</string>
+    <string name="import_dialog_msg">Please be aware, all schedule data will be wiped before importing! Make sure back up your data before proceeding.</string>
+
+
+    <!-- location detail -->
+    <string name="item_title">Palais Garnier</string>
+    <string name="item_desc">The Palais Garnier which locates in Paris was built from 1861 for
+        the Paris Opera.
+    </string>
+    <string name="detail_phone_number">669-7777777</string>
+    <string name="detail_location">"8 Rue Scribe, 75009 Paris, France"</string>
+    <string name="detail_web_url">www.google.com</string>
+    <string name="detail_rating">1.0</string>
+    <string name="detail_type">Restaurant</string>
+    <string name="detail_price_level">$$$</string>
+
+
 
 </resources>

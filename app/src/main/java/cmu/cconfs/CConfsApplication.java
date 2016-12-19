@@ -110,6 +110,7 @@ public class CConfsApplication extends Application {
         ParseUser.enableRevocableSessionInBackground();
         ParseACL defaultACL = new ParseACL();
         defaultACL.setPublicReadAccess(true);
+        defaultACL.setPublicWriteAccess(true);
         ParseACL.setDefaultACL(defaultACL, true);
 
 //        instant message
