@@ -1,16 +1,23 @@
 package cmu.cconfs.fragment;
 
+import android.app.Activity;
 import android.graphics.drawable.NinePatchDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
@@ -19,10 +26,14 @@ import com.h6ah4i.android.widget.advrecyclerview.decoration.ItemShadowDecorator;
 import com.h6ah4i.android.widget.advrecyclerview.decoration.SimpleListDividerDecorator;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
+import com.parse.Parse;
+import com.parse.ParseException;
 
 import cmu.cconfs.CConfsApplication;
 import cmu.cconfs.R;
 import cmu.cconfs.adapter.ExpandableItemAdapter;
+import cmu.cconfs.model.parseModel.Version;
+import cmu.cconfs.parseUtils.helper.LoadingUtils;
 import cmu.cconfs.utils.data.UnityDataProvider;
 
 /**
@@ -31,25 +42,28 @@ import cmu.cconfs.utils.data.UnityDataProvider;
 public class RecyclerExpandableFragment extends Fragment {
 
     private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewExpandableItemManager";
+    private static final String TAG = RecyclerExpandableFragment.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView.Adapter mWrappedAdapter;
     private RecyclerViewExpandableItemManager mRecyclerViewExpandableItemManager;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private Handler mHandler;
+    private Thread mRefreshTask;
+
     private int dateIndex;
 
 
     public static RecyclerExpandableFragment newInstance() {
-
-
         RecyclerExpandableFragment newInstance = new RecyclerExpandableFragment();
-
         return newInstance;
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         return inflater.inflate(R.layout.fragment_recycler_expandable_view, container, false);
 
     }
@@ -59,10 +73,34 @@ public class RecyclerExpandableFragment extends Fragment {
         //access the dateIndex data
         dateIndex = getArguments().getInt("dateIndex");
 
+
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
 
+        // set the refresh action
+        mSwipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(getContext(), "Refresh the content!", Toast.LENGTH_LONG).show();
+                mRefreshTask.start();
+            }
+        });
+
+        // define handler and refresh task
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.recreate();
+                }
+            }
+        };
+        mRefreshTask = new Thread(new RefreshRunnable());
 
         mLayoutManager = new LinearLayoutManager(getActivity());
 
@@ -112,6 +150,11 @@ public class RecyclerExpandableFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onDestroyView() {
         if (mRecyclerViewExpandableItemManager != null) {
             mRecyclerViewExpandableItemManager.release();
@@ -141,4 +184,32 @@ public class RecyclerExpandableFragment extends Fragment {
 
         return ((CConfsApplication) getActivity().getApplication()).getUnityDataProvider(dateIndex);
     }
+
+    private boolean isUpToDate() {
+        try {
+            String local = Version.getQuery().fromLocalDatastore().getFirst().getVersion();
+            String remote = Version.getQuery().getFirst().getVersion();
+            Log.d(TAG, "Local parse version: " + local);
+            Log.d(TAG, "Remote parse version: " + remote);
+            return local.equals(remote);
+        } catch (ParseException e) {
+            Log.e(TAG, "Error check db version: "  + e.getMessage());
+        }
+        return false;
+    }
+
+    private class RefreshRunnable implements Runnable {
+        @Override
+        public void run() {
+            try {
+                LoadingUtils.loadFromParse();
+                LoadingUtils.populateDataProvider();
+                LoadingUtils.populateRoomProvider();
+                mHandler.sendEmptyMessage(1);
+            } catch (ParseException e) {
+                Log.e(TAG, "Error reloading data: " + e.getMessage());
+            }
+        }
+    }
+
 }

@@ -24,7 +24,6 @@
         app:viewpager_displayToolbarWhenSwipe="true"
         app:viewpager_transparentToolbar="false"
         app:viewpager_animatedHeaderImage="true"
-
         />
 
     <!--<include layout="@layout/drawer" />-->

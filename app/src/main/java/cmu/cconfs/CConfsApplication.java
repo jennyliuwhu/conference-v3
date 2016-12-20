@@ -40,6 +40,7 @@ public class CConfsApplication extends Application {
 
     private static DataProvider dataProvider;
     private static RoomProvider roomProvider;
+    private static boolean isDataUpToDate;
 
     public void setDataProvider(DataProvider dataProvider) {
         this.dataProvider = dataProvider;
@@ -168,5 +169,14 @@ public class CConfsApplication extends Application {
     public void logout(final boolean isGCM, final EMCallBack emCallBack) {
         // 先调用sdk logout，在清理app中自己的数据
         hxSDKHelper.logout(isGCM, emCallBack);
+    }
+
+
+    public void setDataStatus(boolean status) {
+        isDataUpToDate = status;
+    }
+
+    public boolean getDataStatus() {
+        return isDataUpToDate;
     }
 }

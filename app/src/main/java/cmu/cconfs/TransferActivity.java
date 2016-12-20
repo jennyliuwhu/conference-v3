@@ -55,6 +55,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cmu.cconfs.instantMessage.activities.AlertDialog;
+import cmu.cconfs.model.parseModel.Dirty;
 import cmu.cconfs.model.parseModel.Paper;
 import cmu.cconfs.model.parseModel.Program;
 import cmu.cconfs.model.parseModel.Room;
@@ -268,7 +269,6 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
             double v2 = Double.parseDouble(version.getVersion());
             version.setVersion("" + (v2 + 1));
             version.save();
-            Version.unpinAll();
         } catch (ParseException e) {
             Log.e(TAG, "Error update db version");
         }

@@ -1,16 +1,23 @@
 package cmu.cconfs.fragment;
 
+import android.app.Activity;
 import android.graphics.drawable.NinePatchDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.florent37.materialviewpager.MaterialViewPagerHelper;
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
@@ -19,16 +26,19 @@ import com.h6ah4i.android.widget.advrecyclerview.decoration.ItemShadowDecorator;
 import com.h6ah4i.android.widget.advrecyclerview.decoration.SimpleListDividerDecorator;
 import com.h6ah4i.android.widget.advrecyclerview.expandable.RecyclerViewExpandableItemManager;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
+import com.parse.ParseException;
 
 import cmu.cconfs.CConfsApplication;
 import cmu.cconfs.R;
 import cmu.cconfs.adapter.ExpandableItemAdapter;
 import cmu.cconfs.adapter.ExpandableRoomAdapter;
+import cmu.cconfs.parseUtils.helper.LoadingUtils;
 import cmu.cconfs.utils.data.RoomDataProvider;
 import cmu.cconfs.utils.data.UnityDataProvider;
 
 
 public class RecyclerRoomFragment extends Fragment {
+    private static final String TAG = RecyclerRoomFragment.class.getSimpleName();
 
     private static final String SAVED_STATE_EXPANDABLE_ITEM_MANAGER = "RecyclerViewRoomItemManager";
 
@@ -37,6 +47,11 @@ public class RecyclerRoomFragment extends Fragment {
     private RecyclerView.Adapter mWrappedAdapter;
     private RecyclerViewExpandableItemManager mRecyclerViewExpandableItemManager;
     private int roomIndex;
+
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private Handler mHandler;
+    private Thread mRefreshTask;
 
 
     public static RecyclerRoomFragment newInstance() {
@@ -63,6 +78,30 @@ public class RecyclerRoomFragment extends Fragment {
         //noinspection ConstantConditions
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
 
+
+        // set the refresh action
+        mSwipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Toast.makeText(getContext(), "Refresh the content!", Toast.LENGTH_LONG).show();
+                mRefreshTask.start();
+            }
+        });
+
+        // define handler and refresh task
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                mSwipeRefreshLayout.setRefreshing(false);
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.recreate();
+                }
+            }
+        };
+        mRefreshTask = new Thread(new RefreshRunnable());
 
         mLayoutManager = new LinearLayoutManager(getActivity());
 
@@ -142,5 +181,19 @@ public class RecyclerRoomFragment extends Fragment {
     public RoomDataProvider getRoomDataProvider(int dateIndex) {
 
         return ((CConfsApplication) getActivity().getApplication()).getRoomDataProvider(dateIndex);
+    }
+
+    private class RefreshRunnable implements Runnable {
+        @Override
+        public void run() {
+            try {
+                LoadingUtils.loadFromParse();
+                LoadingUtils.populateDataProvider();
+                LoadingUtils.populateRoomProvider();
+                mHandler.sendEmptyMessage(1);
+            } catch (ParseException e) {
+                Log.e(TAG, "Error reloading data: " + e.getMessage());
+            }
+        }
     }
 }

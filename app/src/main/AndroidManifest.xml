@@ -110,7 +110,8 @@
             android:label="@string/title_activity_home"/>
         <activity
             android:name=".AgendaActivity"
-            android:label="@string/title_activity_agenda"/>
+            android:label="@string/title_activity_agenda"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".SessionActivity"
             android:label="@string/title_activity_session"
