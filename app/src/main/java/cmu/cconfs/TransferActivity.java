@@ -10,6 +10,8 @@ import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -97,6 +99,10 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
     private IndeterminateProgressButton mExpPaperBtn;
     private IndeterminateProgressButton mExpSessionBtn;
     private IndeterminateProgressButton mImpBtn;
+
+    private Handler mImportDataTaskHandler;
+
+    private static final String BUNDLE_IMPORT_SUC = "import-success";
 
     private static final int MORPH_BUTTON_SUC = 0;
     private static final int MORPH_BUTTON_INIT = 1;
@@ -632,6 +638,7 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
         mExpSessionBtn = (IndeterminateProgressButton) findViewById(R.id.export_session_data_btn);
         mImpBtn = (IndeterminateProgressButton) findViewById(R.id.import_data_btn);
 
+
         mPaperFileName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -672,6 +679,27 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
                 onMorphButtonClicked(mImpBtn, R.string.import_btn, 3);
             }
         });
+
+
+        // define handler & thread for handling result from import task
+        mImportDataTaskHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                boolean suc = msg.getData().getBoolean(BUNDLE_IMPORT_SUC);
+                if (suc) {
+                    Log.d(TAG, "finish import data task.");
+                    morphToSuccess(mImpBtn);
+                } else {
+                    Log.d(TAG, "import data task failed.");
+                    morphToSquare(mImpBtn, integer(R.integer.mb_animation), R.string.import_btn);
+                    Toast.makeText(getApplicationContext(), "Import file format invalid! Please select file with correct format.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+
     }
 
     private void onMorphButtonClicked(final IndeterminateProgressButton btn, int resId, int btnType) {
@@ -707,29 +735,8 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             setButtonInProgress(btn);
-                            new AsyncTask<Void, Void, Boolean>() { // import async task
-                                @Override
-                                protected Boolean doInBackground(Void... voids) {
-                                    Log.d(TAG, "validate import data format...");
-                                    if (!validateFileFormat()) {
-                                        return false;
-                                    }
-                                    Log.d(TAG, "start import data task...");
-                                    importData();
-                                    return true;
-                                }
-                                @Override
-                                protected void onPostExecute(Boolean success) {
-                                    if (success) {
-                                        Log.d(TAG, "finish import data task.");
-                                        morphToSuccess(mImpBtn);
-                                    } else {
-                                        Log.d(TAG, "import data task failed.");
-                                        morphToSquare(mImpBtn, integer(R.integer.mb_animation), R.string.import_btn);
-                                        Toast.makeText(getApplicationContext(), "Import file format invalid! Please select file with correct format.", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            Thread importDataTask = new Thread(new ImportDataRunnable());
+                            importDataTask.start();
                         }
                     });
                     builder.setNegativeButton(getString(android.R.string.cancel), null);
@@ -784,5 +791,24 @@ public class TransferActivity extends BaseActivity implements ConnectionCallback
                 progressColor3, progressColor4);
 
         return button;
+    }
+
+    private class ImportDataRunnable implements Runnable {
+        @Override
+        public void run() {
+            Message message = mImportDataTaskHandler.obtainMessage();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(BUNDLE_IMPORT_SUC, false);
+
+            Log.d(TAG, "validate import data format...");
+            if (validateFileFormat()) {
+                Log.d(TAG, "start import data task...");
+                importData();
+                bundle.putBoolean(BUNDLE_IMPORT_SUC, true);
+            }
+
+            message.setData(bundle);
+            mImportDataTaskHandler.sendMessage(message);
+        }
     }
 }
