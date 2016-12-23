@@ -449,6 +449,12 @@
     <string name="detail_type">Restaurant</string>
     <string name="detail_price_level">$$$</string>
 
+    <!-- place strings -->
+    <string name="place_search_hint">Search a place</string>
+    <string name="place_type">Attractions</string>
+    <string name="place_name">National Park</string>
+    <string name="no_place_avail_dialog_title">No place found</string>
+    <string name="no_place_avail_msg">There is no places found for the specified query. Please try other query terms.</string>
 
 
 </resources>

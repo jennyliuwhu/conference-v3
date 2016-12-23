@@ -505,8 +505,31 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
 
+        <!-- around me activities -->
         <activity android:name=".NearbyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable">
+            </meta-data>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
         </activity>
+
+        <activity android:name=".NearbyResultActivity">
+        </activity>
+        <activity android:name=".NearbyDetailActivity">
+
+        </activity>
+
+
     </application>
 
 </manifest>

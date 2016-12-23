@@ -120,8 +120,6 @@ public class NotificationActivity extends AppCompatActivity implements WaveSwipe
         mWaveSwipeRefreshLayout.setRefreshing(true);
 
         refresh();
-
-
     }
 
     @Override

@@ -10,12 +10,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-import com.parse.ParsePush;
 
 import org.askerov.dynamicgrid.DynamicGridView;
 
@@ -122,7 +121,7 @@ public class HomeActivity extends AppCompatActivity {
                         intent.setClass(getApplicationContext(), IMActivity.class);
                         startActivityForResult(intent, REQUEST_SIGN_IN);
                         break;
-                    // show nearby places
+                    // nearby places
                     case 10:
                         intent.setClass(getApplicationContext(), NearbyActivity.class);
                         startActivity(intent);
@@ -151,11 +150,15 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGN_IN) {
-            finish();
-            startActivity(getIntent());
+        switch (requestCode) {
+            case REQUEST_SIGN_IN:
+                finish();
+                startActivity(getIntent());
+                break;
         }
     }
+
 }
