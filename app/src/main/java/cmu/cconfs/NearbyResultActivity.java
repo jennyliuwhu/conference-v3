@@ -129,7 +129,7 @@ public class NearbyResultActivity extends AppCompatActivity implements GoogleApi
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double lat = location.getLatitude();
         double lon = location.getLongitude();
-        String url = String.format(baseUrl, lat, lon, term, "AIzaSyCP7weh6asqvczTB1KRzGy09VY6FravLJM");
+        String url = String.format(baseUrl, lat, lon, term, getString(R.string.google_place_api_key));
         Log.d(TAG, "url: " + url);
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
@@ -188,12 +188,10 @@ public class NearbyResultActivity extends AppCompatActivity implements GoogleApi
                 builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(NearbyResultActivity.this, NearbyActivity.class);
-                        startActivity(intent);
+                        finish();
                     }
                 });
                 builder.setCancelable(false);
-
                 builder.create().show();
                 return;
             }

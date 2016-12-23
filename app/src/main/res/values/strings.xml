@@ -450,11 +450,16 @@
     <string name="detail_price_level">$$$</string>
 
     <!-- place strings -->
+    <string name="google_place_api_key">AIzaSyCP7weh6asqvczTB1KRzGy09VY6FravLJM</string>
     <string name="place_search_hint">Search a place</string>
     <string name="place_type">Attractions</string>
     <string name="place_name">National Park</string>
     <string name="no_place_avail_dialog_title">No place found</string>
     <string name="no_place_avail_msg">There is no places found for the specified query. Please try other query terms.</string>
+
+    <!-- splash screen -->
+    <string name="conf_title">IEEE 2017</string>
+    <string name="splash_img">https://www.tsi.lv/sites/default/files/editor/news/ieee_compter_society.jpg</string>
 
 
 </resources>
