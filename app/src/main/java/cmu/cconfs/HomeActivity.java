@@ -1,20 +1,19 @@
 package cmu.cconfs;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.os.PersistableBundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
-
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
 
 import org.askerov.dynamicgrid.DynamicGridView;
 
@@ -33,6 +32,11 @@ public class HomeActivity extends AppCompatActivity {
     PreferencesManager mPreferencesManager;
 
     private final static int REQUEST_SIGN_IN = 1;
+
+    private DrawerLayout mDrawerLayout;
+    private Toolbar mToolbar;
+    private NavigationView mNavigationView;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,19 +141,76 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.menu_home);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayUseLogoEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setTitle("Home");
+        // set up the nav drawer
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Home");
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavigationView = (NavigationView) findViewById(R.id.nvView);
+        mDrawerToggle = setupDrawerToggle();
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        setupNavigationView(mNavigationView);
     }
 
+    private void setupNavigationView(NavigationView navView) {
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                selectDrawerItem(menuItem);
+                return true;
+            }
+        });
+    }
+
+    private void selectDrawerItem(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.nav_dash_board:
+                Toast.makeText(getApplicationContext(), "1 clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_my_schedule:
+                Toast.makeText(getApplicationContext(), "2 clicked", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.nav_my_profile:
+                Toast.makeText(getApplicationContext(), "3 clicked", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        menuItem.setCheckable(true);
+        setTitle(menuItem.getTitle());
+        mDrawerLayout.closeDrawers();
+    }
+
+    private ActionBarDrawerToggle setupDrawerToggle() {
+        return new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open,  R.string.drawer_close);
+    }
+
+
+    @Override
+    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

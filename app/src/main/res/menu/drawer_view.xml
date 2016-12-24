@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item android:title="Main">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                    android:id="@+id/nav_dash_board"
+                    android:icon="@drawable/ic_dashboard_black_48dp"
+                    android:title="Dashboard" />
+                </group>
+            </menu>
+        </item>
+
+        <item android:title="Personal">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_my_schedule"
+                        android:icon="@drawable/ic_alarm_on_black_48dp"
+                        android:title="My Schedule" />
+                    <item
+                        android:id="@+id/nav_my_profile"
+                        android:icon="@drawable/ic_account_box_black_48dp"
+                        android:title="My Profile"/>
+                    <item
+                        android:id="@+id/nav_my_to_do_list"
+                        android:icon="@drawable/ic_list_black_48dp"
+                        android:title="My To Do List"/>
+                </group>
+            </menu>
+        </item>
+
+        <item android:title="Setting">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_sync_data"
+                        android:icon="@drawable/ic_sync_black_48dp"
+                        android:title="Sync Data" />
+                    <item
+                        android:id="@+id/nav_log_in"
+                        android:icon="@drawable/ic_perm_identity_black_48dp"
+                        android:title="Log in/Log out"/>
+                </group>
+            </menu>
+        </item>
+    </group>
+</menu>

@@ -461,5 +461,8 @@
     <string name="conf_title">IEEE 2017</string>
     <string name="splash_img">https://www.tsi.lv/sites/default/files/editor/news/ieee_compter_society.jpg</string>
 
+    <!-- nav side bar -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>

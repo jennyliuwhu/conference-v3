@@ -12,6 +12,8 @@
         <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowActionBar">false</item>
+        <item name="android:actionMenuTextColor">@color/colorPrimaryDark</item>
+
 
         <!-- Material Theme -->
         <item name="colorPrimary">@color/colorPrimary</item>
