@@ -7,26 +7,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.github.jlmd.animatedcircleloadingview.AnimatedCircleLoadingView;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.io.IOException;
 import java.net.Socket;
 
-import cmu.cconfs.model.CheckVersion;
-import cmu.cconfs.model.parseModel.Dirty;
-import cmu.cconfs.model.parseModel.FloorPlan;
-import cmu.cconfs.model.parseModel.Paper;
-import cmu.cconfs.model.parseModel.Program;
-import cmu.cconfs.model.parseModel.Room;
-import cmu.cconfs.model.parseModel.Session_Room;
-import cmu.cconfs.model.parseModel.Session_Timeslot;
-import cmu.cconfs.model.parseModel.Sponsor;
-import cmu.cconfs.model.parseModel.Timeslot;
 import cmu.cconfs.model.parseModel.Version;
 import cmu.cconfs.parseUtils.helper.LoadingUtils;
 import cmu.cconfs.utils.data.DataProvider;

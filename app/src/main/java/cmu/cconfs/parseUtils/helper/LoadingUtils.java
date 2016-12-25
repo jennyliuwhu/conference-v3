@@ -5,7 +5,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import cmu.cconfs.CConfsApplication;
-import cmu.cconfs.model.parseModel.Dirty;
 import cmu.cconfs.model.parseModel.FloorPlan;
 import cmu.cconfs.model.parseModel.Paper;
 import cmu.cconfs.model.parseModel.Program;

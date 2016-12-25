@@ -2,7 +2,7 @@
 <resources>
     <color name="blue">#303F9F</color>
 
-    <color name="accent_color">#FF00E5FF</color>
+    <color name="colorAccent">#FF00E5FF</color>
     <color name="colorPrimary">#32cd80</color>
     <color name="colorPrimaryDark">#2bb676</color>
     <color name="statusBarColor">@color/colorPrimary</color>
@@ -87,4 +87,6 @@
     <color name="pink">#FF407F</color>
     <color name="yellow">#FFCE45</color>
 
+    <color name="iron">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
 </resources>

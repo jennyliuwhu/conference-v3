@@ -2,12 +2,14 @@ package cmu.cconfs;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.easemob.EMError;
@@ -18,56 +20,62 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 public class SignUpActivity extends AppCompatActivity {
-    protected Button mSignUpButton;
-    EditText mUsername;
-    EditText mPassword ;
-    EditText mConfirmPassword;
-    EditText mEmail ;
 
+    private final static String TAG = SignUpActivity.class.getSimpleName();
+
+    private EditText mNameText;
+    private EditText mEmailText;
+    private EditText mUsernameText;
+    private EditText mPasswordText;
+    private Button mSignupButton;
+    private TextView mLinkLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        mNameText = (EditText) findViewById(R.id.input_name);
+        mEmailText = (EditText) findViewById(R.id.input_email);
+        mUsernameText = (EditText) findViewById(R.id.input_account);
+        mPasswordText = (EditText) findViewById(R.id.input_password);
 
-        mSignUpButton = (Button) findViewById(R.id.signupButton);
+        mSignupButton = (Button) findViewById(R.id.btn_signup);
+        mLinkLogin = (TextView) findViewById(R.id.link_login);
 
-        mUsername = (EditText) findViewById(R.id.usernameField);
-        mPassword = (EditText) findViewById(R.id.passwordField);
-        mConfirmPassword = (EditText) findViewById(R.id.passwordConfirmField);
-        mEmail = (EditText) findViewById(R.id.emailField);
-
-        mSignUpButton.setOnClickListener(new View.OnClickListener() {
+        mSignupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = mUsername.getText().toString().trim();
-                String password = mPassword.getText().toString().trim();
-                String confirmPassword = mConfirmPassword.getText().toString().trim();
-                String email = mEmail.getText().toString().trim();
-
-
-                if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
-                    Log.e("name",username);
-                    Log.e("pass",password);
-                    Log.e("conf",confirmPassword);
-                    Log.e("em",email);
-                    postError("Invalid input information");
-
+                if (!validate()) {
+                    onSignupFailed();
+                    return;
                 }
-                else if (! password.equals(confirmPassword)){
-                    postError("Password don not match");
-                }
-                else {
-                    signUp(username, password, email);
-                }
+
+                signUp(fillUserInfo());
             }
         });
 
-
+        mLinkLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(i);
+            }
+        });
     }
+
+    private ParseUser fillUserInfo() {
+        final ParseUser user = new ParseUser();
+        user.put("full_name", mNameText.getText().toString());
+        user.setUsername(mUsernameText.getText().toString());
+        user.setEmail(mEmailText.getText().toString());
+        user.setPassword(mPasswordText.getText().toString());
+
+        return user;
+    }
+
     private void postError(String error){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_Dark_Dialog);
 
         builder.setMessage(error)
                 .setTitle("Please try again")
@@ -75,16 +83,10 @@ public class SignUpActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-    private void signUp(String username, String password, String email){
-        final ParseUser user = new ParseUser();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setEmail(email);
 
-// other fields can be set just like with ParseObject
-//        user.put("phone", "650-253-0000");
 
-        final ProgressDialog pd = new ProgressDialog(this);
+    private void signUp(final ParseUser user){
+        final ProgressDialog pd = new ProgressDialog(this, R.style.AppTheme_Dark_Dialog);
         pd.setMessage(getResources().getString(R.string.Is_the_registered));
         pd.show();
 
@@ -92,13 +94,13 @@ public class SignUpActivity extends AppCompatActivity {
             public void run() {
                 try {
                     // 调用sdk注册方法
-                    EMChatManager.getInstance().createAccountOnServer(mUsername.getText().toString().trim(), mPassword.getText().toString().trim());
+                    EMChatManager.getInstance().createAccountOnServer(mUsernameText.getText().toString(), mPasswordText.getText().toString());
                     runOnUiThread(new Runnable() {
                         public void run() {
                             if (!SignUpActivity.this.isFinishing())
                                 pd.dismiss();
                             // 保存用户名
-                            CConfsApplication.getInstance().setUserName(mUsername.getText().toString().trim());
+                            CConfsApplication.getInstance().setUserName(mUsernameText.getText().toString());
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_successfully), Toast.LENGTH_SHORT).show();
 
                             user.signUpInBackground(new SignUpCallback() {
@@ -107,9 +109,9 @@ public class SignUpActivity extends AppCompatActivity {
                                         Log.e("sign up", "success");
                                         Toast.makeText(getApplicationContext(), "Sign up Success!", Toast.LENGTH_LONG).show();
                                         try {
-                                            EMChatManager.getInstance().createAccountOnServer(mUsername.getText().toString().trim(), mPassword.getText().toString().trim());
+                                            EMChatManager.getInstance().createAccountOnServer(mUsernameText.getText().toString(), mPasswordText.getText().toString());
                                             // 保存用户名
-                                            CConfsApplication.getInstance().setUserName(mUsername.getText().toString().trim());
+                                            CConfsApplication.getInstance().setUserName(mUsernameText.getText().toString());
                                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_successfully), Toast.LENGTH_SHORT).show();
                                             finish();
                                         } catch (final EaseMobException ee) {
@@ -126,8 +128,6 @@ public class SignUpActivity extends AppCompatActivity {
                                                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registration_failed) + ee.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         }
-
-
                                         // Hooray! Let them use the app now.
                                     } else {
                                         if (e.getMessage().contains("This email has already been registered")) {
@@ -163,8 +163,52 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
 
 
+    public void onSignupFailed() {
+        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        mSignupButton.setEnabled(true);
+    }
+
+    private boolean validate() {
+        boolean valid = true;
+
+        String name = mNameText.getText().toString();
+        String email = mEmailText.getText().toString();
+        String account = mUsernameText.getText().toString();
+        String password = mPasswordText.getText().toString();
+
+
+        if (name.isEmpty() || name.length() < 3) {
+            mNameText.setError("at least 3 characters");
+            valid = false;
+        } else {
+            mNameText.setError(null);
+        }
+
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mEmailText.setError("enter a valid email address");
+            valid = false;
+        } else {
+            mEmailText.setError(null);
+        }
+
+        if (account.isEmpty() || account.length() < 6) {
+            mUsernameText.setError("at least 6 characters");
+            valid = false;
+        } else {
+            mUsernameText.setError(null);
+        }
+
+        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
+            mPasswordText.setError("between 4 and 10 alphanumeric characters");
+            valid = false;
+        } else {
+            mPasswordText.setError(null);
+        }
+
+        return valid;
     }
 
 }
