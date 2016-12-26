@@ -462,16 +462,19 @@
 
         <activity
             android:name=".RoomScheduleActivity"
-            android:label="@string/title_activity_room_schedule">
+            android:label="@string/title_activity_room_schedule"
+            android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".SignUpActivity"
             android:label="@string/title_activity_sign_up"
-            android:theme="@style/AppTheme.Dark">
+            android:theme="@style/AppTheme.Dark"
+            android:configChanges="orientation|screenSize">
         </activity>
         <activity
             android:name=".LoginActivity"
             android:theme="@style/AppTheme.Dark"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_login">
         </activity>
         <activity

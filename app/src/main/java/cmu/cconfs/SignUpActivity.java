@@ -3,6 +3,8 @@ package cmu.cconfs;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +22,8 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 public class SignUpActivity extends AppCompatActivity {
-
+    public final static String EXTRA_USERNAME = "username";
+    public final static String EXTRA_PASSWORD = "password";
     private final static String TAG = SignUpActivity.class.getSimpleName();
 
     private EditText mNameText;
@@ -29,6 +32,12 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText mPasswordText;
     private Button mSignupButton;
     private TextView mLinkLogin;
+
+    private Handler mHandler;
+    private ProgressDialog mProgressDialog;
+    private final static int SIGNUP_SUC = 1;
+    private final static int SIGNUP_FAIL = 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,18 +59,55 @@ public class SignUpActivity extends AppCompatActivity {
                     onSignupFailed();
                     return;
                 }
-
-                signUp(fillUserInfo());
+                signUp();
             }
         });
 
         mLinkLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(i);
+                finish();
             }
         });
+
+        mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dark_Dialog);
+        mProgressDialog.setMessage(getString(R.string.Is_the_registered));
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setMessage("Registering...");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.setCancelable(false);
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.arg1) {
+                    case SIGNUP_SUC:
+                        // send the registered user info to login activity for direct login
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_successfully), Toast.LENGTH_SHORT).show();
+                        Intent data = new Intent();
+                        data.putExtra(EXTRA_USERNAME, mUsernameText.getText().toString());
+                        data.putExtra(EXTRA_PASSWORD, mPasswordText.getText().toString());
+                        setResult(RESULT_OK, data);
+                        mProgressDialog.dismiss();
+                        finish();
+                        break;
+                    case SIGNUP_FAIL:
+                        String errorMsg = msg.getData().getString("msg");
+                        Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                        break;
+                }
+            }
+        };
+    }
+
+
+    private void signUp() {
+        mProgressDialog.show();
+        ParseUser user = fillUserInfo();
+        String username = mUsernameText.getText().toString();
+        String password = mPasswordText.getText().toString();
+        new Thread(new SignUpTask(user, username, password, mHandler)).start();
     }
 
     private ParseUser fillUserInfo() {
@@ -72,97 +118,6 @@ public class SignUpActivity extends AppCompatActivity {
         user.setPassword(mPasswordText.getText().toString());
 
         return user;
-    }
-
-    private void postError(String error){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme_Dark_Dialog);
-
-        builder.setMessage(error)
-                .setTitle("Please try again")
-                .setPositiveButton(android.R.string.ok, null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-
-    private void signUp(final ParseUser user){
-        final ProgressDialog pd = new ProgressDialog(this, R.style.AppTheme_Dark_Dialog);
-        pd.setMessage(getResources().getString(R.string.Is_the_registered));
-        pd.show();
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    // 调用sdk注册方法
-                    EMChatManager.getInstance().createAccountOnServer(mUsernameText.getText().toString(), mPasswordText.getText().toString());
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            if (!SignUpActivity.this.isFinishing())
-                                pd.dismiss();
-                            // 保存用户名
-                            CConfsApplication.getInstance().setUserName(mUsernameText.getText().toString());
-                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_successfully), Toast.LENGTH_SHORT).show();
-
-                            user.signUpInBackground(new SignUpCallback() {
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        Log.e("sign up", "success");
-                                        Toast.makeText(getApplicationContext(), "Sign up Success!", Toast.LENGTH_LONG).show();
-                                        try {
-                                            EMChatManager.getInstance().createAccountOnServer(mUsernameText.getText().toString(), mPasswordText.getText().toString());
-                                            // 保存用户名
-                                            CConfsApplication.getInstance().setUserName(mUsernameText.getText().toString());
-                                            Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registered_successfully), Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        } catch (final EaseMobException ee) {
-                                            int errorCode = ee.getErrorCode();
-                                            if (errorCode == EMError.NONETWORK_ERROR) {
-                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.network_anomalies), Toast.LENGTH_SHORT).show();
-                                            } else if (errorCode == EMError.USER_ALREADY_EXISTS) {
-                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.User_already_exists), Toast.LENGTH_SHORT).show();
-                                            } else if (errorCode == EMError.UNAUTHORIZED) {
-                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.registration_failed_without_permission), Toast.LENGTH_SHORT).show();
-                                            } else if (errorCode == EMError.ILLEGAL_USER_NAME) {
-                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.illegal_user_name), Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registration_failed) + ee.getMessage(), Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                        // Hooray! Let them use the app now.
-                                    } else {
-                                        if (e.getMessage().contains("This email has already been registered")) {
-                                            postError("This email has already been registered. You can reset your password at the login page.");
-                                        } else
-                                            postError(e.getMessage());
-                                    }
-                                }
-                            });
-
-                            finish();
-                        }
-                    });
-                } catch (final EaseMobException e) {
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            if (!SignUpActivity.this.isFinishing())
-                                pd.dismiss();
-                            int errorCode=e.getErrorCode();
-                            if(errorCode== EMError.NONETWORK_ERROR){
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.network_anomalies), Toast.LENGTH_SHORT).show();
-                            }else if(errorCode == EMError.USER_ALREADY_EXISTS){
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.User_already_exists), Toast.LENGTH_SHORT).show();
-                            }else if(errorCode == EMError.UNAUTHORIZED){
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.registration_failed_without_permission), Toast.LENGTH_SHORT).show();
-                            }else if(errorCode == EMError.ILLEGAL_USER_NAME){
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.illegal_user_name), Toast.LENGTH_SHORT).show();
-                            }else{
-                                Toast.makeText(getApplicationContext(), getResources().getString(R.string.Registration_failed) + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
-            }
-        }).start();
     }
 
 
@@ -209,6 +164,76 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    private class SignUpTask implements Runnable {
+        ParseUser user;
+        String username, password;
+        Handler handler;
+
+        public SignUpTask(ParseUser user, String username, String password, Handler handler) {
+            this.user = user;
+            this.handler = handler;
+            this.username = username;
+            this.password = password;
+        }
+
+        @Override
+        public void run() {
+            final Message message = handler.obtainMessage();
+
+            try {
+                // 调用sdk注册方法
+                EMChatManager.getInstance().createAccountOnServer(username,password);
+                Log.d(TAG, "em sign up success");
+
+                // 保存用户名
+                CConfsApplication.getInstance().setUserName(username);
+                user.signUpInBackground(new SignUpCallback() {
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            Log.d(TAG, "parse sign up success");
+                            CConfsApplication.getInstance().setUserName(username);
+                            // send suc message
+                            message.arg1 = SIGNUP_SUC;
+                            mHandler.sendMessage(message);
+                            // Hooray! Let them use the app now.
+                        } else {
+                            handleParseError(message, handler, e);
+                        }
+                    }
+                });
+            } catch (final EaseMobException e) {
+                handleEMError(message, handler, e);
+            }
+        }
+
+        private void handleEMError(Message message, Handler handler, EaseMobException e) {
+            int errorCode = e.getErrorCode();
+            message.arg1 = SIGNUP_FAIL;
+            if (errorCode == EMError.NONETWORK_ERROR) {
+                message.getData().putString("msg", getResources().getString(R.string.network_anomalies));
+            } else if (errorCode == EMError.USER_ALREADY_EXISTS) {
+                message.getData().putString("msg", getResources().getString(R.string.User_already_exists));
+            } else if (errorCode == EMError.UNAUTHORIZED) {
+                message.getData().putString("msg", getResources().getString(R.string.registration_failed_without_permission));
+            } else if (errorCode == EMError.ILLEGAL_USER_NAME) {
+                message.getData().putString("msg", getResources().getString(R.string.illegal_user_name));
+            } else {
+                message.getData().putString("msg", getResources().getString(R.string.Registration_failed) + e.getMessage());
+            }
+            handler.sendMessage(message);
+        }
+
+        private void handleParseError(Message message, Handler handler, ParseException e) {
+            message.arg1 = SIGNUP_FAIL;
+            if (e.getMessage().contains("This email has already been registered")) {
+                message.getData().putString("msg", "This email has already been registered. You can reset your password at the login page.");
+            } else {
+                message.getData().putString("msg", e.getMessage());
+            }
+            handler.sendMessage(message);
+        }
     }
 
 }
