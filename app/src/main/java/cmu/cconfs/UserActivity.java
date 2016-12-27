@@ -36,14 +36,16 @@ public class UserActivity extends Activity {
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ParseUser.logOut();
-                mPreferencesManager.writeBooleanPreference("LoggedIn", false);
-                logout();
-                //finish();
+                signOut();
             }
         });
     }
 
+    private void signOut() {
+        ParseUser.logOut();
+        mPreferencesManager.writeBooleanPreference("LoggedIn", false);
+        logout();
+    }
 
     void logout() {
         final ProgressDialog pd = new ProgressDialog(this);

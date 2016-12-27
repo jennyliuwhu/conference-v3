@@ -169,13 +169,15 @@ public class HomeActivity extends AppCompatActivity {
     private void selectDrawerItem(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.nav_dash_board:
-                Toast.makeText(getApplicationContext(), "1 clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "dash board clicked", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_my_schedule:
-                Toast.makeText(getApplicationContext(), "2 clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "my schedule clicked", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_my_profile:
-                Toast.makeText(getApplicationContext(), "3 clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "my profile clicked", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(this, ProfileActivity.class);
+                startActivity(i);
                 break;
         }
 

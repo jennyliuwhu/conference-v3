@@ -110,8 +110,8 @@
             android:label="@string/title_activity_home"/>
         <activity
             android:name=".AgendaActivity"
-            android:label="@string/title_activity_agenda"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_agenda"/>
         <activity
             android:name=".SessionActivity"
             android:label="@string/title_activity_session"
@@ -462,20 +462,20 @@
 
         <activity
             android:name=".RoomScheduleActivity"
-            android:label="@string/title_activity_room_schedule"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_room_schedule">
         </activity>
         <activity
             android:name=".SignUpActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_sign_up"
-            android:theme="@style/AppTheme.Dark"
-            android:configChanges="orientation|screenSize">
+            android:theme="@style/AppTheme.Dark">
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:theme="@style/AppTheme.Dark"
             android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_login">
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.Dark">
         </activity>
         <activity
             android:name=".ResetPasswordActivity"
@@ -523,14 +523,13 @@
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
         </activity>
-
         <activity android:name=".NearbyResultActivity">
         </activity>
         <activity android:name=".NearbyDetailActivity">
-
         </activity>
-
-
+        <activity android:name=".ProfileActivity"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

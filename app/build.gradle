@@ -5,7 +5,7 @@ android {
     buildToolsVersion '23.0.0'
     defaultConfig {
         applicationId "cmu.cconfs"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -104,5 +104,8 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
     // load images from url
     compile 'com.squareup.picasso:picasso:2.5.2'
+    // fab with actions
+    compile 'com.github.clans:fab:1.6.4'
+
 
 }

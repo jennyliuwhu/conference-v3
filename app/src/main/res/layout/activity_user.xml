@@ -19,8 +19,6 @@
         android:textSize="40sp"
         android:textStyle="bold" />
 
-
-
         <TextView
             android:id="@+id/current_username"
             android:layout_width="match_parent"
@@ -31,7 +29,7 @@
             android:textSize="17sp" />
 
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/signOutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,9 +48,7 @@
         android:ems="10"
         android:textColor="#000"
         android:textSize="17sp"
-        android:layout_below="@+id/user"
-        android:layout_alignLeft="@+id/u_editTextLayout"
-        android:layout_alignStart="@+id/u_editTextLayout" />
+        android:layout_below="@+id/user"/>
 
 
 </RelativeLayout>
