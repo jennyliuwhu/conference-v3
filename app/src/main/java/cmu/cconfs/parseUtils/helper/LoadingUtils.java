@@ -1,5 +1,10 @@
 package cmu.cconfs.parseUtils.helper;
 
+import android.app.Service;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -54,7 +59,6 @@ public class LoadingUtils {
         ParseObject.pinAll(FloorPlan.PIN_TAG, floorPlanQuery.find());
         ParseObject.pinAll(Sponsor.PIN_TAG, sponsorQuery.find());
         ParseObject.pinAll(Version.PIN_TAG, versionQuery.find());
-
     }
 
     public static void populateDataProvider() {
@@ -67,5 +71,12 @@ public class LoadingUtils {
         CConfsApplication application = new CConfsApplication();
         RoomProvider roomProvider = new RoomProvider();
         application.setRoomProvider(roomProvider);
+    }
+
+    public static boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) CConfsApplication.getInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

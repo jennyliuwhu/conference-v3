@@ -21,6 +21,8 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import cmu.cconfs.model.parseModel.Profile;
+
 public class SignUpActivity extends AppCompatActivity {
     public final static String EXTRA_USERNAME = "username";
     public final static String EXTRA_PASSWORD = "password";
@@ -194,6 +196,9 @@ public class SignUpActivity extends AppCompatActivity {
                         if (e == null) {
                             Log.d(TAG, "parse sign up success");
                             CConfsApplication.getInstance().setUserName(username);
+                            // save profile
+                            saveProfile(user, user.getString("full_name"), user.getEmail());
+
                             // send suc message
                             message.arg1 = SIGNUP_SUC;
                             mHandler.sendMessage(message);
@@ -233,6 +238,18 @@ public class SignUpActivity extends AppCompatActivity {
                 message.getData().putString("msg", e.getMessage());
             }
             handler.sendMessage(message);
+        }
+
+        private void saveProfile(ParseUser user, String name, String email) {
+            Profile profile = new Profile();
+            profile.setParseUser(user);
+            profile.setFullName(name);
+            profile.setEmail(email);
+            try {
+                profile.save();
+            } catch (ParseException e) {
+                Log.d(TAG, "Error saving user profile: " + e.getMessage());
+            }
         }
     }
 

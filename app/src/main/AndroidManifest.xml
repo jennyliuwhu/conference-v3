@@ -528,6 +528,7 @@
         <activity android:name=".NearbyDetailActivity">
         </activity>
         <activity android:name=".ProfileActivity"
+                  android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
     </application>

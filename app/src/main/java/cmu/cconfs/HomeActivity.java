@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 import org.askerov.dynamicgrid.DynamicGridView;
 
 import java.util.ArrayList;
@@ -180,6 +182,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(i);
                 break;
         }
+
 
         menuItem.setCheckable(true);
         setTitle(menuItem.getTitle());
