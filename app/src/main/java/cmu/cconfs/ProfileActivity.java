@@ -1,13 +1,17 @@
 package cmu.cconfs;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,21 +22,31 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.parse.DeleteCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+
 import cmu.cconfs.model.parseModel.Profile;
+import cmu.cconfs.parseUtils.helper.LoadingUtils;
+import cmu.cconfs.utils.image.BitmapScaler;
 
 public class ProfileActivity extends AppCompatActivity {
     private final static String TAG = ProfileActivity.class.getSimpleName();
@@ -44,7 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FloatingActionButton mSettingButton;
     private FloatingActionButton mSendNotesButton;
 
-    private ImageButton mProfileImage;
+    private ImageView mProfileImageView;
     private AppBarLayout mAppBarLayout;
     private RelativeLayout mPhoneBox;
     private RelativeLayout mEmailBox;
@@ -57,9 +71,18 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mTitleTv;
     private TextView mDescTv;
 
-    private Profile mProfile;
+    private ParseFile mProfileImg;
+    private ParseFile mBackgroundImg;
+    private String mProfileImgFilename;
+    private String mBackgroundImgFilename;
+    private final static int REQUEST_GET_PROFILE_IMG_TAKE_PHOTO = 1;
+    private final static int REQUEST_GET_BACKGROUND_IMG_TAKE_PHOTO = 2;
+    private final static int REQUEST_GET_PROFILE_IMG_GALLERY = 3;
+    private final static int REQUEST_GET_BACKGROUND_IMG_GALLERY = 4;
+
 
     private AlertDialog mEditTextAlertDialog;
+    private static String[] mImageSourceOptions = { "Take a photo", "Choose from gallery" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +91,37 @@ public class ProfileActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // create unique filenames for profile image & background image
+        mProfileImgFilename = ParseUser.getCurrentUser().getUsername() + "_profile.jpg";
+        mBackgroundImgFilename = ParseUser.getCurrentUser().getUsername() + "_background.jpg";
+
         // profile related changes
-        mProfileImage = (ImageButton) findViewById(R.id.user_profile_photo);
-        mProfileImage.setOnClickListener(new View.OnClickListener() {
+        mProfileImageView = (ImageView) findViewById(R.id.user_profile_photo);
+        mProfileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Profile image clicked!", Toast.LENGTH_SHORT).show();
+                snackNotify(view, "profile img clicked");
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this, R.style.AppTheme_Dark_Dialog);
+                builder.setTitle("Change profile image");
+
+                ListView listView = new ListView(view.getContext());
+                listView.setAdapter(new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, mImageSourceOptions));
+                builder.setView(listView);
+                final AlertDialog dialog = builder.show();
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        if (i == 0) {
+                            Log.d(TAG, "Take a photo");
+                            onOpenCamera(REQUEST_GET_PROFILE_IMG_TAKE_PHOTO, mProfileImgFilename);
+                        } else {
+                            Log.d(TAG, "Select from gallery");
+                            onOpenGallery(REQUEST_GET_PROFILE_IMG_GALLERY);
+                        }
+                        dialog.dismiss();
+                    }
+                });
             }
         });
 
@@ -81,7 +129,28 @@ public class ProfileActivity extends AppCompatActivity {
         mAppBarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAppBarLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.main_background));
+                snackNotify(view, "background img clicked");
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this, R.style.AppTheme_Dark_Dialog);
+                builder.setTitle("Change background image");
+
+                ListView listView = new ListView(view.getContext());
+                listView.setAdapter(new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, mImageSourceOptions));
+                builder.setView(listView);
+                final AlertDialog dialog = builder.show();
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        if (i == 0) {
+                            Log.d(TAG, "Take a photo");
+                            onOpenCamera(REQUEST_GET_BACKGROUND_IMG_TAKE_PHOTO, mBackgroundImgFilename);
+                        } else {
+                            Log.d(TAG, "Select from gallery");
+                            onOpenGallery(REQUEST_GET_BACKGROUND_IMG_GALLERY);
+                        }
+                        dialog.dismiss();
+                    }
+                });
             }
         });
 
@@ -196,6 +265,23 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         mSaveChangeButton = (Button) findViewById(R.id.btn_save_change);
+        mSaveChangeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this, R.style.MyDialogTheme);
+                builder.setTitle("Save Profle");
+                builder.setMessage("You sure want to save the profile changes?");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        new UpdateUserProfileTask().execute();
+                        mSaveChangeButton.setEnabled(false);
+                    }
+                });
+                builder.setNegativeButton("CANCEL", null);
+                builder.show();
+            }
+        });
 
         // account setting related
         mLogoutButton = (Button) findViewById(R.id.btn_sign_out);
@@ -230,6 +316,41 @@ public class ProfileActivity extends AppCompatActivity {
         new FetchProfileTask().execute();
     }
 
+    private void onOpenCamera(int requestCode, String fileName) {
+        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        i.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri(fileName));
+
+        if (i.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(i, requestCode);
+        }
+    }
+
+    private void onOpenGallery(int requestCode) {
+        Intent i = new Intent (Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        if (i.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(i, requestCode);
+        }
+    }
+
+    private Uri getPhotoFileUri(String fileName) {
+        if (isExternalStorageAvailable()) {
+            File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "CC App tag");
+
+            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdir()) {
+                Log.e(TAG, "Failed to create directory for image file");
+            }
+
+            return Uri.fromFile(new File(mediaStorageDir.getPath() + File.separator + fileName));
+        }
+
+        Log.e(TAG, "Could not create Uri for file name: " + fileName);
+        return null;
+    }
+
+    private boolean isExternalStorageAvailable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
     private void snackNotify(View v, String s) {
         Snackbar.make(v, s, Snackbar.LENGTH_LONG).setAction("Action", null).show();
     }
@@ -250,7 +371,6 @@ public class ProfileActivity extends AppCompatActivity {
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     if (!mSaveChangeButton.isEnabled()) {
-                        Log.d(TAG, "Edit text changes");
                         mSaveChangeButton.setEnabled(true);
                     }
                 }
@@ -273,31 +393,71 @@ public class ProfileActivity extends AppCompatActivity {
         return mEditTextAlertDialog;
     }
 
+    private Profile getUserProfile() {
+        ParseQuery<Profile> query = Profile.getQuery();
+        query.whereEqualTo(Profile.PARSE_USER_KEY, ParseUser.getCurrentUser());
+
+        // check network connection
+        if (!LoadingUtils.isNetworkAvailable()) {
+            query.fromLocalDatastore();
+        }
+
+        Profile profile = null;
+        try {
+            profile = query.getFirst();
+        } catch (ParseException e) {
+            Log.e(TAG, "Error fetching profile for user: " + e.getMessage());
+        }
+
+        return profile;
+    }
+
+    private void updateUserProfile() {
+        Profile profile = getUserProfile();
+        if (profile != null) {
+            profile.setPhone(mPhoneTv.getText().toString());
+            profile.setEmail(mEmailTv.getText().toString());
+            profile.setCompany(mCompanyTv.getText().toString());
+            profile.setTitle(mTitleTv.getText().toString());
+            profile.setDescription(mDescTv.getText().toString());
+
+            if (mBackgroundImg != null) {
+                mBackgroundImg.saveInBackground();
+                profile.setBackgroundImage(mBackgroundImg);
+            }
+            if (mProfileImg != null) {
+                mProfileImg.saveInBackground();
+                profile.setProfileImage(mProfileImg);
+            }
+
+            profile.saveEventually();
+        }
+    }
+
     private class FetchProfileTask extends AsyncTask<Void, Void, Profile> {
 
         @Override
         protected Profile doInBackground(Void... voids) {
-            ParseQuery<Profile> query = Profile.getQuery();
-            query.whereEqualTo(Profile.PARSE_USER_KEY, ParseUser.getCurrentUser());
-
-            Profile profile = null;
-            try {
-                profile = query.getFirst();
-            } catch (ParseException e) {
-                Log.e(TAG, "Error fetching profile for user: " + e.getMessage());
-            }
-
-            return profile;
+            return getUserProfile();
         }
 
         @Override
-        protected void onPostExecute(Profile profile) {
+        protected void onPostExecute(final Profile profile) {
             if (profile == null) {
-                Log.d(TAG, "no profile associated with the user");
+                Log.d(TAG, "No profile associated with the user");
                 return;
             }
 
-            mProfile = profile;
+            // update the local profile
+            profile.unpinInBackground(new DeleteCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null) {
+                        return;
+                    }
+                    profile.pinInBackground();
+                }
+            });
 
             mPhoneTv.setText(profile.getPhone());
             mEmailTv.setText(profile.getEmail());
@@ -306,28 +466,123 @@ public class ProfileActivity extends AppCompatActivity {
             mDescTv.setText(profile.getDescription());
             getSupportActionBar().setTitle(profile.getFullName());
 
-            profile.getProfileImage().getDataInBackground(new GetDataCallback() {
-                @Override
-                public void done(byte[] data, ParseException e) {
-                    if (e == null) {
-                        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                        mProfileImage.setImageBitmap(bmp);
-                    } else {
-                        Log.e(TAG, "Error loading profile image: " + e.getMessage());
+            if (profile.getProfileImage() != null) {
+                profile.getProfileImage().getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] data, ParseException e) {
+                        if (e == null) {
+                            Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            mProfileImageView.setImageBitmap(bmp);
+                        } else {
+                            Log.e(TAG, "Error loading profile image: " + e.getMessage());
+                        }
                     }
-                }
-            });
+                });
+            }
 
-            profile.getBackgroundImage().getDataInBackground(new GetDataCallback() {
-                @Override
-                public void done(byte[] data, ParseException e) {
-                    if (e == null) {
-                        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                        mAppBarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bmp));
+            if (profile.getBackgroundImage() != null) {
+                profile.getBackgroundImage().getDataInBackground(new GetDataCallback() {
+                    @Override
+                    public void done(byte[] data, ParseException e) {
+                        if (e == null) {
+                            Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            mAppBarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bmp));
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
+
+    private class UpdateUserProfileTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            updateUserProfile();
+            return null;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mSaveChangeButton.isEnabled()) {
+            mSaveChangeButton.setEnabled(true);
+        }
+
+        switch (requestCode) {
+            case REQUEST_GET_PROFILE_IMG_TAKE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    Bitmap bmp = convertFilenameToBitmap(mProfileImgFilename);
+                    Bitmap resized = BitmapScaler.scaleToFill(bmp, 120, 120);
+                    mProfileImageView.setImageDrawable(getProfileImageDrawable(resized));
+                    mProfileImg = new ParseFile(mProfileImgFilename, convertBitmapToByteArray(resized));
+                } else {
+                    Log.e(TAG, "Error retrieve profile image");
+                }
+                break;
+            case REQUEST_GET_BACKGROUND_IMG_TAKE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    Bitmap bmp = convertFilenameToBitmap(mBackgroundImgFilename);
+                    Bitmap resized = BitmapScaler.scaleToFitHeight(bmp, 218);
+                    mAppBarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), resized));
+                    mBackgroundImg = new ParseFile(mBackgroundImgFilename, convertBitmapToByteArray(resized));
+                } else {
+                    Log.e(TAG, "Error retrieve background image");
+                }
+                break;
+            case REQUEST_GET_PROFILE_IMG_GALLERY:
+                if (resultCode == RESULT_OK && data != null) {
+                    try {
+                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                        Bitmap resized = BitmapScaler.scaleToFill(bmp, 120, 120);
+                        mProfileImageView.setImageDrawable(getProfileImageDrawable(resized));
+                        mProfileImg = new ParseFile(mProfileImgFilename, convertBitmapToByteArray(resized));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error get bitmap from picker: " + e.getMessage());
+                    }
+                } else {
+                    Log.e(TAG, "Error retrieve profile image from gallery");
+                }
+                break;
+            case REQUEST_GET_BACKGROUND_IMG_GALLERY:
+                if (resultCode == RESULT_OK && data != null) {
+                    try {
+                        Bitmap bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                        Bitmap resized = BitmapScaler.scaleToFitHeight(bmp, 218);
+                        mAppBarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), resized));
+                        mBackgroundImg = new ParseFile(mBackgroundImgFilename, convertBitmapToByteArray(resized));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error get bitmap from picker: " + e.getMessage());
+                    }
+                } else {
+                    Log.e(TAG, "Error retrieve background image from gallery");
+                }
+                break;
+        }
+    }
+
+    private Bitmap convertFilenameToBitmap(String filename) {
+        Uri takenPhotoUri = getPhotoFileUri(filename);
+        Log.d(TAG, "photo path: " + takenPhotoUri.getPath());
+        Bitmap bmp = BitmapFactory.decodeFile(takenPhotoUri.getPath());
+
+        return bmp;
+    }
+
+    private byte[] convertBitmapToByteArray(Bitmap bmp) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] bytes = stream.toByteArray();
+        try {
+            stream.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error closing byte stream.");
+        }
+        return bytes;
+    }
+
+    private Drawable getProfileImageDrawable(Bitmap bitmap) {
+        return BitmapScaler.scaleToCircle(bitmap, 60);
+    }
+
 }
 
