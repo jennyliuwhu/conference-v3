@@ -35,10 +35,12 @@ import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.parse.DeleteCallback;
 import com.parse.GetDataCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,11 +62,13 @@ public class ProfileActivity extends AppCompatActivity {
 
     private ImageView mProfileImageView;
     private AppBarLayout mAppBarLayout;
+    private RelativeLayout mFullnameBox;
     private RelativeLayout mPhoneBox;
     private RelativeLayout mEmailBox;
     private RelativeLayout mCompanyBox;
     private RelativeLayout mTitleBox;
     private RelativeLayout mDescBox;
+    private TextView mFullnameTv;
     private TextView mPhoneTv;
     private TextView mEmailTv;
     private TextView mCompanyTv;
@@ -154,17 +158,42 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+        mFullnameBox = (RelativeLayout) findViewById(R.id.fullname_box);
         mPhoneBox = (RelativeLayout) findViewById(R.id.phone_box);
         mEmailBox = (RelativeLayout) findViewById(R.id.email_box);
         mCompanyBox = (RelativeLayout) findViewById(R.id.company_box);
         mTitleBox = (RelativeLayout) findViewById(R.id.title_box);
         mDescBox = (RelativeLayout) findViewById(R.id.desc_box);
 
+        mFullnameTv = (TextView) findViewById(R.id.fullname_tv);
         mPhoneTv = (TextView) findViewById(R.id.phone_number_tv);
         mEmailTv = (TextView) findViewById(R.id.email_tv);
         mCompanyTv = (TextView) findViewById(R.id.company_tv);
         mTitleTv = (TextView) findViewById(R.id.title_tv);
         mDescTv = (TextView) findViewById(R.id.description_tv);
+
+        mFullnameBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final AlertDialog dialog = getEditTextAlertDialog("Name");
+                dialog.show();
+                final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setText(mFullnameTv.getText().toString());
+                dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String text = editText.getText().toString();
+                        if (!text.isEmpty() && text.length() > 3) {
+                            mFullnameTv.setText(text);
+                            editText.setError(null);
+                            dialog.dismiss();
+                        } else {
+                            editText.setError("at least 3 characters");
+                        }
+                    }
+                });
+            }
+        });
 
         mPhoneBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,6 +208,7 @@ public class ProfileActivity extends AppCompatActivity {
                         String text = editText.getText().toString();
                         if (Patterns.PHONE.matcher(text).matches()) {
                             mPhoneTv.setText(text);
+                            editText.setError(null);
                             dialog.dismiss();
                         } else {
                             editText.setError("Enter a valid number");
@@ -201,6 +231,7 @@ public class ProfileActivity extends AppCompatActivity {
                         String text = editText.getText().toString();
                         if (Patterns.EMAIL_ADDRESS.matcher(text).matches()) {
                             mEmailTv.setText(text);
+                            editText.setError(null);
                             dialog.dismiss();
                         } else {
                             editText.setError("Enter a valid email");
@@ -240,6 +271,7 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         String text = editText.getText().toString();
                         mTitleTv.setText(text);
+                        editText.setError(null);
                         dialog.dismiss();
                     }
                 });
@@ -258,6 +290,7 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         String text = editText.getText().toString();
                         mDescTv.setText(text);
+                        editText.setError(null);
                         dialog.dismiss();
                     }
                 });
@@ -314,6 +347,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         // fetch profile and load the screen
         new FetchProfileTask().execute();
+
+        getSupportActionBar().setTitle(null);
     }
 
     private void onOpenCamera(int requestCode, String fileName) {
@@ -412,9 +447,10 @@ public class ProfileActivity extends AppCompatActivity {
         return profile;
     }
 
-    private void updateUserProfile() {
+    private void updateUserProfile() throws ParseException {
         Profile profile = getUserProfile();
         if (profile != null) {
+            profile.setFullName(mFullnameTv.getText().toString());
             profile.setPhone(mPhoneTv.getText().toString());
             profile.setEmail(mEmailTv.getText().toString());
             profile.setCompany(mCompanyTv.getText().toString());
@@ -422,11 +458,11 @@ public class ProfileActivity extends AppCompatActivity {
             profile.setDescription(mDescTv.getText().toString());
 
             if (mBackgroundImg != null) {
-                mBackgroundImg.saveInBackground();
+                mBackgroundImg.save();
                 profile.setBackgroundImage(mBackgroundImg);
             }
             if (mProfileImg != null) {
-                mProfileImg.saveInBackground();
+                mProfileImg.save();
                 profile.setProfileImage(mProfileImg);
             }
 
@@ -459,12 +495,12 @@ public class ProfileActivity extends AppCompatActivity {
                 }
             });
 
+            mFullnameTv.setText(profile.getFullName());
             mPhoneTv.setText(profile.getPhone());
             mEmailTv.setText(profile.getEmail());
             mCompanyTv.setText(profile.getCompany());
             mTitleTv.setText(profile.getTitle());
             mDescTv.setText(profile.getDescription());
-            getSupportActionBar().setTitle(profile.getFullName());
 
             if (profile.getProfileImage() != null) {
                 profile.getProfileImage().getDataInBackground(new GetDataCallback() {
@@ -472,7 +508,7 @@ public class ProfileActivity extends AppCompatActivity {
                     public void done(byte[] data, ParseException e) {
                         if (e == null) {
                             Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                            mProfileImageView.setImageBitmap(bmp);
+                            mProfileImageView.setImageDrawable(getProfileImageDrawable(bmp));
                         } else {
                             Log.e(TAG, "Error loading profile image: " + e.getMessage());
                         }
@@ -497,7 +533,11 @@ public class ProfileActivity extends AppCompatActivity {
     private class UpdateUserProfileTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            updateUserProfile();
+            try {
+                updateUserProfile();
+            } catch (ParseException e) {
+                Log.e(TAG, "Error updating user profile: " + e.getMessage());
+            }
             return null;
         }
     }
@@ -511,7 +551,7 @@ public class ProfileActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_GET_PROFILE_IMG_TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
-                    Bitmap bmp = convertFilenameToBitmap(mProfileImgFilename);
+                    Bitmap bmp = BitmapScaler.rotateBitmapOrientation(getPhotoFileUri(mProfileImgFilename).getPath());
                     Bitmap resized = BitmapScaler.scaleToFill(bmp, 120, 120);
                     mProfileImageView.setImageDrawable(getProfileImageDrawable(resized));
                     mProfileImg = new ParseFile(mProfileImgFilename, convertBitmapToByteArray(resized));
@@ -521,7 +561,7 @@ public class ProfileActivity extends AppCompatActivity {
                 break;
             case REQUEST_GET_BACKGROUND_IMG_TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
-                    Bitmap bmp = convertFilenameToBitmap(mBackgroundImgFilename);
+                    Bitmap bmp = BitmapScaler.rotateBitmapOrientation(getPhotoFileUri(mBackgroundImgFilename).getPath());
                     Bitmap resized = BitmapScaler.scaleToFitHeight(bmp, 218);
                     mAppBarLayout.setBackground(new BitmapDrawable(getApplicationContext().getResources(), resized));
                     mBackgroundImg = new ParseFile(mBackgroundImgFilename, convertBitmapToByteArray(resized));

@@ -5,16 +5,61 @@
                                             android:id="@+id/nest_scroll_view"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
-                                            android:layout_marginTop="@dimen/activity_horizontal_margin"
                                             android:padding="@dimen/activity_horizontal_margin"
                                             app:layout_behavior="@string/appbar_scrolling_view_behavior"
                                             tools:context=".ProfileActivity"
                                             tools:showIn="@layout/activity_profile">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/fullname_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <ImageView
+                android:id="@+id/ivContactItem0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:src="@drawable/ic_account_circle_black_24dp" />
+
+            <TextView
+                android:id="@+id/fullname_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_toEndOf="@id/ivContactItem0"
+                android:layout_toRightOf="@id/ivContactItem0"
+                android:text="John Doe"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#212121" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fullname_tv"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/ivContactItem0"
+                android:layout_toRightOf="@id/ivContactItem0"
+                android:text="Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="#727272" />
+
+        </RelativeLayout>
+
+        <include layout="@layout/item_divider" />
+
 
         <RelativeLayout
             android:id="@+id/phone_box"
@@ -44,6 +89,19 @@
                 android:text="(123) 456-7890"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/phone_number_tv"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/ivContactItem1"
+                android:layout_toRightOf="@id/ivContactItem1"
+                android:text="Phone"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="#727272" />
 
         </RelativeLayout>
 
@@ -81,6 +139,19 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/email_tv"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/ivContactItem3"
+                android:layout_toRightOf="@id/ivContactItem3"
+                android:text="Email"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="#727272" />
+
         </RelativeLayout>
 
         <include layout="@layout/item_divider" />
@@ -115,6 +186,19 @@
             android:text="Carnegie Mellon University"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#212121" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/company_tv"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/ivContactItem5"
+            android:layout_toRightOf="@id/ivContactItem5"
+            android:text="Company"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="#727272" />
     </RelativeLayout>
 
         <include layout="@layout/item_divider" />
@@ -134,7 +218,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:src="@drawable/ic_account_circle_black_24dp" />
+                android:src="@drawable/ic_branding_watermark_black_24dp" />
 
             <TextView
                 android:id="@+id/title_tv"
@@ -151,6 +235,19 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121"
                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title_tv"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/ivContactItem6"
+                android:layout_toRightOf="@id/ivContactItem6"
+                android:text="Title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="#727272" />
         </RelativeLayout>
 
         <include layout="@layout/item_divider" />
@@ -187,6 +284,20 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121"
                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/description_tv"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@id/ivContactItem7"
+                android:layout_toRightOf="@id/ivContactItem7"
+                android:text="Description"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="#727272" />
+
         </RelativeLayout>
 
         <include layout="@layout/item_divider" />
@@ -197,7 +308,6 @@
             android:layout_height="wrap_content"
             android:enabled="false"
             android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
             android:padding="12dp"
             android:text="Save Changes"/>
 
