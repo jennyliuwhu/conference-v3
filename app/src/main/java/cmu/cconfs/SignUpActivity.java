@@ -118,6 +118,7 @@ public class SignUpActivity extends AppCompatActivity {
         user.setUsername(mUsernameText.getText().toString());
         user.setEmail(mEmailText.getText().toString());
         user.setPassword(mPasswordText.getText().toString());
+        user.put("share_profile", true);
 
         return user;
     }

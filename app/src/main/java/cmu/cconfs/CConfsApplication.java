@@ -97,6 +97,7 @@ public class CConfsApplication extends Application {
         ParseObject.registerSubclass(FloorPlan.class);
         ParseObject.registerSubclass(Sponsor.class);
         ParseObject.registerSubclass(Profile.class);
+        ParseObject.registerSubclass(Todo.class);
 
         // set application id and connect to server
         Parse.initialize(new Parse.Configuration.Builder(this)

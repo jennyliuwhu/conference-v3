@@ -178,6 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
                 final AlertDialog dialog = getEditTextAlertDialog("Name");
                 dialog.show();
                 final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setError(null);
                 editText.setText(mFullnameTv.getText().toString());
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -185,7 +186,6 @@ public class ProfileActivity extends AppCompatActivity {
                         String text = editText.getText().toString();
                         if (!text.isEmpty() && text.length() > 3) {
                             mFullnameTv.setText(text);
-                            editText.setError(null);
                             dialog.dismiss();
                         } else {
                             editText.setError("at least 3 characters");
@@ -201,6 +201,7 @@ public class ProfileActivity extends AppCompatActivity {
                 final AlertDialog dialog = getEditTextAlertDialog("Phone");
                 dialog.show();
                 final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setError(null);
                 editText.setText(mPhoneTv.getText().toString());
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -208,7 +209,6 @@ public class ProfileActivity extends AppCompatActivity {
                         String text = editText.getText().toString();
                         if (Patterns.PHONE.matcher(text).matches()) {
                             mPhoneTv.setText(text);
-                            editText.setError(null);
                             dialog.dismiss();
                         } else {
                             editText.setError("Enter a valid number");
@@ -224,6 +224,7 @@ public class ProfileActivity extends AppCompatActivity {
                 final AlertDialog dialog = getEditTextAlertDialog("Email");
                 dialog.show();
                 final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setError(null);
                 editText.setText(mEmailTv.getText().toString());
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -231,7 +232,6 @@ public class ProfileActivity extends AppCompatActivity {
                         String text = editText.getText().toString();
                         if (Patterns.EMAIL_ADDRESS.matcher(text).matches()) {
                             mEmailTv.setText(text);
-                            editText.setError(null);
                             dialog.dismiss();
                         } else {
                             editText.setError("Enter a valid email");
@@ -247,6 +247,7 @@ public class ProfileActivity extends AppCompatActivity {
                 final AlertDialog dialog = getEditTextAlertDialog("Company");
                 dialog.show();
                 final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setError(null);
                 editText.setText(mCompanyTv.getText().toString());
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -265,13 +266,13 @@ public class ProfileActivity extends AppCompatActivity {
                 final AlertDialog dialog = getEditTextAlertDialog("Title");
                 dialog.show();
                 final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setError(null);
                 editText.setText(mTitleTv.getText().toString());
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         String text = editText.getText().toString();
                         mTitleTv.setText(text);
-                        editText.setError(null);
                         dialog.dismiss();
                     }
                 });
@@ -284,13 +285,13 @@ public class ProfileActivity extends AppCompatActivity {
                 final AlertDialog dialog = getEditTextAlertDialog("Description");
                 dialog.show();
                 final EditText editText = (EditText) dialog.findViewById(R.id.edit_text);
+                editText.setError(null);
                 editText.setText(mDescTv.getText().toString());
                 dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         String text = editText.getText().toString();
                         mDescTv.setText(text);
-                        editText.setError(null);
                         dialog.dismiss();
                     }
                 });
