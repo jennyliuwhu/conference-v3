@@ -14,7 +14,6 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-import cmu.cconfs.model.Todo;
 import cmu.cconfs.model.parseModel.Program;
 
 public class LoadingActivityTest extends Activity {
@@ -119,42 +118,42 @@ public class LoadingActivityTest extends Activity {
     }
 
     private void loadFromParse() {
-        ParseQuery<Todo> query = Todo.getQuery();
-        query.whereEqualTo("isDraft", false);
-//        try {
-//            results=query.find();
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
+//        ParseQuery<Todo> query = Todo.getQuery();
+//        query.whereEqualTo("isDraft", false);
+////        try {
+////            results=query.find();
+////        } catch (ParseException e) {
+////            e.printStackTrace();
+////        }
+////
+////        StringBuilder sb= new StringBuilder();
+////        for (Todo todo: results){
+////            sb.append(todo.getTitle());
+////            sb.append("\n");
+////        }
+////        textView.setText(sb.toString());
 //
-//        StringBuilder sb= new StringBuilder();
-//        for (Todo todo: results){
-//            sb.append(todo.getTitle());
-//            sb.append("\n");
-//        }
-//        textView.setText(sb.toString());
-
-        query.findInBackground(new FindCallback<Todo>() {
-            public void done(List<Todo> todos, ParseException e) {
-                if (e == null) {
-                    ParseObject.pinAllInBackground("ALL_TODOS", (List<Todo>) todos,
-                            new SaveCallback() {
-                                public void done(ParseException e) {
-                                    if (e == null) {
-
-                                    } else {
-                                        Log.e("TodoListActivity",
-                                                "Error pinning todos: "
-                                                        + e.getMessage());
-                                    }
-                                }
-                            });
-                } else {
-                    Log.e("TodoListActivity",
-                            "loadFromParse: Error finding pinned todos: "
-                                    + e.getMessage());
-                }
-            }
-        });
+//        query.findInBackground(new FindCallback<Todo>() {
+//            public void done(List<Todo> todos, ParseException e) {
+//                if (e == null) {
+//                    ParseObject.pinAllInBackground("ALL_TODOS", (List<Todo>) todos,
+//                            new SaveCallback() {
+//                                public void done(ParseException e) {
+//                                    if (e == null) {
+//
+//                                    } else {
+//                                        Log.e("TodoListActivity",
+//                                                "Error pinning todos: "
+//                                                        + e.getMessage());
+//                                    }
+//                                }
+//                            });
+//                } else {
+//                    Log.e("TodoListActivity",
+//                            "loadFromParse: Error finding pinned todos: "
+//                                    + e.getMessage());
+//                }
+//            }
+//        });
     }
 }

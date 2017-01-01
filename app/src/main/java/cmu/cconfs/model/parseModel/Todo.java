@@ -9,6 +9,8 @@ import java.util.UUID;
 
 @ParseClassName("Todo")
 public class Todo extends ParseObject {
+
+    public final static String PIN_TAG = "todo";
      
     public String getTitle() {
         return getString("title");

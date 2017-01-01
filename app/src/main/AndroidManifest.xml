@@ -32,7 +32,6 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
-
     <!--
   IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
   to match your app's package name + ".permission.C2D_MESSAGE".
@@ -43,8 +42,9 @@
 
     <uses-permission android:name="cmu.cconfs.permission.C2D_MESSAGE"/>
 
-    <uses-feature android:name="android.hardware.camera"
-                  android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true"/>
 
     <application
         android:name=".CConfsApplication"
@@ -530,9 +530,16 @@
         </activity>
         <activity android:name=".NearbyDetailActivity">
         </activity>
-        <activity android:name=".ProfileActivity"
-                  android:screenOrientation="portrait"
+        <activity
+            android:name=".ProfileActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
+        </activity>
+        <activity android:name=".TodoListActivity"
+                  android:theme="@style/AppTheme.Dark">
+        </activity>
+        <activity android:name=".NewTodoActivity"
+                  android:theme="@style/AppTheme.Dark">
         </activity>
     </application>
 

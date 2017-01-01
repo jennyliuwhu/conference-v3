@@ -3,6 +3,7 @@ package cmu.cconfs;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +15,7 @@ import com.parse.ParseUser;
 
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
 import cmu.cconfs.instantMessage.activities.*;
+import cmu.cconfs.utils.AccountUtils;
 import cmu.cconfs.utils.PreferencesManager;
 
 public class UserActivity extends Activity {
@@ -22,6 +24,8 @@ public class UserActivity extends Activity {
 
     protected Button mSignOutButton;
     protected TextView mCurrentUserTextView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,60 +34,81 @@ public class UserActivity extends Activity {
         mCurrentUserTextView.setText(ParseUser.getCurrentUser().getUsername());
         mPreferencesManager = new PreferencesManager(this);
 
-
-
         mSignOutButton = (Button) findViewById(R.id.signOutButton);
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signOut();
-            }
-        });
-    }
+                final ProgressDialog pd = new ProgressDialog(UserActivity.this);
+                String st = getResources().getString(R.string.Are_logged_out);
+                pd.setMessage(st);
+                pd.setCanceledOnTouchOutside(false);
+                pd.show();
 
-    private void signOut() {
-        ParseUser.logOut();
-        mPreferencesManager.writeBooleanPreference("LoggedIn", false);
-        logout();
-    }
-
-    void logout() {
-        final ProgressDialog pd = new ProgressDialog(this);
-        String st = getResources().getString(R.string.Are_logged_out);
-        pd.setMessage(st);
-        pd.setCanceledOnTouchOutside(false);
-        pd.show();
-        IMHXSDKHelper.getInstance().logout(true, new EMCallBack() {
-
-            @Override
-            public void onSuccess() {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        pd.dismiss();
-                        // 重新显示登陆页面
-                        finish();
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        AccountUtils.logoutUser(getApplicationContext());
+                        return null;
                     }
-                });
-            }
-
-            @Override
-            public void onProgress(int progress, String status) {
-
-            }
-
-            @Override
-            public void onError(int code, String message) {
-                runOnUiThread(new Runnable() {
 
                     @Override
-                    public void run() {
-                        // TODO Auto-generated method stub
+                    protected void onPostExecute(Void aVoid) {
                         pd.dismiss();
-                        Toast.makeText(getApplicationContext(), "unbind devicetokens failed", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
-                });
+                }.execute();
+
             }
         });
     }
+
+//    private void signOut() {
+//
+//
+//        AccountUtils.logoutUser(this);
+//        finish();
+//        ParseUser.logOut();
+//        logout();
+//        mPreferencesManager.writeBooleanPreference("LoggedIn", false);
+//    }
+
+//    void logout() {
+//        final ProgressDialog pd = new ProgressDialog(this);
+//        String st = getResources().getString(R.string.Are_logged_out);
+//        pd.setMessage(st);
+//        pd.setCanceledOnTouchOutside(false);
+//        pd.show();
+//        IMHXSDKHelper.getInstance().logout(true, new EMCallBack() {
+//
+//            @Override
+//            public void onSuccess() {
+//                runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        pd.dismiss();
+//                        // 重新显示登陆页面
+//                        finish();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onProgress(int progress, String status) {
+//
+//            }
+//
+//            @Override
+//            public void onError(int code, String message) {
+//                runOnUiThread(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        // TODO Auto-generated method stub
+//                        pd.dismiss();
+//                        Toast.makeText(getApplicationContext(), "unbind devicetokens failed", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        });
+//    }
 
 }

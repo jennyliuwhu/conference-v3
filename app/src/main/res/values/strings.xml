@@ -465,4 +465,9 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
+    <!-- to do list -->
+    <string name="not_logged_in">Not logged in</string>
+    <string name="logged_in">Welcome, %1$s</string>
+    <string name="no_items">No items, click + to started adding todos.</string>
+    <string name="todo_prompt">Enter todo details:</string>
 </resources>

@@ -17,8 +17,11 @@ import android.widget.Toast;
 import com.easemob.EMCallBack;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
+import com.parse.FindCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ import cmu.cconfs.instantMessage.activities.IMMainActivity;
 import cmu.cconfs.instantMessage.db.UserDao;
 import cmu.cconfs.instantMessage.domain.User;
 import cmu.cconfs.instantMessage.imlib.controller.HXSDKHelper;
+import cmu.cconfs.model.parseModel.Todo;
 import cmu.cconfs.utils.PreferencesManager;
 
 public class LoginActivity extends AppCompatActivity {
@@ -88,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                 switch (msg.arg1) {
                     case HANDLE_LOGIN_SUC:
                         mPreferencesManager.writeBooleanPreference("LoggedIn", true);
+                        setResult(RESULT_OK);
                         break;
                     case HANDLE_LOGIN_FAIL_RETRIEVE_CACHED:
                         IMHXSDKHelper.getInstance().logout(true, null);
@@ -288,4 +293,5 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
 }

@@ -169,6 +169,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void selectDrawerItem(MenuItem menuItem) {
+        Intent i = new Intent();
         switch (menuItem.getItemId()) {
             case R.id.nav_dash_board:
                 Toast.makeText(getApplicationContext(), "dash board clicked", Toast.LENGTH_SHORT).show();
@@ -178,11 +179,15 @@ public class HomeActivity extends AppCompatActivity {
                 break;
             case R.id.nav_my_profile:
                 Toast.makeText(getApplicationContext(), "my profile clicked", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(this, ProfileActivity.class);
+                i.setClass(this, ProfileActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_my_to_do_list:
+                Toast.makeText(getApplicationContext(), "my todo list clicked", Toast.LENGTH_SHORT).show();
+                i.setClass(this, TodoListActivity.class);
                 startActivity(i);
                 break;
         }
-
 
         menuItem.setCheckable(true);
         setTitle(menuItem.getTitle());

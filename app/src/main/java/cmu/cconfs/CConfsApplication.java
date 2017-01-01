@@ -16,7 +16,6 @@ import com.parse.interceptors.ParseLogInterceptor;
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.model.parseModel.Sponsor;
-import cmu.cconfs.model.Todo;
 import cmu.cconfs.model.parseModel.FloorPlan;
 import cmu.cconfs.model.parseModel.Message;
 import cmu.cconfs.model.parseModel.Paper;
@@ -27,6 +26,8 @@ import cmu.cconfs.model.parseModel.Room;
 import cmu.cconfs.model.parseModel.Session_Room;
 import cmu.cconfs.model.parseModel.Session_Timeslot;
 import cmu.cconfs.model.parseModel.Timeslot;
+import cmu.cconfs.model.parseModel.Todo;
+import cmu.cconfs.model.parseModel.TodoCached;
 import cmu.cconfs.model.parseModel.Version;
 import cmu.cconfs.utils.data.DataProvider;
 import cmu.cconfs.utils.data.RoomDataProvider;
@@ -82,7 +83,6 @@ public class CConfsApplication extends Application {
         Fresco.initialize(this);
 
         // add Todo subclass
-        ParseObject.registerSubclass(Todo.class);
 
         ParseObject.registerSubclass(Paper.class);
         ParseObject.registerSubclass(Program.class);
@@ -98,6 +98,7 @@ public class CConfsApplication extends Application {
         ParseObject.registerSubclass(Sponsor.class);
         ParseObject.registerSubclass(Profile.class);
         ParseObject.registerSubclass(Todo.class);
+        ParseObject.registerSubclass(TodoCached.class);
 
         // set application id and connect to server
         Parse.initialize(new Parse.Configuration.Builder(this)

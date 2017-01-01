@@ -7,13 +7,28 @@ package cmu.cconfs.utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.easemob.EMCallBack;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.parse.ParseAnonymousUtils;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
+import java.util.concurrent.CountDownLatch;
+
+import cmu.cconfs.R;
+import cmu.cconfs.instantMessage.IMHXSDKHelper;
+import cmu.cconfs.model.parseModel.Todo;
+
+import static com.google.android.gms.internal.zzir.runOnUiThread;
 
 public class AccountUtils {
 
@@ -25,18 +40,18 @@ public class AccountUtils {
     // the AccountUtils utility class!
     private static String mCurrentUser = null;
 
-    public static Account getGoogleAccountByName(Context ctx, String accountName) {
-        if (accountName != null) {
-            AccountManager am = AccountManager.get(ctx);
-            Account[] accounts = am.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-            for (Account account : accounts) {
-                if (accountName.equals(account.name)) {
-                    return account;
-                }
-            }
-        }
-        return null;
-    }
+//    public static Account getGoogleAccountByName(Context ctx, String accountName) {
+//        if (accountName != null) {
+//            AccountManager am = AccountManager.get(ctx);
+//            Account[] accounts = am.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+//            for (Account account : accounts) {
+//                if (accountName.equals(account.name)) {
+//                    return account;
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     public static String getAccountName(Context ctx) {
         if (mCurrentUser != null) {
@@ -69,4 +84,45 @@ public class AccountUtils {
         }
         mCurrentUser = null;
     }
+
+    public static void logoutUser(final Context context) {
+        // logout parse user
+        ParseUser.logOut();
+
+        // logout em user
+        final CountDownLatch latch = new CountDownLatch(1);
+        IMHXSDKHelper.getInstance().logout(true, new EMCallBack() {
+
+            @Override
+            public void onSuccess() {
+                latch.countDown();
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                latch.countDown();
+                Toast.makeText(context, "unbind devicetokens failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // record login status
+        PreferencesManager preferencesManager = new PreferencesManager(context);
+        preferencesManager.writeBooleanPreference("LoggedIn", false);
+
+        // create a anonymous user
+        ParseAnonymousUtils.logIn(null);
+
+        // wait for log out to be finished
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e("account util", e.getMessage());
+        }
+    }
+
 }

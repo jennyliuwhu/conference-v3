@@ -93,6 +93,7 @@ dependencies {
     // parse server dependencies
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse:parse-android:1.+'
+    compile 'com.parse:parseui-widget-android:0.0.1'
     compile 'com.parse:parseinterceptors:0.0.2'
     // for logging API calls to LogCat
     //    // google service for useful apis
