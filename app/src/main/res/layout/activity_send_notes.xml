@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_send_notes"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cmu.cconfs.SendNotesActivity">
+
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/email_edit_text"
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:hint="email"
+        />
+
+    <Button
+        android:id="@+id/send_notes_button"
+        android:layout_below="@id/email_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="send"
+        />
+
+</RelativeLayout>

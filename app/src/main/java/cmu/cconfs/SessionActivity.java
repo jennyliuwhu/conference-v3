@@ -34,8 +34,10 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import cmu.cconfs.adapter.PaperListViewAdapter;
+import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Paper;
 
 public class SessionActivity extends BaseActivity implements ObservableScrollViewCallbacks {
@@ -65,6 +68,13 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
     private Uri fileUri;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+
+    // useful note reference
+    private String mSessionName;
+    private String mSessionTime;
+    private String mSessionRoom;
+    private String mSessionChair;
+    public static String SESSION_INFO_SEPARATOR = "|";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,12 +103,12 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
             }
         }
 
-        String sessionTime = getIntent().getStringExtra("sessionTime");
-        String sessionName = getIntent().getStringExtra("sessionName");
-        String sessionRoom = getIntent().getStringExtra("sessionRoom");
-        String sessionChair = getIntent().getStringExtra("sessionChair");
+        mSessionTime = getIntent().getStringExtra("sessionTime");
+        mSessionName = getIntent().getStringExtra("sessionName");
+        mSessionRoom = getIntent().getStringExtra("sessionRoom");
+        mSessionChair = getIntent().getStringExtra("sessionChair");
 
-        sessionKey = sessionName + sessionChair + sessionRoom + sessionTime;
+        sessionKey = getSessionKey(new String[] { mSessionName , mSessionChair , mSessionRoom , mSessionTime });
         notesSharedPref = sessionKey + "note";
         imageSharedPref = sessionKey + "image";
 
@@ -111,16 +121,16 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         // session title, time and room
-        getSupportActionBar().setTitle(sessionName);
+        getSupportActionBar().setTitle(mSessionName);
         TextView stickyTextView = (TextView) findViewById(R.id.sticky);
-        stickyTextView.setText(sessionTime + ", Room " + sessionRoom);
+        stickyTextView.setText(mSessionTime + ", Room " + mSessionRoom);
         // session chairman
-        if (sessionChair == null || sessionChair.length() == 0) {
+        if (mSessionChair == null || mSessionChair.length() == 0) {
             CardView cardView = (CardView) findViewById(R.id.container);
             cardView.setVisibility(View.GONE);
         } else {
             TextView textView_chairman = (TextView) findViewById(R.id.chairman);
-            textView_chairman.setText(sessionChair);
+            textView_chairman.setText(mSessionChair);
         }
         // session paper
         ListView listView_paper = (ListView) findViewById(R.id.listView_paper);
@@ -192,6 +202,8 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
                 editor.putString(notesSharedPref, editTextValue);
                 editor.commit();
                 Log.e("edit", editTextValue);
+                // update the note content in datastore
+                saveSessionNote(editTextValue);
             }
         });
 
@@ -415,5 +427,35 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
             ViewPropertyAnimator.animate(mHeaderView).cancel();
             ViewPropertyAnimator.animate(mHeaderView).translationY(-toolbarHeight).setDuration(200).start();
         }
+    }
+
+    // create a session key for session related data
+    private String getSessionKey(String[] data) {
+        StringBuffer sb = new StringBuffer();
+        for (String d : data) {
+            sb.append(d).append(SESSION_INFO_SEPARATOR);
+        }
+        return sb.toString();
+    }
+
+    // save session notes have to be retrieved later
+    private void saveSessionNote(final String content) {
+        ParseQuery<Note> query = Note.getQuery();
+        query.fromPin(Note.SESSION_PIN_TAG);
+        query.fromLocalDatastore();
+        query.whereEqualTo("session_info", sessionKey);
+        query.whereEqualTo("author", ParseUser.getCurrentUser());
+        query.getFirstInBackground(new GetCallback<Note>() {
+            @Override
+            public void done(Note note, ParseException e) {
+                if (e != null || note == null) {
+                    note = new Note();
+                    note.setAuthor(ParseUser.getCurrentUser());
+                    note.setSessionInfo(sessionKey);
+                }
+                note.setContent(content);
+                note.pinInBackground(Note.SESSION_PIN_TAG);
+            }
+        });
     }
 }

@@ -545,6 +545,8 @@
         </activity>
         <activity android:name=".PreferenceActivity">
         </activity>
+        <activity android:name=".SendNotesActivity">
+        </activity>
     </application>
 
 </manifest>

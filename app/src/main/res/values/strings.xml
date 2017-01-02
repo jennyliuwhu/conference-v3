@@ -420,6 +420,7 @@
 
     <string-array name="admin_mail_address">
         <item>gqw1992@gmail.com</item>
+        <item>ethanqzx@gmail.com</item>
 
     </string-array>
 
@@ -470,7 +471,7 @@
     <string name="logged_in">Welcome, %1$s</string>
     <string name="no_items">No items, click + to started adding todos.</string>
     <string name="todo_prompt">Enter todo details:</string>
-    
+
     <!-- preference setting -->
     <string name="share_profile_key">share_profile</string>
     <string name="share_profile_title">Share Profile</string>

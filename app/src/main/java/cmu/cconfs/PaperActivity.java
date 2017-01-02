@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Rate;
 import cmu.cconfs.utils.PreferencesManager;
 
@@ -53,6 +55,11 @@ public class PaperActivity extends AppCompatActivity {
     private Uri fileUri;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
+
+    // useful note reference
+    private String mPaperInfo;
+    private String mSessionKey;
+    public static String PAPER_INFO_SEPARATOR = "|";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,9 @@ public class PaperActivity extends AppCompatActivity {
         String paperAuthor = getIntent().getStringExtra("paperAuthor");
         String sessionKey = getIntent().getStringExtra("sessionKey");
 
+
+        mSessionKey = sessionKey;
+        mPaperInfo = getPaperInfo( new String[] {paperTitle, paperAuthor} );
         final String paperKey = sessionKey + paperTitle;
         notesSharedPref = paperKey + "note";
         imageSharedPref = paperKey + "image";
@@ -175,6 +185,8 @@ public class PaperActivity extends AppCompatActivity {
                 editor.putString(notesSharedPref, editTextValue);
                 editor.commit();
                 Log.e("edit", editTextValue);
+                // save the paper notes in local datastore
+                savePaperNote(editTextValue);
             }
         });
 
@@ -351,5 +363,34 @@ public class PaperActivity extends AppCompatActivity {
         return cursor.getString(column_index);
     }
 
+    private String getPaperInfo(String[] data) {
+        StringBuffer sb = new StringBuffer();
+        for (String d : data) {
+            sb.append(d).append(PAPER_INFO_SEPARATOR);
+        }
+        return sb.toString();
+    }
+
+    private void savePaperNote(final String content) {
+        ParseQuery<Note> query = Note.getQuery();
+        query.fromPin(Note.PAPER_PIN_TAG);
+        query.fromLocalDatastore();
+        query.whereEqualTo("session_info", mSessionKey);
+        query.whereEqualTo("paper_info", mPaperInfo);
+        query.whereEqualTo("author", ParseUser.getCurrentUser());
+        query.getFirstInBackground(new GetCallback<Note>() {
+            @Override
+            public void done(Note note, ParseException e) {
+                if (e != null || note == null) {
+                    note = new Note();
+                    note.setAuthor(ParseUser.getCurrentUser());
+                    note.setSessionInfo(mSessionKey);
+                    note.setPaperInfo(mPaperInfo);
+                }
+                note.setContent(content);
+                note.pinInBackground(Note.PAPER_PIN_TAG);
+            }
+        });
+    }
 
 }

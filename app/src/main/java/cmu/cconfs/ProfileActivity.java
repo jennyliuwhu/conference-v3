@@ -344,6 +344,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 snackNotify(view, "send notes clicked");
+                Intent i = new Intent(getApplicationContext(), SendNotesActivity.class);
+                startActivity(i);
             }
         });
 
