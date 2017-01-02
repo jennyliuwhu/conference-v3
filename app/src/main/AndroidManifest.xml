@@ -535,11 +535,15 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
         </activity>
-        <activity android:name=".TodoListActivity"
-                  android:theme="@style/AppTheme.Dark">
+        <activity
+            android:name=".TodoListActivity"
+            android:theme="@style/AppTheme.Dark">
         </activity>
-        <activity android:name=".NewTodoActivity"
-                  android:theme="@style/AppTheme.Dark">
+        <activity
+            android:name=".NewTodoActivity"
+            android:theme="@style/AppTheme.Dark">
+        </activity>
+        <activity android:name=".PreferenceActivity">
         </activity>
     </application>
 

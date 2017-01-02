@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Privacy">
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="@string/share_profile_key"
+            android:title="@string/share_profile_title"
+            android:summary="@string/share_profile_summary"
+            android:defaultValue="true" />
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Notification">
+        <android.support.v7.preference.CheckBoxPreference
+            android:key="@string/appointment_key"
+            android:title="@string/appointment_title"
+            android:summary="@string/appointment_summary"
+            android:defaultValue="true"/>
+        <android.support.v7.preference.CheckBoxPreference
+            android:key="@string/message_key"
+            android:title="@string/message_title"
+            android:summary="@string/message_summary"
+            android:defaultValue="true"/>
+    </android.support.v7.preference.PreferenceCategory>
+
+    <android.support.v7.preference.PreferenceCategory
+        android:title="Calendar">
+        <android.support.v7.preference.SwitchPreferenceCompat
+            android:key="@string/calendar_key"
+            android:title="@string/calendar_title"
+            android:summary="@string/calendar_summary"
+            android:defaultValue="true" />
+    </android.support.v7.preference.PreferenceCategory>
+s
+</android.support.v7.preference.PreferenceScreen>

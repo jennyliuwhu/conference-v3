@@ -470,4 +470,19 @@
     <string name="logged_in">Welcome, %1$s</string>
     <string name="no_items">No items, click + to started adding todos.</string>
     <string name="todo_prompt">Enter todo details:</string>
+    
+    <!-- preference setting -->
+    <string name="share_profile_key">share_profile</string>
+    <string name="share_profile_title">Share Profile</string>
+    <string name="share_profile_summary">Switch whether to share your profiles with other attendees</string>
+    <string name="appointment_key">appointment_status</string>
+    <string name="appointment_title">Notify Appointments</string>
+    <string name="appointment_summary">Check if want to be notified about appointment changes</string>
+    <string name="message_key">message_status</string>
+    <string name="message_title">Messaging</string>
+    <string name="message_summary">Check if want to enable messaging notification</string>
+    <string name="calendar_key">sync_calendar</string>
+    <string name="calendar_title">Sync Calendar</string>
+    <string name="calendar_summary">Sync your schedule with device calendar</string>
+
 </resources>

@@ -107,6 +107,9 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     // fab with actions
     compile 'com.github.clans:fab:1.6.4'
+    // setting
+    compile 'com.android.support:preference-v7:23.0.1'
+    compile 'com.android.support:preference-v14:23.0.1'
 
 
 }

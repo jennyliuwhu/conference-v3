@@ -335,6 +335,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 snackNotify(view, "setting clicked");
+                Intent i = new Intent(getApplicationContext(), PreferenceActivity.class);
+                startActivity(i);
             }
         });
 

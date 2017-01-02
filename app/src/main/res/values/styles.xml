@@ -24,6 +24,10 @@
         <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="23">true</item>
 
         <item name="android:colorButtonNormal">@color/colorPrimaryDark</item>
+
+        <!-- Theme for the Preferences -->
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">

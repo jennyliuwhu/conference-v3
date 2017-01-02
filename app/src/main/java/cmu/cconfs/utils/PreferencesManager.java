@@ -2,6 +2,7 @@ package cmu.cconfs.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.SyncStateContract;
 
 import cmu.cconfs.R;
@@ -17,7 +18,17 @@ public class PreferencesManager {
         sharedPref = context.getSharedPreferences(
                 context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         editor = sharedPref.edit();
+    }
 
+    public PreferencesManager(Context context, boolean getDefault) {
+        if (getDefault) {
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+            editor = sharedPref.edit();
+        } else {
+            sharedPref = context.getSharedPreferences(
+                    context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            editor = sharedPref.edit();
+        }
     }
 
     public boolean getBooleanPreference(String key, boolean defaultValue){
