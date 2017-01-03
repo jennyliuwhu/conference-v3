@@ -48,9 +48,10 @@ import java.util.Map;
 import cmu.cconfs.adapter.PaperListViewAdapter;
 import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Paper;
+import cmu.cconfs.model.parseModel.SessionImage;
 
 public class SessionActivity extends BaseActivity implements ObservableScrollViewCallbacks {
-
+    private final static String TAG  = SessionActivity.class.getSimpleName();
     private View mHeaderView;
     private View mToolbarView;
     private ObservableScrollView mScrollView;
@@ -256,6 +257,8 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
                 editor.putString(imageSharedPref, imageUris);
                 editor.commit();
 
+                // save all images paths separated by ,
+                saveSessionImages(imageUris);
             }
         }
 
@@ -455,6 +458,29 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
                 }
                 note.setContent(content);
                 note.pinInBackground(Note.SESSION_PIN_TAG);
+            }
+        });
+    }
+
+    // save session images to be retrieved later
+    private void saveSessionImages(final String paths) {
+        ParseQuery<SessionImage> query = SessionImage.getQuery();
+        query.fromPin(SessionImage.SESSION_PIN_TAG);
+        query.fromLocalDatastore();
+        query.whereEqualTo("session_key", imageSharedPref);
+        query.whereEqualTo("author", ParseUser.getCurrentUser());
+        query.getFirstInBackground(new GetCallback<SessionImage>() {
+            @Override
+            public void done(SessionImage images, ParseException e) {
+                if (e != null || images == null) {
+                    images = new SessionImage();
+                    images.setAuthor(ParseUser.getCurrentUser());
+                    images.setSessionKey(imageSharedPref);
+                }
+                images.setImagePaths(paths);
+                images.pinInBackground(SessionImage.SESSION_PIN_TAG);
+
+                Log.d(TAG, "Saved image paths: " + paths);
             }
         });
     }

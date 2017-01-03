@@ -16,6 +16,7 @@ import com.parse.interceptors.ParseLogInterceptor;
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
 import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Profile;
+import cmu.cconfs.model.parseModel.SessionImage;
 import cmu.cconfs.model.parseModel.Sponsor;
 import cmu.cconfs.model.parseModel.FloorPlan;
 import cmu.cconfs.model.parseModel.Message;
@@ -101,6 +102,7 @@ public class CConfsApplication extends Application {
         ParseObject.registerSubclass(Todo.class);
         ParseObject.registerSubclass(TodoCached.class);
         ParseObject.registerSubclass(Note.class);
+        ParseObject.registerSubclass(SessionImage.class);
 
         // set application id and connect to server
         Parse.initialize(new Parse.Configuration.Builder(this)

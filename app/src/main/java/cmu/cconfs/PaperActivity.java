@@ -39,9 +39,11 @@ import java.util.Map;
 
 import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Rate;
+import cmu.cconfs.model.parseModel.SessionImage;
 import cmu.cconfs.utils.PreferencesManager;
 
 public class PaperActivity extends AppCompatActivity {
+    private final static String TAG  = PaperActivity.class.getSimpleName();
 
     private String notesSharedPref;
     private String imageSharedPref;
@@ -239,6 +241,8 @@ public class PaperActivity extends AppCompatActivity {
                 editor.putString(imageSharedPref, imageUris);
                 editor.commit();
 
+                // save paper image paths separated by ,
+                savePaperImages(imageUris);
             }
         }
 
@@ -389,6 +393,30 @@ public class PaperActivity extends AppCompatActivity {
                 }
                 note.setContent(content);
                 note.pinInBackground(Note.PAPER_PIN_TAG);
+            }
+        });
+    }
+
+    // save paper images to be retrieved later
+    private void savePaperImages(final String paths) {
+        ParseQuery<SessionImage> query = SessionImage.getQuery();
+        query.fromPin(SessionImage.PAPER_PIN_TAG);
+        query.fromLocalDatastore();
+        query.whereEqualTo("paper_key", imageSharedPref);
+        query.whereEqualTo("author", ParseUser.getCurrentUser());
+        query.getFirstInBackground(new GetCallback<SessionImage>() {
+            @Override
+            public void done(SessionImage images, ParseException e) {
+                if (e != null || images == null) {
+                    images = new SessionImage();
+                    images.setAuthor(ParseUser.getCurrentUser());
+                    images.setSessionKey(mSessionKey);
+                    images.setPaperKey(imageSharedPref);
+                }
+                images.setImagePaths(paths);
+                images.pinInBackground(SessionImage.PAPER_PIN_TAG);
+
+                Log.d(TAG, "Saved paper paths: " + paths);
             }
         });
     }

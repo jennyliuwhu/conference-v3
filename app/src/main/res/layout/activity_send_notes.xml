@@ -21,9 +21,35 @@
         android:hint="email"
         />
 
+
+    <LinearLayout
+        android:id="@+id/options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/email_edit_text"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/email_notes_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:checked="true"
+            android:text="notes"/>
+
+        <CheckBox
+            android:id="@+id/email_images_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:checked="true"
+            android:text="images"/>
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/send_notes_button"
-        android:layout_below="@id/email_edit_text"
+        android:layout_below="@id/options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="send"
