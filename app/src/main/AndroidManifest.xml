@@ -110,7 +110,8 @@
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
         <activity
             android:name=".HomeActivity"
-            android:label="@string/title_activity_home"/>
+            android:label="@string/title_activity_home"
+            android:launchMode="singleTask"/>
         <activity
             android:name=".AgendaActivity"
             android:configChanges="orientation|screenSize"

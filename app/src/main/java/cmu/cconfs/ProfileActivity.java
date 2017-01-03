@@ -1,5 +1,6 @@
 package cmu.cconfs;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -48,6 +49,7 @@ import java.io.IOException;
 
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.parseUtils.helper.LoadingUtils;
+import cmu.cconfs.utils.AccountUtils;
 import cmu.cconfs.utils.image.BitmapScaler;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -323,6 +325,25 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Log out button clicked", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                final ProgressDialog pd = new ProgressDialog(ProfileActivity.this);
+                String st = getResources().getString(R.string.Are_logged_out);
+                pd.setMessage(st);
+                pd.setCanceledOnTouchOutside(false);
+                pd.show();
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        AccountUtils.logoutUser(getApplicationContext());
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        pd.dismiss();
+                        finish();
+                    }
+                }.execute();
             }
         });
 
