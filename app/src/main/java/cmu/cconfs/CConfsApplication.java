@@ -1,7 +1,15 @@
 package cmu.cconfs;
 
 import android.app.Application;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.CalendarContract;
+import android.provider.CalendarContract.Calendars;
+import android.provider.CalendarContract.Reminders;
 
 import com.easemob.EMCallBack;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -12,6 +20,10 @@ import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
 import com.parse.interceptors.ParseLogInterceptor;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
 import cmu.cconfs.model.parseModel.Note;
@@ -32,6 +44,7 @@ import cmu.cconfs.model.parseModel.Todo;
 import cmu.cconfs.model.parseModel.TodoCached;
 import cmu.cconfs.model.parseModel.Version;
 import cmu.cconfs.utils.data.DataProvider;
+import cmu.cconfs.utils.data.DayTriple;
 import cmu.cconfs.utils.data.RoomDataProvider;
 import cmu.cconfs.utils.data.RoomProvider;
 import cmu.cconfs.utils.data.UnityDataProvider;
@@ -127,6 +140,14 @@ public class CConfsApplication extends Application {
         instance = this;
         hxSDKHelper.onInit(applicationContext);
     //    SDKInitializer.initialize(getApplicationContext());
+
+        if (getCalendarId() == -1) {
+            createCalendar();
+        }
+
+//        clearCalendar();
+//        long eventId = addEvent(new DayTriple(2017, 0, 3), "20:00-21:30", "test title", "1021");
+//        addReminder(eventId, 15);
     }
 
     public static CConfsApplication getInstance() {
@@ -155,7 +176,7 @@ public class CConfsApplication extends Application {
     /**
      * 设置用户名
      *
-     * @param user
+     * @param username
      */
     public void setUserName(String username) {
         hxSDKHelper.setHXId(username);
@@ -187,4 +208,189 @@ public class CConfsApplication extends Application {
     public boolean getDataStatus() {
         return isDataUpToDate;
     }
+
+    /* app calendar feature */
+    private final static String CITY_LOCATION = "Honolulu, Hawaii, USA";
+    private final static String CITY_TIMEZONE = "America/Los_Angeles";
+    private final static String MY_ACCOUNT_NAME = "scconfs-calendar-account";
+    private final static String MY_EMAIL_ACCOUNT = "icwscmu@gmail.com";
+    private final static String ORGANIZER_EMAIL = "some.mail@some.address.com";
+
+
+    private void createCalendar() {
+        ContentValues values = new ContentValues();
+        values.put(
+                Calendars.ACCOUNT_NAME,
+                MY_ACCOUNT_NAME);
+        values.put(
+                Calendars.ACCOUNT_TYPE,
+                CalendarContract.ACCOUNT_TYPE_LOCAL);
+        values.put(
+                Calendars.NAME,
+                "SCConfs Android Calendar");
+        values.put(
+                Calendars.CALENDAR_DISPLAY_NAME,
+                "SCConfs Android Calendar");
+        values.put(
+                Calendars.CALENDAR_COLOR,
+                0xffff0000);
+        values.put(
+                Calendars.CALENDAR_ACCESS_LEVEL,
+                Calendars.CAL_ACCESS_OWNER);
+        values.put(
+                Calendars.OWNER_ACCOUNT,
+                MY_EMAIL_ACCOUNT);
+        values.put(
+                Calendars.CALENDAR_TIME_ZONE,
+                "America/Los_Angeles");
+        values.put(
+                Calendars.SYNC_EVENTS,
+                1);
+        Uri.Builder builder =
+                CalendarContract.Calendars.CONTENT_URI.buildUpon();
+        builder.appendQueryParameter(
+                Calendars.ACCOUNT_NAME,
+                getPackageName());
+        builder.appendQueryParameter(
+                Calendars.ACCOUNT_TYPE,
+                CalendarContract.ACCOUNT_TYPE_LOCAL);
+        builder.appendQueryParameter(
+                CalendarContract.CALLER_IS_SYNCADAPTER,
+                "true");
+        Uri uri = getContentResolver().insert(builder.build(), values);
+    }
+
+    private long getCalendarId() throws SecurityException {
+        String[] projection = new String[]{CalendarContract.Calendars._ID};
+        String selection =
+                CalendarContract.Calendars.ACCOUNT_NAME +
+                        " = ? AND " +
+                        CalendarContract.Calendars.ACCOUNT_TYPE +
+                        " = ? ";
+        // use the same values as above:
+        String[] selArgs = new String[]{ MY_ACCOUNT_NAME, CalendarContract.ACCOUNT_TYPE_LOCAL};
+        Cursor cursor = getContentResolver().query(
+                CalendarContract.Calendars.CONTENT_URI,
+                projection,
+                selection,
+                selArgs,
+                null);
+        if (cursor.moveToFirst()) {
+            return cursor.getLong(0);
+        }
+        return -1;
+    }
+
+    // timeslot example: 12:00-3:00
+    public long addEvent(DayTriple triple, String timeslot, String title, String room) throws SecurityException {
+        long calId = getCalendarId();
+        if (calId == -1) {
+            // no calendar account; react meaningfully
+            return -1;
+        }
+
+        // event day
+        Calendar cal = new GregorianCalendar(triple.year, triple.month, triple.dayInMonth);
+        String[] timeslot_start_end = timeslot.split("-");
+        String[] hour_minute_start = timeslot_start_end[0].split(":");
+        String[] hour_minute_end = timeslot_start_end[1].split(":");
+
+        // event start time
+        cal.setTimeZone(Calendar.getInstance().getTimeZone());
+        cal.set(Calendar.HOUR, Integer.parseInt(hour_minute_start[0]));
+        cal.set(Calendar.MINUTE, Integer.parseInt(hour_minute_start[1]));
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long start = cal.getTimeInMillis();
+
+        // event end time
+        cal = new GregorianCalendar(triple.year, triple.month, triple.dayInMonth);
+        cal.setTimeZone(Calendar.getInstance().getTimeZone());
+        cal.set(Calendar.HOUR, Integer.parseInt(hour_minute_end[0]));
+        cal.set(Calendar.MINUTE, Integer.parseInt(hour_minute_end[1]));
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long end = cal.getTimeInMillis();
+
+        // enter calendar data
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.DTSTART, start);
+        values.put(CalendarContract.Events.DTEND, end);
+//        values.put(Events.RRULE, "FREQ=DAILY;COUNT=20;BYDAY=MO,TU,WE,TH,FR;WKST=MO");
+        values.put(CalendarContract.Events.TITLE, title);
+        values.put(CalendarContract.Events.EVENT_LOCATION,  CITY_LOCATION);
+        values.put(CalendarContract.Events.CALENDAR_ID, calId);
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, CITY_TIMEZONE);
+        values.put(CalendarContract.Events.DESCRIPTION, "Room: " + room);
+
+        // reasonable defaults exist:
+        values.put(CalendarContract.Events.ACCESS_LEVEL, CalendarContract.Events.ACCESS_PRIVATE);
+        values.put(CalendarContract.Events.SELF_ATTENDEE_STATUS, CalendarContract.Events.STATUS_CONFIRMED);
+//        values.put(CalendarContract.Events.ALL_DAY, 1);
+        values.put(CalendarContract.Events.ORGANIZER, ORGANIZER_EMAIL);
+        values.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, 1);
+        values.put(CalendarContract.Events.GUESTS_CAN_MODIFY, 1);
+        values.put(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_BUSY);
+        Uri uri = getContentResolver().insert(CalendarContract.Events.CONTENT_URI, values);
+
+        // return event id
+        return new Long(uri.getLastPathSegment());
+    }
+
+    public long addReminder(long eventId, int minutes) throws SecurityException {
+        ContentValues values = new ContentValues();
+        values.put(Reminders.EVENT_ID, eventId);
+        values.put(Reminders.METHOD, Reminders.METHOD_ALERT);
+        values.put(Reminders.MINUTES, minutes);
+        Uri uri = getContentResolver().insert(Reminders.CONTENT_URI, values);
+
+        // return reminder id
+        return new Long(uri.getLastPathSegment());
+    }
+
+    public void clearCalendar() {
+        Uri eventsUri;
+        int osVersion = android.os.Build.VERSION.SDK_INT;
+        if (osVersion <= 7) { //up-to Android 2.1
+            eventsUri = Uri.parse("content://calendar/events");
+        } else { //8 is Android 2.2 (Froyo) (http://developer.android.com/reference/android/os/Build.VERSION_CODES.html)
+            eventsUri = Uri.parse("content://com.android.calendar/events");
+        }
+        ContentResolver resolver = this.getContentResolver();
+        deleteEvent(resolver, eventsUri, getCalendarId());
+    }
+
+    private void deleteEvent(ContentResolver resolver, Uri eventsUri, long calendarId) {
+        Cursor cursor;
+        if (android.os.Build.VERSION.SDK_INT <= 7) { //up-to Android 2.1
+            cursor = resolver.query(eventsUri, new String[]{ "_id" }, "Calendars._id=" + calendarId, null, null);
+        } else { //8 is Android 2.2 (Froyo) (http://developer.android.com/reference/android/os/Build.VERSION_CODES.html)
+            cursor = resolver.query(eventsUri, new String[]{ "_id" }, "calendar_id=" + calendarId, null, null);
+        }
+        while(cursor.moveToNext()) {
+            long eventId = cursor.getLong(cursor.getColumnIndex("_id"));
+            // delete any associated reminders
+            deleteReminders(eventId, resolver);
+            // delete the event
+            resolver.delete(ContentUris.withAppendedId(eventsUri, eventId), null, null);
+        }
+        cursor.close();
+    }
+
+    private void deleteReminders(long eventId, ContentResolver resolver) {
+        String[] projection = new String[] {
+                CalendarContract.Reminders._ID,
+        };
+
+        Cursor cursor = CalendarContract.Reminders.query(resolver, eventId, projection);
+        while (cursor.moveToNext()) {
+            long reminderId = cursor.getLong(0);
+            Uri uri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, reminderId);
+            int rows = resolver.delete(uri, null, null);
+        }
+        cursor.close();
+    }
+
+
+
 }

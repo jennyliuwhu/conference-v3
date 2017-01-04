@@ -31,6 +31,8 @@
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
     <uses-permission android:name="android.permission.BROADCAST_STICKY"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
     <!--
   IMPORTANT: Change "com.parse.starter.permission.C2D_MESSAGE" in the lines below
@@ -548,6 +550,17 @@
         </activity>
         <activity android:name=".SendNotesActivity">
         </activity>
+
+        <!-- sync calendar service -->
+        <receiver
+            android:name="cmu.cconfs.receiver.SyncCalendarAlarmReceiver">
+        </receiver>
+
+        <service
+            android:name="cmu.cconfs.service.SyncCalendarService"
+            android:exported="false" />
     </application>
+
+
 
 </manifest>

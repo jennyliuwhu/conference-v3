@@ -8,6 +8,7 @@ import com.parse.ParseQuery;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,7 +24,15 @@ import cmu.cconfs.model.parseModel.Timeslot;
  */
 public class DataProvider {
     private final static String TAG = DataProvider.class.getSimpleName();
-    private final int days = 6;
+    public static final int days = 6;
+    public static final DayTriple[] DATES = new DayTriple[] {
+            new DayTriple(2016, 5, 27),
+            new DayTriple(2016, 5, 28),
+            new DayTriple(2016, 5, 29),
+            new DayTriple(2016, 5, 30),
+            new DayTriple(2016, 6, 1),
+            new DayTriple(2016, 6, 2)
+    };
 
     private List<UnityDataProvider> programsData;
 

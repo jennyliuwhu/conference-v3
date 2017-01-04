@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,8 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cmu.cconfs.fragment.RecyclerSelectedExpandableFragment;
+import cmu.cconfs.utils.data.AbstractExpandableDataProvider;
+import cmu.cconfs.utils.data.DataProvider;
+import cmu.cconfs.utils.data.UnityDataProvider;
 
 public class ScheduleActivity extends AppCompatActivity implements OnMenuItemClickListener {
+    private final static String TAG = ScheduleActivity.class.getSimpleName();
 
     private MaterialViewPager mViewPager;
     private DrawerLayout mDrawer;
@@ -148,6 +153,9 @@ public class ScheduleActivity extends AppCompatActivity implements OnMenuItemCli
         mViewPager.getPagerTitleStrip().setViewPager(mViewPager.getViewPager());
 
         mViewPager.getViewPager().setCurrentItem(0);
+
+        // TODO: delete after test
+        printSelectedSessions();
     }
 
     private void initMenuFragment() {
@@ -242,6 +250,23 @@ public class ScheduleActivity extends AppCompatActivity implements OnMenuItemCli
     @Override
     public void onMenuItemClick(View view, int i) {
         Toast.makeText(this, "Clicked on position: " + i, Toast.LENGTH_SHORT).show();
+    }
+
+    private void printSelectedSessions() {
+        for (int i = 0; i < DataProvider.days; i++) {
+            UnityDataProvider provider = CConfsApplication.getInstance().getUnityDataProvider(i);
+            for (int j = 0; j < provider.getSelectedGroupCount(); j++) {
+                AbstractExpandableDataProvider.BaseData groupData = provider.getSelectedGroupItem(j);
+                for (int k = 0; k < provider.getSelectedChildCount(j); k++) {
+                    StringBuffer sb = new StringBuffer(DataProvider.DATES[i].toString() + "\n");
+                    sb.append("group: " + groupData.getText() + "\n");
+                    UnityDataProvider.ConcreteChildData childData = provider.getSelectedChildItem(j, k);
+                    sb.append("child: (" + childData.getFirstText() + ", " + childData.getSecondText() + ")\n");
+                    Log.d(TAG, "Get a selected item:\n" + sb.toString());
+                }
+            }
+        }
+
     }
 
 }

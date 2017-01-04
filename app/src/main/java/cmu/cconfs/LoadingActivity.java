@@ -27,7 +27,7 @@ public class LoadingActivity extends AppCompatActivity {
 
     private boolean success;
     private AnimatedCircleLoadingView animatedCircleLoadingView;
-    private boolean debug  = true;
+    private boolean debug  = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,11 @@ public class LoadingActivity extends AppCompatActivity {
             @Override
             protected Void doInBackground(Void... arg0) {
                 try {
-                    preProcessing();
+                    if (!debug) {
+                        preProcessing();
+                    } else {
+                        success = true;
+                    }
                     Thread.sleep(3000);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -174,4 +178,6 @@ public class LoadingActivity extends AppCompatActivity {
         RoomProvider roomProvider = new RoomProvider();
         application.setRoomProvider(roomProvider);
     }
+
+
 }

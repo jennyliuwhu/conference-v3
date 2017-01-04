@@ -1,9 +1,13 @@
 package cmu.cconfs;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -11,11 +15,14 @@ import com.dk.view.folder.ResideMenu;
 import com.dk.view.folder.ResideMenuItem;
 import com.parse.ParseAnalytics;
 
+import org.bitlet.weupnp.Main;
+
 import cmu.cconfs.fragment.HomeFragment;
+import cmu.cconfs.receiver.SyncCalendarAlarmReceiver;
 
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
-
+    private final static String TAG = MainActivity.class.getSimpleName();
     private ResideMenu resideMenu;
 
     private ResideMenuItem itemHome_left;
@@ -26,6 +33,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // start the syncing calendar service
+        scheduleAlarm();
+
         // for analytics
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
@@ -40,7 +50,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
         }
-
     }
 
 
@@ -111,5 +120,32 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     public ResideMenu getResideMenu() {
         return resideMenu;
+    }
+
+
+    // schedule alarms in half an hour interval
+    private void scheduleAlarm() {
+        Intent intent = new Intent(getApplicationContext(), SyncCalendarAlarmReceiver.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, SyncCalendarAlarmReceiver.REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        long firstMillis = System.currentTimeMillis();
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis, AlarmManager.INTERVAL_HALF_HOUR, pIntent);
+        Log.d(TAG, "Schedule an alarm for syncing calendar");
+    }
+
+    // cancel the scheduled alarm
+    private void cancelAlarm() {
+
+        Intent intent = new Intent(getApplicationContext(), SyncCalendarAlarmReceiver.class);
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, SyncCalendarAlarmReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        alarm.cancel(pIntent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "I am destroyed");
     }
 }
