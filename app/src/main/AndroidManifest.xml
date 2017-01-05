@@ -552,15 +552,15 @@
         </activity>
 
         <!-- sync calendar service -->
-        <receiver
-            android:name="cmu.cconfs.receiver.SyncCalendarAlarmReceiver">
+        <receiver android:name=".receiver.SyncCalendarAlarmReceiver">
         </receiver>
 
         <service
-            android:name="cmu.cconfs.service.SyncCalendarService"
-            android:exported="false" />
+            android:name=".service.SyncCalendarService"
+            android:exported="false"/>
+
+        <activity android:name=".ModeratorActivity">
+        </activity>
     </application>
-
-
 
 </manifest>

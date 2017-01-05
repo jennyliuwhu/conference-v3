@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
+import cmu.cconfs.model.parseModel.AuthorSession;
 import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.model.parseModel.SessionImage;
@@ -116,6 +117,7 @@ public class CConfsApplication extends Application {
         ParseObject.registerSubclass(TodoCached.class);
         ParseObject.registerSubclass(Note.class);
         ParseObject.registerSubclass(SessionImage.class);
+        ParseObject.registerSubclass(AuthorSession.class);
 
         // set application id and connect to server
         Parse.initialize(new Parse.Configuration.Builder(this)

@@ -49,7 +49,6 @@ public class LoadingActivity extends AppCompatActivity {
                     } else {
                         success = true;
                     }
-                    Thread.sleep(3000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

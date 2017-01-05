@@ -59,6 +59,9 @@ public class LoadingUtils {
         ParseObject.pinAll(FloorPlan.PIN_TAG, floorPlanQuery.find());
         ParseObject.pinAll(Sponsor.PIN_TAG, sponsorQuery.find());
         ParseObject.pinAll(Version.PIN_TAG, versionQuery.find());
+
+        // load author_session data
+
     }
 
     public static void populateDataProvider() {
@@ -79,4 +82,5 @@ public class LoadingUtils {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
 }

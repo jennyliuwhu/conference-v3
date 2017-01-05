@@ -79,29 +79,29 @@ public class RecyclerRoomFragment extends Fragment {
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
 
 
-        // set the refresh action
-        mSwipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue, R.color.yellow);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Toast.makeText(getContext(), "Refresh the content!", Toast.LENGTH_LONG).show();
-                mRefreshTask.start();
-            }
-        });
-
-        // define handler and refresh task
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                Activity activity = getActivity();
-                if (activity != null) {
-                    activity.recreate();
-                }
-            }
-        };
-        mRefreshTask = new Thread(new RefreshRunnable());
+//        // set the refresh action
+//        mSwipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe_refresh_layout);
+//        mSwipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.green, R.color.blue, R.color.yellow);
+//        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                Toast.makeText(getContext(), "Refresh the content!", Toast.LENGTH_LONG).show();
+//                mRefreshTask.start();
+//            }
+//        });
+//
+//        // define handler and refresh task
+//        mHandler = new Handler() {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                mSwipeRefreshLayout.setRefreshing(false);
+//                Activity activity = getActivity();
+//                if (activity != null) {
+//                    activity.recreate();
+//                }
+//            }
+//        };
+//        mRefreshTask = new Thread(new RefreshRunnable());
 
         mLayoutManager = new LinearLayoutManager(getActivity());
 
