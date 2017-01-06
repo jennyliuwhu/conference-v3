@@ -59,7 +59,7 @@ public class ModeratorActivity extends AppCompatActivity implements SearchView.O
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setCancelable(false);
 
-        mModeratorRecyclerView = (RecyclerView) findViewById(R.id.moderator_list);
+        mModeratorRecyclerView = (RecyclerView) findViewById(R.id.main_list);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mModeratorRecyclerView.setLayoutManager(linearLayoutManager);

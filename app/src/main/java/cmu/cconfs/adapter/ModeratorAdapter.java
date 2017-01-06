@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import cmu.cconfs.ModeratorResultActivity;
 import cmu.cconfs.R;
 import cmu.cconfs.adapter.filter.ModeratorFilter;
 import cmu.cconfs.model.parseModel.AuthorSession;
@@ -67,6 +68,10 @@ public class ModeratorAdapter extends RecyclerView.Adapter<ModeratorAdapter.View
             int position = getAdapterPosition();
             AuthorSession as = mModerators.get(position);
             Toast.makeText(v.getContext(), as.getAuthor() + " clicked at " + position + ", session ids: " + as.getSessionIds() , Toast.LENGTH_SHORT).show();
+
+            Intent i = new Intent(v.getContext(), ModeratorResultActivity.class);
+            i.putExtra(ModeratorResultActivity.EXTRA_SESSION_IDS, as.getSessionIds());
+            v.getContext().startActivity(i);
         }
     }
 }
