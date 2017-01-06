@@ -559,7 +559,8 @@
             android:name=".service.SyncCalendarService"
             android:exported="false"/>
 
-        <activity android:name=".ModeratorActivity">
+        <activity android:name=".ModeratorActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

@@ -70,6 +70,8 @@ public class LoadingUtils {
         ParseObject.pinAll(Sponsor.PIN_TAG, sponsorQuery.find());
         ParseObject.pinAll(Version.PIN_TAG, versionQuery.find());
 
+        // load authors
+        loadAuthors();
     }
 
     public static void populateDataProvider() {
@@ -92,7 +94,7 @@ public class LoadingUtils {
     }
 
     // load author_sessions (author_id, author, session_ids)
-    public static void populateAuthors() throws ParseException {
+    public static void loadAuthors() throws ParseException {
         Log.d(TAG, "Start loading authors....");
         ParseObject.unpinAll(AuthorSession.PIN_TAG);
 
@@ -105,11 +107,14 @@ public class LoadingUtils {
             if (authorsStr.contains("，")) {
                 authorsStr = authorsStr.replace("，", ",");
             }
+            if (!authorsStr.contains(",")) {
+                continue;
+            }
             String[] authors = authorsStr.split(",");
 
             for (String author : authors) {
                 author = author.trim();
-                if (author.isEmpty()) {
+                if (author.isEmpty() || author.length() > 30) {
                     continue;
                 }
                 if (!paperIdToAuthorsMap.containsKey(paperId)) {

@@ -94,11 +94,12 @@ public class LoadingActivity extends AppCompatActivity {
             return;
         }
 
+        long t1 = System.currentTimeMillis();
         success = true;
         populateDataProvider();
         populateRoomProvider();
-        LoadingUtils.populateAuthors();
-        Log.i(TAG, "Load data complete");
+        long t2 = System.currentTimeMillis();
+        Log.i(TAG, "Load data completed in " + (t2 - t1) / 1000 + " seconds.");
         animatedCircleLoadingView.stopOk();
     }
 
