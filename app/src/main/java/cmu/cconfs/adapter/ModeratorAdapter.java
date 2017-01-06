@@ -1,6 +1,7 @@
 package cmu.cconfs.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<ModeratorAdapter.View
 
     @Override
     public void onBindViewHolder(ModeratorAdapter.ViewHolder holder, int position) {
-        holder.mTextView.setText(mModerators.get(position).getAuthor());
+        holder.mAuthorNameTv.setText(mModerators.get(position).getAuthor());
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ModeratorAdapter extends RecyclerView.Adapter<ModeratorAdapter.View
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView mTextView;
+        TextView mAuthorNameTv;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -56,13 +57,16 @@ public class ModeratorAdapter extends RecyclerView.Adapter<ModeratorAdapter.View
             itemView.setFocusableInTouchMode(true);
             itemView.setFocusable(true);
             itemView.setOnClickListener(this);
-            mTextView = (TextView) itemView.findViewById(R.id.title);
+
+            mAuthorNameTv = (TextView) itemView.findViewById(R.id.author_name);
         }
 
         @Override
         public void onClick(View v) {
-            TextView text = (TextView) v.findViewById(R.id.title);
-            Toast.makeText(v.getContext(), text.getText().toString() + " clicked.", Toast.LENGTH_SHORT).show();
+            int position = getAdapterPosition();
+
+            TextView text = (TextView) v.findViewById(R.id.author_name);
+            Toast.makeText(v.getContext(), text.getText().toString() + " clicked at " + position, Toast.LENGTH_SHORT).show();
         }
     }
 }

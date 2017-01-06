@@ -73,13 +73,16 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
                 imageResource = R.drawable.ic_location_on_black_48dp;
                 break;
             case 11:
+                imageResource = R.drawable.ic_perm_identity_black_48dp;
+                break;
+            case 12:
                 imageResource = R.drawable.ic_cloud_upload_black_48dp;
                 break;
         }
         holder.build(getItem(position).toString(), imageResource);
 
         // only admin can export/import
-        if (position == 11 && !isAdmin()) {
+        if (position == 12  && !isAdmin()) {
             convertView.setVisibility(View.INVISIBLE);
         }
         return convertView;
@@ -87,7 +90,7 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
 
     @Override
     public int getCount() {
-        return 12;
+        return 13;
     }
 
 

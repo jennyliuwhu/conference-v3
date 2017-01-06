@@ -4,33 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/list_selector"
-    android:padding="16dp">
+    android:padding="15dp">
 
     <ImageView
         android:id="@+id/imageView"
+        android:src="@drawable/ic_right_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/author_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/imageView"
         android:layout_alignParentLeft="true"
-        android:text="Title"
-        android:textSize="30sp" />
+        android:text="Jane Doe"
+        android:fontFamily="monospace"
+        android:textStyle="bold"
+        android:textSize="15dip"
+        android:layout_marginLeft="10dp"/>
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_toLeftOf="@+id/imageView"
-        android:layout_alignParentLeft="true"
-        android:text="Description" />
 
 </RelativeLayout>

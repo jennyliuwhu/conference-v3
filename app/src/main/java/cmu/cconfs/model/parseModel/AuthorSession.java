@@ -2,6 +2,7 @@ package cmu.cconfs.model.parseModel;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 /**
  * Created by qiuzhexin on 1/4/17.
@@ -33,5 +34,11 @@ public class AuthorSession extends ParseObject {
 
     public void setSessionIds(String ids) {
         put("session_ids", ids);
+    }
+
+    public static ParseQuery<AuthorSession> getQuery() {
+        ParseQuery<AuthorSession> query = ParseQuery.getQuery(AuthorSession.class);
+        query.setLimit(1000);
+        return query;
     }
 }

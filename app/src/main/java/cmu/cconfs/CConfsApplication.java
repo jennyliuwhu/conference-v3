@@ -69,10 +69,16 @@ public class CConfsApplication extends Application {
     }
 
     public UnityDataProvider getUnityDataProvider(int dateIndex) {
+        if (dataProvider == null) {
+            return null;
+        }
         return dataProvider.getUnityDataProvider(dateIndex);
     }
 
     public RoomDataProvider getRoomDataProvider(int roomIndex) {
+        if (roomProvider == null) {
+            return null;
+        }
         return roomProvider.getRoomDataProvider(roomIndex);
     }
 

@@ -6,10 +6,10 @@
     android:id="@+id/activity_moderator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ModeratorActivity"
     android:fitsSystemWindows="true"
-    >
+    android:baselineAligned="false"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"

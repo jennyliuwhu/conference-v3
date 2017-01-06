@@ -82,7 +82,7 @@ public class LoadingActivity extends AppCompatActivity {
     }
 
 
-    private void preProcessing() {
+    private void preProcessing() throws ParseException {
         if (hasNetworkConnection()) {
             if (!isLocalStoreUpToDate()) {
                 Log.w(TAG, "Current local parse store version is out of sync");
@@ -97,6 +97,7 @@ public class LoadingActivity extends AppCompatActivity {
         success = true;
         populateDataProvider();
         populateRoomProvider();
+        LoadingUtils.populateAuthors();
         Log.i(TAG, "Load data complete");
         animatedCircleLoadingView.stopOk();
     }

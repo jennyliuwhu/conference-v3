@@ -42,6 +42,9 @@ public class SyncCalendarService extends IntentService {
         // add all the event and reminders
         for (int i = 0; i < DataProvider.days; i++) {
             UnityDataProvider provider = app.getUnityDataProvider(i);
+            if (provider == null) {
+                return;
+            }
             for (int j = 0; j < provider.getSelectedGroupCount(); j++) {
                 AbstractExpandableDataProvider.BaseData groupData = provider.getSelectedGroupItem(j);
                 String timeslot = groupData.getText();
