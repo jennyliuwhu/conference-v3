@@ -1,17 +1,16 @@
 package cmu.cconfs.parseUtils.helper;
 
-import android.app.Service;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +70,7 @@ public class LoadingUtils {
         ParseObject.pinAll(Version.PIN_TAG, versionQuery.find());
 
         // load authors
-        loadAuthors();
+        loadAuthorPaper();
     }
 
     public static void populateDataProvider() {
@@ -93,86 +92,165 @@ public class LoadingUtils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    // load author_sessions (author_id, author, session_ids)
-    public static void loadAuthors() throws ParseException {
-        Log.d(TAG, "Start loading authors....");
+    // load author to paper ids relations
+    public static void loadAuthorPaper() throws ParseException {
+        Log.d(TAG, "Start loading author-paper....");
         ParseObject.unpinAll(AuthorSession.PIN_TAG);
-
-        Map<String, Set<String>> paperIdToAuthorsMap = new HashMap<>();
+        Map<String, Set<String>> authorToPapers = new HashMap<>();
         List<Paper> papers = Paper.getQuery().fromLocalDatastore().find();
-        for (Paper p : papers) {
-            String authorsStr = p.getAuthor().trim();
-            String paperId = p.getUniqueId().trim();
 
-            if (authorsStr.contains("，")) {
-                authorsStr = authorsStr.replace("，", ",");
+        for (Paper p : papers) {
+            String authorStr = p.getAuthor().trim();
+            String pid = p.getUniqueId().trim();
+            if (authorStr.contains("，")) {
+                authorStr = authorStr.replace("，", ",");
             }
-            if (!authorsStr.contains(",")) {
+            if (!authorStr.contains(",")) {
                 continue;
             }
-            String[] authors = authorsStr.split(",");
-
+            String[] authors = authorStr.split(",");
             for (String author : authors) {
                 author = author.trim();
                 if (author.isEmpty() || author.length() > 30) {
                     continue;
                 }
-                if (!paperIdToAuthorsMap.containsKey(paperId)) {
-                    paperIdToAuthorsMap.put(paperId, new HashSet<String>());
+                if (!authorToPapers.containsKey(author)) {
+                    authorToPapers.put(author, new HashSet<String>());
                 }
-                paperIdToAuthorsMap.get(paperId).add(author);
+                authorToPapers.get(author).add(pid);
             }
         }
-        Log.d(TAG, "paperToAuthorMap: \n" + paperIdToAuthorsMap.toString());
 
-        Map<String, Set<Integer>> authorToSessionIdsMap = new HashMap<>();
-        List<Session_Timeslot> sessions = Session_Timeslot.getQuery().fromLocalDatastore().find();
-        for (Session_Timeslot st : sessions) {
-            int sessionId = st.getSessionId();
-            String paperIdsStr = st.getPapers().trim();
-
-            if (paperIdsStr.contains("，")) {
-                paperIdsStr = paperIdsStr.replace("，", ",");
-            }
-
-            String[] paperIds = paperIdsStr.split(",");
-            for (String pid : paperIds) {
-                pid = pid.trim();
-                if (pid.isEmpty()) {
-                    continue;
-                }
-                if (paperIdToAuthorsMap.containsKey(pid)) {
-                    for (String author : paperIdToAuthorsMap.get(pid)) {
-                        if (!authorToSessionIdsMap.containsKey(author)) {
-                            authorToSessionIdsMap.put(author, new HashSet<Integer>());
-                        }
-                        authorToSessionIdsMap.get(author).add(sessionId);
-                    }
-                }
-            }
-        }
-        Log.d(TAG, "authorToSessionIdsMap: \n" + authorToSessionIdsMap.toString());
-
-
+        Log.d(TAG, "authorToPaperIdsMap: \n" + authorToPapers.toString());
+        // save into parse local datastore
         List<AuthorSession> authorSessions = new ArrayList<>();
-        int authorId = 0;
-        for (Map.Entry<String, Set<Integer>> entry : authorToSessionIdsMap.entrySet()) {
-            String author = entry.getKey();
-            StringBuffer sessionIdStr = new StringBuffer();
-            for (int sessionId : entry.getValue()) {
-                sessionIdStr.append(sessionId).append(",");
-            }
-
+        int aid = 0;
+        for (String author : authorToPapers.keySet()) {
             AuthorSession as = new AuthorSession();
+            StringBuffer pids = new StringBuffer();
+            for (String pid : authorToPapers.get(author)) {
+                pids.append(pid).append(",");
+            }
             as.setAuthor(author);
-            as.setAuthorId(authorId++);
-            as.setSessionIds(sessionIdStr.toString());
+            as.setSessionIds(pids.toString());
+            as.setAuthorId(aid++);
             authorSessions.add(as);
         }
-
         ParseObject.pinAll(AuthorSession.PIN_TAG, authorSessions);
 
-        Log.d(TAG, "Loaded " + authorSessions.size() + " authors");
+        Log.d(TAG, "Loaded " + authorSessions.size() + " author-papers");
     }
 
+
+    public static void testPaperSessionRelation() throws ParseException {
+        long t1 = System.currentTimeMillis();
+        ParseQuery<Session_Timeslot> session_timeslotQuery = Session_Timeslot.getQuery().fromLocalDatastore();
+
+        Map<String, List<Integer>> paperToSessionMap = new HashMap<>();
+        List<Session_Timeslot> session_timeslots = session_timeslotQuery.find();
+
+        for (Session_Timeslot st : session_timeslots) {
+            List<String> paperIds = Arrays.asList(st.getPapers().split(","));
+            ParseQuery<Paper> query = Paper.getQuery().fromLocalDatastore();
+            query.whereNotEqualTo("unique_id", "");
+            query.whereContainedIn("unique_id", paperIds);
+            for (Paper p : query.find()) {
+                if (!paperToSessionMap.containsKey(p.getUniqueId())) {
+                    paperToSessionMap.put(p.getUniqueId(), new ArrayList<Integer>());
+                }
+                paperToSessionMap.get(p.getUniqueId()).add(st.getSessionId());
+            }
+        }
+
+        long t2 = System.currentTimeMillis();
+        Log.d(TAG, "paper session relation takes: " + (t2 - t1));
+
+        for (String pid : paperToSessionMap.keySet()) {
+            List<Integer> sids = paperToSessionMap.get(pid);
+            if (sids.size() > 1) {
+                Log.d(TAG, "A paper may have multiple sessions: " + String.format("(paper id: %s, session ids: %s)", pid, sids.toString()));
+            }
+        }
+    }
+
+//    // load author_sessions (author_id, author, session_ids)
+//    public static void loadAuthorSession() throws ParseException {
+//        Log.d(TAG, "Start loading authors....");
+//        ParseObject.unpinAll(AuthorSession.PIN_TAG);
+//
+//        Map<String, Set<String>> paperIdToAuthorsMap = new HashMap<>();
+//        List<Paper> papers = Paper.getQuery().fromLocalDatastore().find();
+//        for (Paper p : papers) {
+//            String authorsStr = p.getAuthor().trim();
+//            String paperId = p.getUniqueId().trim();
+//
+//            if (authorsStr.contains("，")) {
+//                authorsStr = authorsStr.replace("，", ",");
+//            }
+//            if (!authorsStr.contains(",")) {
+//                continue;
+//            }
+//            String[] authors = authorsStr.split(",");
+//
+//            for (String author : authors) {
+//                author = author.trim();
+//                if (author.isEmpty() || author.length() > 30) {
+//                    continue;
+//                }
+//                if (!paperIdToAuthorsMap.containsKey(paperId)) {
+//                    paperIdToAuthorsMap.put(paperId, new HashSet<String>());
+//                }
+//                paperIdToAuthorsMap.get(paperId).add(author);
+//            }
+//        }
+//        Log.d(TAG, "paperToAuthorMap: \n" + paperIdToAuthorsMap.toString());
+//
+//        Map<String, Set<Integer>> authorToSessionIdsMap = new HashMap<>();
+//        List<Session_Timeslot> sessions = Session_Timeslot.getQuery().fromLocalDatastore().find();
+//        for (Session_Timeslot st : sessions) {
+//            int sessionId = st.getSessionId();
+//            String paperIdsStr = st.getPapers().trim();
+//
+//            if (paperIdsStr.contains("，")) {
+//                paperIdsStr = paperIdsStr.replace("，", ",");
+//            }
+//
+//            String[] paperIds = paperIdsStr.split(",");
+//            for (String pid : paperIds) {
+//                pid = pid.trim();
+//                if (pid.isEmpty()) {
+//                    continue;
+//                }
+//                if (paperIdToAuthorsMap.containsKey(pid)) {
+//                    for (String author : paperIdToAuthorsMap.get(pid)) {
+//                        if (!authorToSessionIdsMap.containsKey(author)) {
+//                            authorToSessionIdsMap.put(author, new HashSet<Integer>());
+//                        }
+//                        authorToSessionIdsMap.get(author).add(sessionId);
+//                    }
+//                }
+//            }
+//        }
+//        Log.d(TAG, "authorToSessionIdsMap: \n" + authorToSessionIdsMap.toString());
+//
+//        List<AuthorSession> authorSessions = new ArrayList<>();
+//        int authorId = 0;
+//        for (Map.Entry<String, Set<Integer>> entry : authorToSessionIdsMap.entrySet()) {
+//            String author = entry.getKey();
+//            StringBuffer sessionIdStr = new StringBuffer();
+//            for (int sessionId : entry.getValue()) {
+//                sessionIdStr.append(sessionId).append(",");
+//            }
+//
+//            AuthorSession as = new AuthorSession();
+//            as.setAuthor(author);
+//            as.setAuthorId(authorId++);
+//            as.setSessionIds(sessionIdStr.toString());
+//            authorSessions.add(as);
+//        }
+//
+//        ParseObject.pinAll(AuthorSession.PIN_TAG, authorSessions);
+//
+//        Log.d(TAG, "Loaded " + authorSessions.size() + " authors");
+//    }
 }

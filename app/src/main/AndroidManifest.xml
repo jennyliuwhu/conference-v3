@@ -84,10 +84,10 @@
             android:enabled="true"
             android:process=":remote"/>
         <!-- configuration of google maps api -->
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCBMAG51AGpH-eFQ04gV5l0g8yy0zkDtBY"/>
-        <meta-data
+        <!--<meta-data-->
+            <!--android:name="com.google.android.maps.v2.API_KEY"-->
+            <!--android:value="AIzaSyCBMAG51AGpH-eFQ04gV5l0g8yy0zkDtBY"/>-->
+        <!--<meta-data-->
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
         <meta-data

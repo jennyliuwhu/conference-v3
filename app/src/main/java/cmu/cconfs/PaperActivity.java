@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +33,8 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import org.w3c.dom.Text;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +65,7 @@ public class PaperActivity extends AppCompatActivity {
     private String mPaperInfo;
     private String mSessionKey;
     public static String PAPER_INFO_SEPARATOR = "|";
+    private CardView mSessionContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,16 @@ public class PaperActivity extends AppCompatActivity {
         String paperAuthor = getIntent().getStringExtra("paperAuthor");
         String sessionKey = getIntent().getStringExtra("sessionKey");
 
+        mSessionContainer = (CardView) findViewById(R.id.session_container);
+        if (getIntent().hasExtra("date")) {
+            String date = getIntent().getStringExtra("date");
+            String[] keyFields = SessionActivity.getSessionKeyFields(sessionKey); // session title, session chair, room, timeslot
+            Log.d(TAG, "Get session key: " + sessionKey);
+            String content = String.format("Session: %s\nTime: %s\nChair: %s\nRoom: %s", keyFields[0], keyFields[3] + ", " + date, keyFields[1], keyFields[2]);
+            TextView textView = (TextView) mSessionContainer.findViewById(R.id.session_info);
+            textView.setText(content);
+            mSessionContainer.setVisibility(View.VISIBLE);
+        }
 
         mSessionKey = sessionKey;
         mPaperInfo = getPaperInfo( new String[] {paperTitle, paperAuthor} );
@@ -215,6 +229,19 @@ public class PaperActivity extends AppCompatActivity {
         intent.putExtra("sessionKey", imageSharedPref);
         intent.putExtra("isPublic", true);
         startActivity(intent);
+    }
+
+    public void didTapSessionInfo(View view) {
+        String papers = getIntent().getStringExtra("papers");
+        String[] fields = SessionActivity.getSessionKeyFields(getIntent().getStringExtra("sessionKey")); // session name, chair, room, timeslot
+        Intent i = new Intent(PaperActivity.this, SessionActivity.class);
+        i.putExtra("papers", papers);
+        i.putExtra("sessionName", fields[0]);
+        i.putExtra("sessionChair", fields[1]);
+        i.putExtra("sessionRoom", fields[2]);
+        i.putExtra("sessionTime", fields[3]);
+
+        startActivity(i);
     }
 
     @Override

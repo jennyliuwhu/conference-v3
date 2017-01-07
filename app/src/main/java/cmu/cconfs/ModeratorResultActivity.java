@@ -13,9 +13,12 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import cmu.cconfs.adapter.ModeratorPaperResultAdapter;
 import cmu.cconfs.adapter.ModeratorResultAdapter;
+import cmu.cconfs.model.parseModel.Paper;
 import cmu.cconfs.model.parseModel.Session_Timeslot;
 import cmu.cconfs.model.parseModel.Timeslot;
 
@@ -27,6 +30,8 @@ public class ModeratorResultActivity extends AppCompatActivity {
     private RecyclerView mSessionRecyclerView;
     private ProgressDialog mProgressDialog;
     private ModeratorResultAdapter mModeratorResultAdapter;
+
+    private ModeratorPaperResultAdapter mModeratorPaperResultAdapter;
 
 
     @Override
@@ -48,11 +53,14 @@ public class ModeratorResultActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mSessionRecyclerView.setLayoutManager(linearLayoutManager);
 
-        mModeratorResultAdapter = new ModeratorResultAdapter(getApplication(), new ArrayList<ModeratorResultAdapter.Session>());
-        mSessionRecyclerView.setAdapter(mModeratorResultAdapter);
+        mModeratorResultAdapter = new ModeratorResultAdapter(ModeratorResultActivity.this, new ArrayList<ModeratorResultAdapter.Session>());
+        mModeratorPaperResultAdapter = new ModeratorPaperResultAdapter(ModeratorResultActivity.this, new ArrayList<Paper>());
+
+        mSessionRecyclerView.setAdapter(mModeratorPaperResultAdapter);
 
         if (getIntent().hasExtra(EXTRA_SESSION_IDS)) {
-            loadSessions(getIntent().getStringExtra(EXTRA_SESSION_IDS));
+//            loadSessions(getIntent().getStringExtra(EXTRA_SESSION_IDS));
+            loadPapers(getIntent().getStringExtra(EXTRA_SESSION_IDS));
         }
 
     }
@@ -100,6 +108,35 @@ public class ModeratorResultActivity extends AppCompatActivity {
                 if (sessions != null) {
                     mModeratorResultAdapter.setSessions(sessions);
                     mModeratorResultAdapter.notifyDataSetChanged();
+                }
+                mProgressDialog.dismiss();
+            }
+        }.execute(ids);
+    }
+
+    private void loadPapers(final String ids) {
+        mProgressDialog.show();
+        new AsyncTask<String, Void, List<Paper>>() {
+            @Override
+            protected List<Paper> doInBackground(String... strings) {
+                try {
+                    ParseQuery<Paper> query = Paper.getQuery().fromLocalDatastore();
+                    // get corresponding paper ids
+                    List<String> uids = Arrays.asList(ids.split(","));
+                    query.whereContainedIn("unique_id", uids);
+                    List<Paper> papers = query.find();
+                    return papers;
+                } catch (ParseException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(List<Paper> papers) {
+                if (papers != null) {
+                    mModeratorPaperResultAdapter.setPapers(papers);
+                    mModeratorPaperResultAdapter.notifyDataSetChanged();
                 }
                 mProgressDialog.dismiss();
             }

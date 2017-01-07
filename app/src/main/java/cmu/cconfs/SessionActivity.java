@@ -433,12 +433,17 @@ public class SessionActivity extends BaseActivity implements ObservableScrollVie
     }
 
     // create a session key for session related data
-    private String getSessionKey(String[] data) {
+    public static String getSessionKey(String[] data) {
         StringBuffer sb = new StringBuffer();
         for (String d : data) {
             sb.append(d).append(SESSION_INFO_SEPARATOR);
         }
         return sb.toString();
+    }
+
+    // deconstruct session key
+    public static String[] getSessionKeyFields(String sessionKey) {
+        return sessionKey.split("\\" + SESSION_INFO_SEPARATOR);
     }
 
     // save session notes have to be retrieved later
