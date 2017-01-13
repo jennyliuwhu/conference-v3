@@ -20,6 +20,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -132,9 +133,8 @@ public class MapActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
     // Route Button
-    public void goGoogleMaps(View v) {
+    public void goGoogleMaps(View v) throws SecurityException{
         String destination = "Millennium Broadway Hotel 145 West 44th Street, New York, NY 10036";
         googleMap.setMyLocationEnabled(true);
         //Location userLocation = googleMap.getMyLocation();
@@ -165,8 +165,13 @@ public class MapActivity extends Activity {
          */
         try {
             if (null == googleMap) {
-                googleMap = ((MapFragment) getFragmentManager().findFragmentById(
-                        R.id.map)).getMap();
+                ((MapFragment) getFragmentManager().findFragmentById(
+                        R.id.map)).getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap map) {
+                        googleMap = map;
+                    }
+                });
 
                 /**
                  * If the map is still null after attempted initialisation,

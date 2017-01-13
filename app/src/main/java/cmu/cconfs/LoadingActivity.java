@@ -27,7 +27,7 @@ public class LoadingActivity extends AppCompatActivity {
 
     private boolean success;
     private AnimatedCircleLoadingView animatedCircleLoadingView;
-    private boolean debug  = false;
+    private boolean debug  = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

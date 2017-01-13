@@ -4,10 +4,7 @@ package cmu.cconfs.utils;
  * Created by zmhbh on 6/16/15.
  */
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -17,18 +14,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.easemob.EMCallBack;
-import com.google.android.gms.auth.GoogleAuthUtil;
 import com.parse.ParseAnonymousUtils;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.concurrent.CountDownLatch;
 
-import cmu.cconfs.R;
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
-import cmu.cconfs.model.parseModel.Todo;
-
-import static com.google.android.gms.internal.zzir.runOnUiThread;
 
 public class AccountUtils {
 
