@@ -69,9 +69,10 @@ public class FCMMessageHandlerService extends FirebaseMessagingService {
         HashMap<String, String> serializableMap = new HashMap<>();
 
         for (String key : map.keySet()) {
-            serializableMap.put(key, map.get(key));
+            String value = map.get(key);
+            serializableMap.put(key, value);
         }
-
+        Log.d(TAG, "serialized map: " + serializableMap);
         return serializableMap;
     }
 

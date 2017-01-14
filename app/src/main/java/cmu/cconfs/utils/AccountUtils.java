@@ -20,6 +20,7 @@ import com.parse.ParseUser;
 import java.util.concurrent.CountDownLatch;
 
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
+import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
 
 public class AccountUtils {
 
@@ -77,6 +78,9 @@ public class AccountUtils {
     }
 
     public static void logoutUser(final Context context) {
+        // deregister communication token
+        CloudCodeUtils.deregisterToken();
+
         // logout parse user
         ParseUser.logOut();
 

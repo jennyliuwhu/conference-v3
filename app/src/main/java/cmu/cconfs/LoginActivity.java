@@ -36,6 +36,7 @@ import cmu.cconfs.instantMessage.db.UserDao;
 import cmu.cconfs.instantMessage.domain.User;
 import cmu.cconfs.instantMessage.imlib.controller.HXSDKHelper;
 import cmu.cconfs.model.parseModel.Todo;
+import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
 import cmu.cconfs.utils.PreferencesManager;
 
 public class LoginActivity extends AppCompatActivity {
@@ -93,6 +94,8 @@ public class LoginActivity extends AppCompatActivity {
                     case HANDLE_LOGIN_SUC:
                         mPreferencesManager.writeBooleanPreference("LoggedIn", true);
                         setResult(RESULT_OK);
+                        // register FCM token for commnunication
+                        CloudCodeUtils.registerToken();
                         break;
                     case HANDLE_LOGIN_FAIL_RETRIEVE_CACHED:
                         IMHXSDKHelper.getInstance().logout(true, null);
