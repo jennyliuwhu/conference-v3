@@ -25,6 +25,7 @@ public class Profile extends ParseObject {
     public static String TITLE_KEY = "title";
     public static String DESC_KEY = "description";
     public static String PARSE_USER_KEY = "parse_user";
+    public static String SHARE_OPTION_KEY = "share_profile";
 
     public Profile() {
 
@@ -100,6 +101,14 @@ public class Profile extends ParseObject {
 
     public void setParseUser(ParseUser user) {
         put(PARSE_USER_KEY, user);
+    }
+
+    public Boolean getShareOption() {
+        return getBoolean(SHARE_OPTION_KEY);
+    }
+
+    public void setShareOption(boolean share) {
+        put(SHARE_OPTION_KEY, share);
     }
 
     public static ParseQuery<Profile> getQuery() {

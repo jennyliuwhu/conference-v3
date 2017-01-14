@@ -8,7 +8,13 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
 import cmu.cconfs.fragment.PreferenceFragment;
+import cmu.cconfs.model.parseModel.Profile;
+import cmu.cconfs.model.parseModel.Program;
 import cmu.cconfs.utils.PreferencesManager;
 
 public class PreferenceActivity extends AppCompatActivity {
@@ -56,12 +62,21 @@ public class PreferenceActivity extends AppCompatActivity {
     }
 
     private void updateUserPreference() {
-        boolean shareProf = mPreferencesManager.getBooleanPreference(SHARE_PROFILE_PREF_KEY, true);
+        final boolean shareProf = mPreferencesManager.getBooleanPreference(SHARE_PROFILE_PREF_KEY, true);
         boolean notifyAppointment = mPreferencesManager.getBooleanPreference(NOTIFY_APPOINTMENT_PREF_KEY, true);
         boolean notifyMsg = mPreferencesManager.getBooleanPreference(NOTIFY_MESSAGING_PREF_KEY, true);
         boolean syncCalendar = mPreferencesManager.getBooleanPreference(SYNC_CALENDAR_PREF_KEY, true);
         String prefSummary = String.format("share profile: %s\nnotify appointments: %s\nnotify messages: %s\nsync calendar: %s\n", shareProf, notifyAppointment, notifyMsg, syncCalendar);
-
         Log.d(TAG, "Pref summary:\n" + prefSummary);
+
+        // update user's share profile option in the cloud
+        ParseQuery<Profile> query = Profile.getQuery();
+        query.getFirstInBackground(new GetCallback<Profile>() {
+            @Override
+            public void done(Profile profile, ParseException e) {
+                profile.setShareOption(shareProf);
+                profile.saveInBackground();
+            }
+        });
     }
 }

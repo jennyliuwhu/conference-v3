@@ -60,8 +60,6 @@ public class MapActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
-
     }
 
     private boolean checkPlayServices() {

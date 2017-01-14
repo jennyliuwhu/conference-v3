@@ -12,6 +12,7 @@ import com.parse.ParseUser;
 import java.util.List;
 
 import cmu.cconfs.R;
+import cmu.cconfs.model.parseModel.Profile;
 
 /**
  * Created by qiuzhexin on 1/13/17.
@@ -45,7 +46,7 @@ public class ProfileListAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
 
-        holder.mNameTv.setText(mUsers.get(i).getString("full_name"));
+        holder.mNameTv.setText(mUsers.get(i).getString(Profile.FULL_NAME_KEY));
         holder.mEmailTv.setText(mUsers.get(i).getEmail());
 
         return view;

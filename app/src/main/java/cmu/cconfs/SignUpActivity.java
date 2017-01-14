@@ -114,7 +114,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private ParseUser fillUserInfo() {
         final ParseUser user = new ParseUser();
-        user.put("full_name", mNameText.getText().toString());
+        user.put(Profile.FULL_NAME_KEY, mNameText.getText().toString());
         user.setUsername(mUsernameText.getText().toString());
         user.setEmail(mEmailText.getText().toString());
         user.setPassword(mPasswordText.getText().toString());
@@ -198,7 +198,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.d(TAG, "parse sign up success");
                             CConfsApplication.getInstance().setUserName(username);
                             // save profile
-                            saveProfile(user, user.getString("full_name"), user.getEmail());
+                            saveProfile(user, user.getString(Profile.FULL_NAME_KEY), user.getEmail());
 
                             // send suc message
                             message.arg1 = SIGNUP_SUC;
@@ -246,6 +246,7 @@ public class SignUpActivity extends AppCompatActivity {
             profile.setParseUser(user);
             profile.setFullName(name);
             profile.setEmail(email);
+            profile.setShareOption(true);
             try {
                 profile.save();
             } catch (ParseException e) {
