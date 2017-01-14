@@ -586,9 +586,13 @@
         </service>
 
         <activity android:name=".NotificationDetailActivity">
-            <intent-filter>   <action android:name="NOTI_DETAIL" />
-                <category android:name="android.intent.category.DEFAULT" />
+            <intent-filter>
+                <action android:name="NOTI_DETAIL"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".NetworkingActivity">
         </activity>
     </application>
 
