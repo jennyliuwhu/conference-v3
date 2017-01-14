@@ -13,12 +13,15 @@ import android.view.View;
 
 import com.dk.view.folder.ResideMenu;
 import com.dk.view.folder.ResideMenuItem;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.parse.ParseAnalytics;
 
 import org.bitlet.weupnp.Main;
 
 import cmu.cconfs.fragment.HomeFragment;
 import cmu.cconfs.receiver.SyncCalendarAlarmReceiver;
+import cmu.cconfs.service.FCMRegistrationService;
 
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
@@ -30,9 +33,18 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ResideMenuItem itemMySchedule_left;
     private ResideMenuItem itemMySchedule_right;
 
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // register the device with google connection server
+        if(checkPlayServices()) {
+            Intent intent = new Intent(this, FCMRegistrationService.class);
+            startService(intent);
+        }
+
+
         // start the syncing calendar service
         scheduleAlarm();
 
@@ -148,4 +160,22 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         super.onDestroy();
         Log.d(TAG, "I am destroyed");
     }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+
 }
