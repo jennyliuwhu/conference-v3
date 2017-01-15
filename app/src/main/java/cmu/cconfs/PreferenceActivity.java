@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import cmu.cconfs.fragment.PreferenceFragment;
 import cmu.cconfs.model.parseModel.Profile;
@@ -71,6 +72,7 @@ public class PreferenceActivity extends AppCompatActivity {
 
         // update user's share profile option in the cloud
         ParseQuery<Profile> query = Profile.getQuery();
+        query.whereEqualTo(Profile.PARSE_USER_KEY, ParseUser.getCurrentUser());
         query.getFirstInBackground(new GetCallback<Profile>() {
             @Override
             public void done(Profile profile, ParseException e) {

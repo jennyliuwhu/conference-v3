@@ -4,11 +4,11 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cmu.cconfs.R;
@@ -20,16 +20,18 @@ import cmu.cconfs.model.parseModel.Profile;
 
 public class ProfileListAdapter extends BaseAdapter {
     private Context mContext;
-    private List<ParseUser> mUsers;
+    private List<Profile> mProfiles;
+    private List<Profile> mFilteredProfiles;
 
-    public ProfileListAdapter(Context c, List<ParseUser> users) {
+    public ProfileListAdapter(Context c, List<Profile> profiles) {
         mContext = c;
-        mUsers = users;
+        mProfiles = profiles;
+        mFilteredProfiles = mProfiles;
     }
 
     @Override
     public int getCount() {
-        return mUsers.size();
+        return mFilteredProfiles.size();
     }
 
     @Override
@@ -39,15 +41,15 @@ public class ProfileListAdapter extends BaseAdapter {
             view = View.inflate(viewGroup.getContext(), R.layout.item_list_profile, null);
             holder = new ViewHolder();
             holder.mNameTv = (TextView) view.findViewById(R.id.profile_name);
-            holder.mEmailTv = (TextView) view.findViewById(R.id.profile_email);
+            holder.mOrganizationTv = (TextView) view.findViewById(R.id.profile_organization);
 
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
 
-        holder.mNameTv.setText(mUsers.get(i).getString(Profile.FULL_NAME_KEY));
-        holder.mEmailTv.setText(mUsers.get(i).getEmail());
+        holder.mNameTv.setText(mFilteredProfiles.get(i).getFullName());
+        holder.mOrganizationTv.setText(mFilteredProfiles.get(i).getCompany());
 
         return view;
     }
@@ -59,16 +61,26 @@ public class ProfileListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        return mUsers.get(i);
+        return mFilteredProfiles.get(i);
     }
 
-    public List<ParseUser> getUsers() {
-        return mUsers;
+    public List<Profile> getProfiles() {
+        return mFilteredProfiles;
+    }
+
+    public void filter(String query) {
+        mFilteredProfiles = new ArrayList<>();
+        for (int i = 0; i < mProfiles.size(); i++) {
+            Profile profile = mProfiles.get(i);
+            if (profile.getFullName().toLowerCase().startsWith(query.toLowerCase()) || profile.getFullName().toLowerCase().endsWith(query.toLowerCase())) {
+                mFilteredProfiles.add(profile);
+            }
+        }
     }
 
     class ViewHolder {
         TextView mNameTv;
-        TextView mEmailTv;
+        TextView mOrganizationTv;
     }
 
 

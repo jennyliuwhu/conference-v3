@@ -6,6 +6,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.Serializable;
+
 /**
  * Created by qiuzhexin on 12/27/16.
  *
@@ -13,7 +15,7 @@ import com.parse.ParseUser;
  */
 
 @ParseClassName("Profile")
-public class Profile extends ParseObject {
+public class Profile extends ParseObject implements Serializable {
     public static String PIN_TAG = "profile_pin";
 
     public static String PROFILE_IMG_KEY = "profile_img";
@@ -112,7 +114,9 @@ public class Profile extends ParseObject {
     }
 
     public static ParseQuery<Profile> getQuery() {
-        return ParseQuery.getQuery(Profile.class);
+        ParseQuery<Profile> query = ParseQuery.getQuery(Profile.class);
+        query.setLimit(1000);
+        return query;
     }
 
 }

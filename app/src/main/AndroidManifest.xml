@@ -594,6 +594,8 @@
         </activity>
         <activity android:name=".NetworkingActivity">
         </activity>
+        <activity android:name=".NetworkingProfileActivity">
+        </activity>
     </application>
 
 </manifest>

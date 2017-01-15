@@ -14,15 +14,17 @@
         android:textStyle="bold"
         android:textColor="@color/bottom_bar_normal_bg"
         android:fontFamily="monospace"
+        android:paddingLeft="10dp"
         android:text="Name"/>
 
     <TextView
-        android:id="@+id/profile_email"
+        android:id="@+id/profile_organization"
         android:layout_below="@id/profile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@color/bottom_text_color_normal"
         android:fontFamily="monospace"
-        android:text="Email"/>
+        android:paddingLeft="10dp"
+        android:text="Organization"/>
 </RelativeLayout>

@@ -39,7 +39,7 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_toEndOf="@id/ivContactItem0"
                 android:layout_toRightOf="@id/ivContactItem0"
-                android:text="John Doe"
+                tools:text="John Doe"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121" />
 
@@ -86,7 +86,7 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_toEndOf="@id/ivContactItem1"
                 android:layout_toRightOf="@id/ivContactItem1"
-                android:text="(123) 456-7890"
+                tools:text="(123) 456-7890"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121" />
 
@@ -135,7 +135,7 @@
                 android:layout_toRightOf="@id/ivContactItem3"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="chintan@letsnurture.com"
+                tools:text="chintan@letsnurture.com"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121" />
 
@@ -183,7 +183,7 @@
             android:layout_toRightOf="@id/ivContactItem5"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Carnegie Mellon University"
+            tools:text="Carnegie Mellon University"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#212121" />
 
@@ -231,7 +231,7 @@
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:maxLength="100"
-                android:text="Researcher"
+                tools:text="Researcher"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121"
                 />
@@ -280,7 +280,7 @@
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:maxLength="100"
-                android:text="A short description goes here. Say something to introduce."
+                tools:text="A short description goes here. Say something to introduce."
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="#212121"
                 />
