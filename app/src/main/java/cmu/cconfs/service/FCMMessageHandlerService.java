@@ -14,11 +14,16 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.RemoteMessage.Notification;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import cmu.cconfs.AppointmentActivity;
 import cmu.cconfs.NotificationDetailActivity;
 import cmu.cconfs.R;
+import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
 
 /**
  * Created by qiuzhexin on 1/13/17.
@@ -35,20 +40,12 @@ public class FCMMessageHandlerService extends FirebaseMessagingService {
         Log.d(TAG, "Sent from: " + from);
         Log.d(TAG, "Received data: " + data);
 
-
 //        Notification notification = remoteMessage.getNotification();
         createNotification(convertToSerializableMap(data));
     }
 
     // Creates notification based on title and body received
     private void createNotification(HashMap<String, String> data) {
-        // prepare intent for notification detail
-        Intent i = new Intent(this, NotificationDetailActivity.class);
-        i.putExtra(NotificationDetailActivity.EXTRA_NOTI_DATA, data);
-        int requestId = (int) System.currentTimeMillis();
-        int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
-        PendingIntent pIntent = PendingIntent.getActivity(this, requestId, i, flags);
-
         // create notification
         Context context = getBaseContext();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
@@ -56,10 +53,33 @@ public class FCMMessageHandlerService extends FirebaseMessagingService {
                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentTitle(data.get("title"))
-                .setContentText(data.get("body"))
                 .setVibrate(new long[] { 500, 500, 500 })
-                .setContentIntent(pIntent)
                 .setAutoCancel(true);
+
+        String messageType = data.get("type");
+        switch (messageType) {
+            case CloudCodeUtils.APPOINTMENT_REQUEST_MSG_TYPE:
+                // prepare intent for appointment request notification detail
+                Intent i = new Intent(this, NotificationDetailActivity.class);
+                i.putExtra(NotificationDetailActivity.EXTRA_NOTI_DATA, data);
+                int requestId = (int) System.currentTimeMillis();
+                int flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
+                PendingIntent pIntent = PendingIntent.getActivity(this, requestId, i, flags);
+                mBuilder.setContentIntent(pIntent);
+
+                // deserialize the body content and retrieve short description
+                AppointmentActivity.NotificationPayload payload = AppointmentActivity.NotificationPayload.fromJsonStr(data.get("body"));
+                mBuilder.setContentText(payload.getShortDesc());
+                break;
+            case CloudCodeUtils.NORMAL_MESSAGE_MSG_TYPE:
+                // prepare intent for normal message notification detail
+
+                break;
+            default:
+                mBuilder.setContentText(data.get("body"));
+                break;
+        }
+
         NotificationManager mNotificationManager = (NotificationManager) context
                 .getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(MESSAGE_NOTIFICATION_ID, mBuilder.build());

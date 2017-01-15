@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:fitsSystemWindows="true">
+    <LinearLayout
+        android:id="@+id/activity_appointment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Appointment with: "
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/other_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="David Lee"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            >
+            <EditText android:id="@+id/subject_et"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:inputType="text"
+                      android:hint="Subject" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Date:"
+            android:textStyle="bold"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/choose_date_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp"
+            android:text="Choose a date"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Time:"
+            android:textStyle="bold"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/choose_start_time_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp"
+            android:text="Choose start time"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="End Time:"
+            android:textStyle="bold"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/choose_end_time_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp"
+            android:text="Choose end time"/>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            >
+            <EditText android:id="@+id/loc_et"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:inputType="text"
+                      android:hint="Location" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            >
+            <EditText android:id="@+id/desc_et"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:inputType="text"
+                      android:hint="Description" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/request_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:padding="12dp"
+            android:text="Request"/>
+    </LinearLayout>
+
+</ScrollView>

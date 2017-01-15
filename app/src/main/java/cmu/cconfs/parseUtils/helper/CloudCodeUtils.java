@@ -30,7 +30,6 @@ public class CloudCodeUtils {
         HashMap<String, String> params = new HashMap<>();
         params.put("title", title);
         params.put("body", body);
-        params.put("sender", ParseUser.getCurrentUser().getUsername());
         params.put("target", target);
         params.put("type", type);
 

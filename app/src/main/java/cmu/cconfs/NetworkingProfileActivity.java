@@ -1,6 +1,7 @@
 package cmu.cconfs;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -79,13 +80,19 @@ public class NetworkingProfileActivity extends AppCompatActivity {
         mSendMessageButton.setImageResource(R.drawable.ic_message_white_24dp);
         mSendMessageButton.setLabelText("Send Message");
 
+        mMakeAppointmentButton.setEnabled(false);
         mMakeAppointmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // start appointment detail view passed with target username
+                Intent i = new Intent(view.getContext(), AppointmentActivity.class);
+                i.putExtra(AppointmentActivity.EXTRA_OHTHER_USERNAME, mUsername);
+                i.putExtra(AppointmentActivity.EXTRA_OHTHER_REAL_NAME, mFullnameTv.getText());
+                startActivity(i);
             }
         });
 
+        mSendMessageButton.setEnabled(false);
         mSendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,6 +153,9 @@ public class NetworkingProfileActivity extends AppCompatActivity {
                     mCompanyTv.setText(profile.getCompany());
                     mTitleTv.setText(profile.getTitle());
                     mDescTv.setText(profile.getDescription());
+
+                    mMakeAppointmentButton.setEnabled(true);
+                    mSendMessageButton.setEnabled(true);
                 }
             }
         }.execute();

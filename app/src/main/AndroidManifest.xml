@@ -596,6 +596,9 @@
         </activity>
         <activity android:name=".NetworkingProfileActivity">
         </activity>
+        <activity android:name=".AppointmentActivity"
+                  android:theme="@style/AppTheme.Dark">
+        </activity>
     </application>
 
 </manifest>

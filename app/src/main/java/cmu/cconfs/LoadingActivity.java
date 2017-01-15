@@ -48,7 +48,7 @@ public class LoadingActivity extends AppCompatActivity {
                         preProcessing();
                     } else {
                         success = true;
-                        LoadingUtils.loadAuthorPaper();
+//                        LoadingUtils.loadAuthorPaper();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
