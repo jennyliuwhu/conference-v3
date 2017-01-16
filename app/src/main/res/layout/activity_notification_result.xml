@@ -2,7 +2,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_notification_result"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,66 +10,38 @@
     tools:context="cmu.cconfs.NotificationDetailActivity"
     android:background="@drawable/notification_bg">
 
+    <include layout="@layout/message_card_view"/>
 
-
-    <android.support.v7.widget.CardView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        app:cardBackgroundColor="@color/colorPrimaryDark">
-
-        <LinearLayout
-            android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/acc_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:layout_weight="1"
+            android:text="Accept"/>
+        <Button
+            android:id="@+id/rej_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reject"/>
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/detail_type_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Appointment"
-                android:textStyle="bold"
-                android:textSize="15dp"
-                android:layout_marginBottom="20dp"/>
-
-            <TextView
-                android:text="Title:"
-                android:layout_width="wrap_content"
-                android:textStyle="bold"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/noti_title_tv"
-                tools:text="Invitation from XXX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"/>
-
-            <TextView
-                android:text="Detail:"
-                android:layout_width="wrap_content"
-                android:textStyle="bold"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/noti_detail_tv"
-                tools:text="Subject: xxx:\nTime: xxx\nLocation: xxx\nDescription: xxx\n"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
-
-    <Button
-        android:id="@+id/acc_btn"
+    <EditText
+        android:id="@+id/message_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Accept"/>
+        android:hint="Type message here..."
+        android:visibility="gone"/>
+
     <Button
-        android:id="@+id/rej_btn"
+        android:id="@+id/reply_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Reject"/>
-
+        android:text="Reply"
+        android:visibility="gone"/>
 
 </LinearLayout>

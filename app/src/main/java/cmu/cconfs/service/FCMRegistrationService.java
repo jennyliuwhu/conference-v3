@@ -19,6 +19,7 @@ public class FCMRegistrationService extends IntentService {
     private static final String TAG = FCMRegistrationService.class.getSimpleName();
 
     public static final String FCM_TOKEN = "FCMToken";
+    public static final String FCM_TOKEN_OBJ_ID = "ObjectId";
 
     private PreferencesManager mPreferencesManager;
 

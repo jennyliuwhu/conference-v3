@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.parse.FunctionCallback;
@@ -16,6 +17,7 @@ import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
+import cmu.cconfs.model.parseModel.Appointment;
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
 import cmu.cconfs.service.FCMRegistrationService;
@@ -30,6 +32,8 @@ public class NotificationDetailActivity extends AppCompatActivity {
     private TextView mDetailTv;
     private Button mAcceptBtn;
     private Button mRejectBtn;
+
+    private EditText mMessageBox;
     private Button mReplyBtn;
 
     private AppointmentActivity.NotificationPayload mAppointmentNotificationPayload;
@@ -46,11 +50,41 @@ public class NotificationDetailActivity extends AppCompatActivity {
         mDetailTv = (TextView) findViewById(R.id.noti_detail_tv);
         mAcceptBtn = (Button) findViewById(R.id.acc_btn);
         mRejectBtn = (Button) findViewById(R.id.rej_btn);
+        mMessageBox = (EditText) findViewById(R.id.message_box);
+        mReplyBtn = (Button) findViewById(R.id.reply_btn);
 
         mAcceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: save an appointment for both users
+                // save appointments for both users
+                String myUsername = ParseUser.getCurrentUser().getUsername();
+                String myRealName = ParseUser.getCurrentUser().getString(Profile.FULL_NAME_KEY);
+                String otherUsername = mAppointmentNotificationPayload.getSenderUsername();
+                String otherRealName = mAppointmentNotificationPayload.getSenderRealName();
+                String subject = mAppointmentNotificationPayload.getSubject();
+                String startTime = mAppointmentNotificationPayload.getStartTime();
+                String endTime = mAppointmentNotificationPayload.getEndTime();
+                String date = mAppointmentNotificationPayload.getDate();
+                String time = startTime + "-" + endTime + ", " + date;
+                String detail = mAppointmentNotificationPayload.toString();
+
+                Appointment appointment = new Appointment();
+                appointment.setMyUsername(myUsername);
+                appointment.setOtherUsername(otherUsername);
+                appointment.setOtherRealName(otherRealName);
+                appointment.setSubject(subject);
+                appointment.setTime(time);
+                appointment.setDetail(detail);
+                appointment.saveEventually();
+
+                appointment = new Appointment();
+                appointment.setMyUsername(otherUsername);
+                appointment.setOtherUsername(myUsername);
+                appointment.setOtherRealName(myRealName);
+                appointment.setSubject(subject);
+                appointment.setTime(time);
+                appointment.setDetail(detail);
+                appointment.saveEventually();
 
                 // notify sender about the acceptance
                 CloudCodeUtils.sendNotification("Appointment with " + ParseUser.getCurrentUser().getString(Profile.FULL_NAME_KEY),
@@ -72,6 +106,13 @@ public class NotificationDetailActivity extends AppCompatActivity {
 
             }
         });
+        mReplyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: send message back to the other user
+
+            }
+        });
 
         HashMap<String, String> data = (HashMap<String, String>) getIntent().getSerializableExtra(EXTRA_NOTI_DATA);
         Log.d(TAG, "Get intent extra: " + data);
@@ -88,6 +129,9 @@ public class NotificationDetailActivity extends AppCompatActivity {
                 mDetailTypeTv.setText("Message");
                 mAcceptBtn.setVisibility(View.GONE);
                 mRejectBtn.setVisibility(View.GONE);
+
+                mRejectBtn.setVisibility(View.VISIBLE);
+                mMessageBox.setVisibility(View.VISIBLE);
                 break;
         }
     }

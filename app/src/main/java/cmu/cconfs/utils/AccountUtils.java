@@ -120,4 +120,9 @@ public class AccountUtils {
         }
     }
 
+    public static boolean isUserLogined(Context context) {
+        PreferencesManager preferencesManager = new PreferencesManager(context);
+        return preferencesManager.getBooleanPreference("LoggedIn",false);
+    }
+
 }

@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
+import cmu.cconfs.utils.AccountUtils;
 import cmu.cconfs.utils.image.BitmapScaler;
 
 public class NetworkingProfileActivity extends AppCompatActivity {
@@ -99,6 +100,11 @@ public class NetworkingProfileActivity extends AppCompatActivity {
                 // start message detail view passed with target username
             }
         });
+
+        // restrict visibility to login user
+        if (!AccountUtils.isUserLogined(this)) {
+            mFloatingActionMenu.setVisibility(View.INVISIBLE);
+        }
 
         mUsername = getIntent().getStringExtra(EXTRA_PROFILE_USERNAME);
         fetchUserProfile();

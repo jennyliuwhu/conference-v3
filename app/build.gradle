@@ -112,6 +112,10 @@ dependencies {
     compile 'com.android.support:preference-v14:23.0.1'
     // fcm
     compile 'com.google.firebase:firebase-messaging:9.4.0'
+    // swipe layout for list item
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.daimajia.androidanimations:library:1.1.2@aar'
 }
 
 

@@ -23,6 +23,7 @@ public class CloudCodeUtils {
     public final static String APPOINTMENT_REQUEST_MSG_TYPE = "app-requst";
     public final static String APPOINTMENT_ACCEPT_MSG_TYPE = "app-acc";
     public final static String APPOINTMENT_REJECT_MSG_TYPE = "app-reject";
+    public final static String APPOINTMENT_CANCEL_MSG_TYPE = "app-cancel";
     public final static String NORMAL_MESSAGE_MSG_TYPE = "message";
 
 
@@ -54,9 +55,12 @@ public class CloudCodeUtils {
 
         ParseCloud.callFunctionInBackground("registerToken", params, new FunctionCallback<String>() {
             @Override
-            public void done(String result, ParseException e) {
+            public void done(String objId, ParseException e) {
                 if (e == null) {
-                    Log.d(TAG, result);
+                    Log.d(TAG, "get object id: " + objId);
+                    // save the token objectId
+                    PreferencesManager preferencesManager = new PreferencesManager(CConfsApplication.getInstance(), true);
+                    preferencesManager.writeStringPreference(FCMRegistrationService.FCM_TOKEN_OBJ_ID, objId);
                 } else {
                     Log.e(TAG, e.getMessage());
                 }
@@ -68,8 +72,7 @@ public class CloudCodeUtils {
         HashMap<String, String> params = new HashMap<>();
         PreferencesManager prefManger = new PreferencesManager(CConfsApplication.getInstance(), true);
 
-        params.put("token", prefManger.getStringPreference(FCMRegistrationService.FCM_TOKEN, ""));
-        params.put("username", ParseUser.getCurrentUser().getUsername());
+        params.put("tokenId", prefManger.getStringPreference(FCMRegistrationService.FCM_TOKEN_OBJ_ID, ""));
 
         ParseCloud.callFunctionInBackground("deregisterToken", params, new FunctionCallback<String>() {
             @Override

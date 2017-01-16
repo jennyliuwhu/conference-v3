@@ -61,6 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FloatingActionMenu mFloatingActionMenu;
     private FloatingActionButton mSettingButton;
     private FloatingActionButton mSendNotesButton;
+    private FloatingActionButton mMyAppointmentsButton;
 
     private ImageView mProfileImageView;
     private AppBarLayout mAppBarLayout;
@@ -351,6 +352,7 @@ public class ProfileActivity extends AppCompatActivity {
         mFloatingActionMenu = (FloatingActionMenu) findViewById(R.id.fab_menu);
         mSettingButton = (FloatingActionButton) mFloatingActionMenu.findViewById(R.id.fab_setting);
         mSendNotesButton = (FloatingActionButton) mFloatingActionMenu.findViewById(R.id.fab_email_notes);
+        mMyAppointmentsButton = (FloatingActionButton) mFloatingActionMenu.findViewById(R.id.fab_my_appointment);
 
         mSettingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -364,12 +366,21 @@ public class ProfileActivity extends AppCompatActivity {
         mSendNotesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                snackNotify(view, "send notes clicked");
+                snackNotify(view, "send notes/images clicked");
                 Intent i = new Intent(getApplicationContext(), SendNotesActivity.class);
                 startActivity(i);
             }
         });
 
+        mMyAppointmentsButton.setVisibility(View.VISIBLE);
+        mMyAppointmentsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackNotify(view, "my appointment clicked");
+                Intent i = new Intent(getApplicationContext(), AppointmentListActivity.class);
+                startActivity(i);
+            }
+        });
 
         // fetch profile and load the screen
         new FetchProfileTask().execute();

@@ -147,6 +147,12 @@ public class AppointmentActivity extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
         }
 
+        // should not be the same user
+        if (ParseUser.getCurrentUser().getUsername().equals(getIntent().getStringExtra(EXTRA_OHTHER_USERNAME))) {
+            Toast.makeText(this, "Can't make appointment with self.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
 

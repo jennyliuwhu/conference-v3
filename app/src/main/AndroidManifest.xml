@@ -596,8 +596,11 @@
         </activity>
         <activity android:name=".NetworkingProfileActivity">
         </activity>
-        <activity android:name=".AppointmentActivity"
-                  android:theme="@style/AppTheme.Dark">
+        <activity
+            android:name=".AppointmentActivity"
+            android:theme="@style/AppTheme.Dark">
+        </activity>
+        <activity android:name=".AppointmentListActivity">
         </activity>
     </application>
 
