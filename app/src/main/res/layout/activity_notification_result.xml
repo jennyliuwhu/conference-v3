@@ -30,13 +30,6 @@
             android:text="Reject"/>
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/message_box"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Type message here..."
-        android:visibility="gone"/>
-
     <Button
         android:id="@+id/reply_btn"
         android:layout_width="match_parent"

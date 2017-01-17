@@ -89,6 +89,7 @@
 
     <color name="iron">#CCCCCC</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
     <!-- swipe layout -->
     <color name="backgroundColor">#E8E8E0</color>

@@ -1,5 +1,6 @@
 package cmu.cconfs;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
+import cmu.cconfs.fragment.SendMessageFragment;
 import cmu.cconfs.model.parseModel.Appointment;
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
@@ -33,10 +35,10 @@ public class NotificationDetailActivity extends AppCompatActivity {
     private Button mAcceptBtn;
     private Button mRejectBtn;
 
-    private EditText mMessageBox;
     private Button mReplyBtn;
 
     private AppointmentActivity.NotificationPayload mAppointmentNotificationPayload;
+    private SendMessageFragment.NotificationPayload mSendMessageNotificationPayload;
 
 
     @Override
@@ -50,7 +52,6 @@ public class NotificationDetailActivity extends AppCompatActivity {
         mDetailTv = (TextView) findViewById(R.id.noti_detail_tv);
         mAcceptBtn = (Button) findViewById(R.id.acc_btn);
         mRejectBtn = (Button) findViewById(R.id.rej_btn);
-        mMessageBox = (EditText) findViewById(R.id.message_box);
         mReplyBtn = (Button) findViewById(R.id.reply_btn);
 
         mAcceptBtn.setOnClickListener(new View.OnClickListener() {
@@ -109,8 +110,9 @@ public class NotificationDetailActivity extends AppCompatActivity {
         mReplyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: send message back to the other user
-
+                // send message back to the other user
+                SendMessageFragment fragment = SendMessageFragment.newInstance(mSendMessageNotificationPayload.getSenderUsername());
+                fragment.show(getSupportFragmentManager(), "msg-frag");
             }
         });
 
@@ -126,12 +128,14 @@ public class NotificationDetailActivity extends AppCompatActivity {
                 mDetailTv.setText(mAppointmentNotificationPayload.toString());
                 break;
             case CloudCodeUtils.NORMAL_MESSAGE_MSG_TYPE:
-                mDetailTypeTv.setText("Message");
+                mSendMessageNotificationPayload = SendMessageFragment.NotificationPayload.fromJsonStr(data.get("body"));
+                mDetailTypeTv.setText("Message from " + mSendMessageNotificationPayload.getSenderRealName());
+                mTitleTv.setText(mSendMessageNotificationPayload.getTitle());
+                mDetailTv.setText(mSendMessageNotificationPayload.getMessage());
+
                 mAcceptBtn.setVisibility(View.GONE);
                 mRejectBtn.setVisibility(View.GONE);
-
-                mRejectBtn.setVisibility(View.VISIBLE);
-                mMessageBox.setVisibility(View.VISIBLE);
+                mReplyBtn.setVisibility(View.VISIBLE);
                 break;
         }
     }

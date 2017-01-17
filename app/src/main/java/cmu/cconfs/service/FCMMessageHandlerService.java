@@ -23,6 +23,7 @@ import java.util.Map;
 import cmu.cconfs.AppointmentActivity;
 import cmu.cconfs.NotificationDetailActivity;
 import cmu.cconfs.R;
+import cmu.cconfs.fragment.SendMessageFragment;
 import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
 
 /**
@@ -40,13 +41,12 @@ public class FCMMessageHandlerService extends FirebaseMessagingService {
         Log.d(TAG, "Sent from: " + from);
         Log.d(TAG, "Received data: " + data);
 
-//        Notification notification = remoteMessage.getNotification();
         createNotification(convertToSerializableMap(data));
     }
 
     // Creates notification based on title and body received
     private void createNotification(HashMap<String, String> data) {
-        // create notification
+        // create notification and configure
         Context context = getBaseContext();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_perm_device_information_white_24dp)
@@ -73,7 +73,16 @@ public class FCMMessageHandlerService extends FirebaseMessagingService {
                 break;
             case CloudCodeUtils.NORMAL_MESSAGE_MSG_TYPE:
                 // prepare intent for normal message notification detail
+                i = new Intent(this, NotificationDetailActivity.class);
+                i.putExtra(NotificationDetailActivity.EXTRA_NOTI_DATA, data);
+                requestId = (int) System.currentTimeMillis();
+                flags = PendingIntent.FLAG_CANCEL_CURRENT; // cancel old intent and create new one
+                pIntent = PendingIntent.getActivity(this, requestId, i, flags);
+                mBuilder.setContentIntent(pIntent);
 
+                // deserialize message body content;
+                SendMessageFragment.NotificationPayload msgPayload = SendMessageFragment.NotificationPayload.fromJsonStr(data.get("body"));
+                mBuilder.setContentText(msgPayload.getMessage());
                 break;
             default:
                 mBuilder.setContentText(data.get("body"));

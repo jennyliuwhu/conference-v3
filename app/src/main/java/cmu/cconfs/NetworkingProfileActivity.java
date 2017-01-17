@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ import com.parse.ParseUser;
 
 import java.util.HashMap;
 
+import cmu.cconfs.fragment.SendMessageFragment;
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
 import cmu.cconfs.utils.AccountUtils;
@@ -98,6 +100,8 @@ public class NetworkingProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // start message detail view passed with target username
+                SendMessageFragment fragment = SendMessageFragment.newInstance(mUsername);
+                fragment.show(getSupportFragmentManager(), "send-msg-frag");
             }
         });
 
