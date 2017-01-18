@@ -62,10 +62,20 @@
         <TextView
             android:id="@+id/brief_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:tag="Hover"
             android:textStyle="bold"
             android:text="Subject: XXX"
             android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:id="@+id/time_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="Hover"
+            android:textStyle="bold"
+            android:text="Time: XXX"
+            />
+
     </LinearLayout>
 </com.daimajia.swipe.SwipeLayout>

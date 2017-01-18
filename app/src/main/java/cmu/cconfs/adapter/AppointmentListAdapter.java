@@ -94,8 +94,11 @@ public class AppointmentListAdapter extends BaseSwipeAdapter {
     public void fillValues(int position, View convertView) {
         TextView title = (TextView)convertView.findViewById(R.id.title_text);
         TextView brief = (TextView)convertView.findViewById(R.id.brief_text);
+        TextView time = (TextView) convertView.findViewById(R.id.time_text);
+
         title.setText("Appointment with " + mAppointments.get(position).getOtherRealName());
         brief.setText("Subject: " + mAppointments.get(position).getSubject());
+        time.setText("Time: " + mAppointments.get(position).getTime());
     }
 
     @Override

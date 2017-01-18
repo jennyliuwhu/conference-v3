@@ -17,7 +17,11 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import cmu.cconfs.adapter.AppointmentListAdapter;
@@ -81,8 +85,8 @@ public class AppointmentListActivity extends AppCompatActivity {
                 try {
                     ParseQuery<Appointment> query = Appointment.getQuery();
                     query.whereEqualTo(Appointment.MY_USERNAME_KEY, ParseUser.getCurrentUser().getUsername());
-                    query.orderByAscending("createdAt");
                     appointments = query.find();
+                    sortAppointmentList(appointments);
                 } catch (ParseException e) {
                     Log.e(TAG, e.getMessage());
                 }
@@ -95,6 +99,34 @@ public class AppointmentListActivity extends AppCompatActivity {
                 mListView.setAdapter(mAdapter);
                 mAdapter.setMode(Attributes.Mode.Single);
                 mProgressDialog.dismiss();
+            }
+
+            // sort appointment by start time
+            private void sortAppointmentList(List<Appointment> appointments) {
+                Collections.sort(appointments, new Comparator<Appointment>() {
+                    @Override
+                    public int compare(Appointment app1, Appointment app2) {
+                        Date date1 = getAppointmentDate(app1);
+                        Date date2 = getAppointmentDate(app2);
+
+                        return date1 == null || date2 == null ? 0 : date1.compareTo(date2);
+                    }
+                });
+            }
+
+            private Date getAppointmentDate(Appointment appointment) {
+                String time = appointment.getTime();
+                String startHourMinute = time.split(",")[0].split("-")[0];
+                String dateStr = time.split(",")[1];
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd hh:mm");
+
+                try {
+                    Date date = sdf.parse(dateStr + " " + startHourMinute);
+                    return date;
+                } catch (java.text.ParseException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                return null;
             }
         }.execute();
     }
