@@ -86,6 +86,12 @@ User can also explore the places around them by clicking on the Nearby session i
 
 ![](http://i.giphy.com/26xBSCNcNwwl1KdEs.gif) ![](http://i.giphy.com/l3q2L2ppFHeRevN3W.gif) ![](http://i.giphy.com/l3q2E28NgGNg0pZYc.gif)
 
+## App installation
+
+The installation of the app is easy: just check out the repository and open the it using Android studio. Compile the code and run it either on an emulator or a physical device (using a USB cable to connect with the computer). You can read more [here](https://developer.android.com/training/basics/firstapp/running-app.html) about running Android project on device.
+
+Our app use several Google Play Serivces so you would need to install the it before being able to use some app features. Fortuanately, the app will automatically detect whether Google Play Service is available and if not it will direct you to a website to download the services during the first time installation.
+
 
 
 
