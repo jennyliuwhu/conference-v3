@@ -88,9 +88,16 @@ User can also explore the places around them by clicking on the Nearby session i
 
 ## App installation
 
-The installation of the app is easy: just check out the repository and open the it using Android studio. Compile the code and run it either on an emulator or a physical device (using a USB cable to connect with the computer). You can read more [here](https://developer.android.com/training/basics/firstapp/running-app.html) about running Android project on device.
+The installation of the app is easy:
 
-Our app use several Google Play Serivces so you would need to install the it before being able to use some app features. Fortuanately, the app will automatically detect whether Google Play Service is available and if not it will direct you to a website to download the services during the first time installation.
+1. Clone the project [repository](https://github.com/zhexinq/conference-v2) (e.g. in comand line type "git clone https://github.com/zhexinq/conference-v2.git") into your local directory: ![](https://s24.postimg.org/fewlmngyd/checkout_project.jpg)
+
+2. Open the project using Android by choosing open existing project and find the location where you downloaded the repository: ![](https://s30.postimg.org/ak5il1wpd/open_project.jpg) ![](https://s30.postimg.org/ligs38lap/open_project_2.jpg)
+
+3. Compile the code and run it either on an emulator or a physical device (using a USB cable to connect with the computer). After successul compilation the app will be installed on the device. You can read more [here](https://developer.android.com/training/basics/firstapp/running-app.html) about running Android project on device: ![](https://s29.postimg.org/jtbeu0mjb/compile_and_run.jpg)
+
+4. Our app use several Google Play Serivces so you would need to install the it before being able to use some app features. Fortuanately, the app will automatically detect whether Google Play Service is available and if not it will direct you to a website to download the services during the first time installation.
+
 
 
 
