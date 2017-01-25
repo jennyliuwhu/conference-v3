@@ -1,4 +1,4 @@
-# CConfs
+# CConfs (17Spring v3)
 
 ## User Tutorial
 
