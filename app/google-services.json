@@ -1,35 +1,35 @@
 {
   "project_info": {
-    "project_number": "656148948376",
-    "firebase_url": "https://cconfs-152102.firebaseio.com",
-    "project_id": "cconfs-152102",
-    "storage_bucket": "cconfs-152102.appspot.com"
+    "project_number": "950269876097",
+    "firebase_url": "https://cconfs.firebaseio.com",
+    "project_id": "cconfs",
+    "storage_bucket": "cconfs.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:656148948376:android:3b81043218f5823b",
+        "mobilesdk_app_id": "1:950269876097:android:3b81043218f5823b",
         "android_client_info": {
           "package_name": "cmu.cconfs"
         }
       },
       "oauth_client": [
         {
-          "client_id": "656148948376-j3mh4klgfjscfob0gqms8tmac5r3jknk.apps.googleusercontent.com",
+          "client_id": "950269876097-d82ilcjhost7h4ei81lu5tpt1lj0lulg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "cmu.cconfs",
-            "certificate_hash": "5F03BB5A0A7A97810DD0969183F25B2048ED8D64"
+            "certificate_hash": "36F338830A37CF2265F45E286F71D83FF584CA45"
           }
         },
         {
-          "client_id": "656148948376-5t3ei352da0gei2rhj1u4c2iukdvk0m1.apps.googleusercontent.com",
+          "client_id": "950269876097-9ds9htv61jfglkeaa2lpuvfuuojjo62n.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAfE9nCXQwrEpaV_xsutm5bRjT_NjikAjA"
+          "current_key": "AIzaSyBibYB3QWpSWziYyQoviMXViGAkaHO5L0g"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "656148948376-5t3ei352da0gei2rhj1u4c2iukdvk0m1.apps.googleusercontent.com",
+              "client_id": "950269876097-9ds9htv61jfglkeaa2lpuvfuuojjo62n.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
