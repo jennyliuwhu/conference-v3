@@ -224,7 +224,7 @@ public class DemoDBManager {
     }
     
     /**
-     * 获取messges
+     * 获取messages
      * @return
      */
     synchronized public List<InviteMessage> getMessagesList(){
