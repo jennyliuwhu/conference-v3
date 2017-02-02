@@ -34,11 +34,12 @@ public class SponsorActivity extends AppCompatActivity {
 //        toolbar.inflateMenu(R.menu.menu_paper);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayUseLogoEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
+        actionBar.setHomeButtonEnabled(true);
         actionBar.setTitle("Sponsor");
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);

@@ -261,7 +261,7 @@ public class HomeActivity extends AppCompatActivity {
         boolean loggedIn = mPreferencesManager.getBooleanPreference("LoggedIn",false);
         Toast .makeText(this, loggedIn + "", Toast.LENGTH_SHORT).show();
         Intent i = new Intent();
-        if(loggedIn == false) {
+        if(!loggedIn) {
             i.setClass(getApplicationContext(), notLoginTarget);
         } else {
             i.setClass(getApplicationContext(), loginTarget);

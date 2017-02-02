@@ -53,11 +53,11 @@ public class ScheduleActivity extends AppCompatActivity implements OnMenuItemCli
 
         initMenuFragment();
 
-        setTitle("");
+        setTitle("Schedule");
 
         mViewPager = (MaterialViewPager) findViewById(R.id.materialViewPager);
         toolbar = mViewPager.getToolbar();
-//        toolbar=(Toolbar)findViewById(R.id.toolbar);
+        toolbar=(Toolbar)findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if (toolbar != null) {
