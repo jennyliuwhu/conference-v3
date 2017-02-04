@@ -37,9 +37,9 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = HomeActivity.class.getName();
     private DynamicGridView gridView;
     private String[] titles = {"Agenda", "My Schedule", "Room Schedule","Map", "Floor Guide", "Sponsor", "Notification", "About", "Setting", "Chat", "Nearby", "Authors", "Network", "Transfer"};
-    PreferencesManager mPreferencesManager;
+    public static PreferencesManager mPreferencesManager;
 
-    private final static int REQUEST_SIGN_IN = 1;
+    public final static int REQUEST_SIGN_IN = 1;
 
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;

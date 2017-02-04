@@ -52,10 +52,10 @@ public class AgendaActivity extends AppCompatActivity implements OnMenuItemClick
     private DialogFragment mMenuDialogFragment;
 
     // navigate toobar
-    PreferencesManager mPreferencesManager;
+    PreferencesManager mPreferencesManager = HomeActivity.mPreferencesManager;
     private Toolbar mmToolbar;
 
-    private final static int REQUEST_SIGN_IN = 1;
+    private final static int REQUEST_SIGN_IN = HomeActivity.REQUEST_SIGN_IN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
