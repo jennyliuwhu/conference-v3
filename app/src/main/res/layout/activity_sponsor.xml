@@ -7,32 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
-    <com.github.florent37.materialviewpager.MaterialViewPager
-        android:id="@+id/materialViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:viewpager_logo="@layout/header_logo"
-        app:viewpager_pagerTitleStrip="@layout/material_view_pager_pagertitlestrip_newstand"
-        app:viewpager_logoMarginTop="70dp"
-        app:viewpager_color="@color/colorPrimary"
-        app:viewpager_headerHeight="150dp"
-        app:viewpager_headerAlpha="0.6"
-        app:viewpager_hideLogoWithFade="false"
-        app:viewpager_hideToolbarAndTitle="false"
-        app:viewpager_enableToolbarElevation="true"
-        app:viewpager_parallaxHeaderFactor="1.5"
-        app:viewpager_headerAdditionalHeight="20dp"
-        app:viewpager_displayToolbarWhenSwipe="true"
-        app:viewpager_transparentToolbar="false"
-        app:viewpager_animatedHeaderImage="true"
-        />
     <!-- Your normal content view -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/background">
-        <!--android:orientation="vertical">-->
 
         <include
             layout="@layout/toolbar"
@@ -45,12 +25,10 @@
             android:layout_height="5dp"
             android:layout_below="@+id/toolbar"
             android:background="@drawable/toolbar_dropshadow" />
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
     </LinearLayout>
     <!-- The navigation drawer that comes from the left -->
     <!-- Note that `android:layout_gravity` needs to be set to 'start' -->

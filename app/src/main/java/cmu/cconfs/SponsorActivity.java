@@ -19,7 +19,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.github.florent37.materialviewpager.MaterialViewPager;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
@@ -33,40 +32,40 @@ import cmu.cconfs.utils.PreferencesManager;
 
 
 public class SponsorActivity extends AppCompatActivity {
-
+    private static final String TAG = HomeActivity.class.getName();
     RecyclerView recyclerView;
     SponsorListAdapter adapter;
 
-    private final static String TAG = RoomScheduleActivity.class.getSimpleName();
-    private MaterialViewPager mViewPager;
-    // navigate toobar
+    List<Sponsor> sponsors = new ArrayList<>();
     public static PreferencesManager mPreferencesManager;
+
+    public final static int REQUEST_SIGN_IN = 1;
+
     private DrawerLayout mDrawerLayout;
-    private Toolbar mToolbar;
+    private Toolbar toolbar;
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mDrawerToggle;
-    private final static int REQUEST_SIGN_IN = HomeActivity.REQUEST_SIGN_IN;
-    List<Sponsor> sponsors = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_sponsor);
         mPreferencesManager = new PreferencesManager(this);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        toolbar.inflateMenu(R.menu.menu_paper);
-//        setSupportActionBar(toolbar);
-        setTitle("Sponsor");
-
-//        ActionBar actionBar = getSupportActionBar();
-//
-////        actionBar.setDisplayHomeAsUpEnabled(true);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayUseLogoEnabled(false);
+        actionBar.setHomeButtonEnabled(true);
+//        actionBar.setDisplayHomeAsUpEnabled(true);
 //        actionBar.setDisplayShowHomeEnabled(true);
 //        actionBar.setDisplayShowTitleEnabled(true);
 //        actionBar.setDisplayUseLogoEnabled(false);
 //        actionBar.setHomeButtonEnabled(true);
-//        actionBar.setTitle("Sponsor");
+        actionBar.setTitle("Sponsor");
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -77,20 +76,15 @@ public class SponsorActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         populate();
-        // set up the nav drawer
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-        getSupportActionBar().setTitle("Sponsor");
 
+        // setup drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationView = (NavigationView) findViewById(R.id.nvView);
         mDrawerToggle = setupDrawerToggle();
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         setupNavigationView(mNavigationView);
+
     }
     private void setupNavigationView(NavigationView navView) {
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -140,8 +134,9 @@ public class SponsorActivity extends AppCompatActivity {
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
-        return new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open,  R.string.drawer_close);
+        return new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
     }
+
     private Intent getLoginStatusIntent(Class loginTarget, Class notLoginTarget) {
         boolean loggedIn = mPreferencesManager.getBooleanPreference("LoggedIn",false);
         Toast .makeText(this, loggedIn + "", Toast.LENGTH_SHORT).show();
@@ -190,6 +185,7 @@ public class SponsorActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
     private void populate() {
         ParseQuery<Sponsor> query = Sponsor.getQuery();
         query.fromLocalDatastore();
@@ -214,6 +210,4 @@ public class SponsorActivity extends AppCompatActivity {
 //        this.sponsors.add(new Sponsor("OMG", "http://www.omg.org/", "https://upload.wikimedia.org/wikipedia/en/f/f1/OMG-logo.jpg"));
 //        this.sponsors.add(new Sponsor("IBM Research", "http://www.research.ibm.com", "https://pbs.twimg.com/profile_images/2453018418/fn1i02hac59i02ccd9c1_400x400.jpeg"));
     }
-
-
 }
