@@ -56,7 +56,7 @@ public class RoomScheduleActivity extends AppCompatActivity implements OnMenuIte
     PreferencesManager mPreferencesManager;
     private Toolbar mmToolbar;
 
-    private final static int REQUEST_SIGN_IN = 1;
+    private final static int REQUEST_SIGN_IN = HomeActivity.REQUEST_SIGN_IN;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +71,7 @@ public class RoomScheduleActivity extends AppCompatActivity implements OnMenuIte
 
         mViewPager = (MaterialViewPager) findViewById(R.id.materialViewPager);
         toolbar = mViewPager.getToolbar();
-        toolbar=(Toolbar)findViewById(R.id.toolbar);
+//        toolbar=(Toolbar)findViewById(R.id.toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         if (toolbar != null) {

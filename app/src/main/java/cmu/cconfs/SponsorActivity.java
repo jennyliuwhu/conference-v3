@@ -210,6 +210,4 @@ public class SponsorActivity extends AppCompatActivity {
 //        this.sponsors.add(new Sponsor("OMG", "http://www.omg.org/", "https://upload.wikimedia.org/wikipedia/en/f/f1/OMG-logo.jpg"));
 //        this.sponsors.add(new Sponsor("IBM Research", "http://www.research.ibm.com", "https://pbs.twimg.com/profile_images/2453018418/fn1i02hac59i02ccd9c1_400x400.jpeg"));
     }
-
-
 }
