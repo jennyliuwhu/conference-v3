@@ -32,7 +32,7 @@ import cmu.cconfs.utils.PreferencesManager;
 
 
 public class SponsorActivity extends AppCompatActivity {
-    private static final String TAG = HomeActivity.class.getName();
+    private static final String TAG = SponsorActivity.class.getName();
     RecyclerView recyclerView;
     SponsorListAdapter adapter;
 
@@ -52,19 +52,11 @@ public class SponsorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sponsor);
         mPreferencesManager = new PreferencesManager(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        toolbar.inflateMenu(R.menu.menu_paper);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayUseLogoEnabled(false);
-        actionBar.setHomeButtonEnabled(true);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setDisplayShowHomeEnabled(true);
-//        actionBar.setDisplayShowTitleEnabled(true);
-//        actionBar.setDisplayUseLogoEnabled(false);
-//        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionBar.setTitle("Sponsor");
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
@@ -84,7 +76,6 @@ public class SponsorActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         setupNavigationView(mNavigationView);
-
     }
     private void setupNavigationView(NavigationView navView) {
         navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
