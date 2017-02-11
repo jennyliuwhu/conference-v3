@@ -35,6 +35,10 @@ public class MapActivity extends Activity {
     //progress dialog
     private ProgressDialog progressDialog;
 
+    // location for New Montgomery St, San Francisco, CA
+    private double lat = 37.788019;
+    private double lon = -122.401890;
+
     private LocationManager locationManager;
     private GoogleMap googleMap;
 
@@ -192,11 +196,11 @@ public class MapActivity extends Activity {
 
         /** Make sure that the map has been initialised **/
         if (null != googleMap) {
-            LatLng latlng = new LatLng(37.788019, -122.401890);
+            LatLng latlng = new LatLng(lat, lon);
             googleMap.addMarker(new MarkerOptions()
                             .position(latlng)
                             .title("Palace Hotel")
-                            .snippet("2 New Montgomery St, San Francisco, CA")
+                            .snippet("to New Montgomery St, San Francisco, CA")
                             .draggable(true)
             );
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
@@ -244,6 +248,13 @@ public class MapActivity extends Activity {
             progressDialog.dismiss();
 
         }
-    }
 
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if ( progressDialog!=null && progressDialog.isShowing() ){
+            progressDialog.cancel();
+        }
+    }
 }
