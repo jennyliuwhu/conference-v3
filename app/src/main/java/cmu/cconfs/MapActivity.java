@@ -172,6 +172,13 @@ public class MapActivity extends Activity {
                     @Override
                     public void onMapReady(GoogleMap map) {
                         googleMap = map;
+                        System.out.println("Apply value to gooleMap");
+                        // Add a marker in Sydney and move the camera
+                        LatLng TutorialsPoint = new LatLng(21, 57);
+                        googleMap.addMarker(new
+                                MarkerOptions().position(TutorialsPoint).title("Tutorialspoint.com"));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(TutorialsPoint));
+                        System.out.println("Successfully add marker");
                     }
                 });
 
@@ -179,10 +186,11 @@ public class MapActivity extends Activity {
                  * If the map is still null after attempted initialisation,
                  * show an error to the user
                  */
-                if (null == googleMap) {
-                    Toast.makeText(getApplicationContext(),
-                            "Error creating map", Toast.LENGTH_SHORT).show();
-                }
+//                if (null == googleMap) {
+//                    System.out.println("Got googlemap as null");
+//                    Toast.makeText(getApplicationContext(),
+//                            "Error creating map", Toast.LENGTH_SHORT).show();
+//                }
             }
         } catch (NullPointerException exception) {
             Log.e("mapApp", exception.toString());
@@ -246,15 +254,14 @@ public class MapActivity extends Activity {
             createMapView();
             addMarker();
             progressDialog.dismiss();
-
-        }
-
-    }
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        if ( progressDialog!=null && progressDialog.isShowing() ){
-            progressDialog.cancel();
         }
     }
+
+//    @Override
+//    public void onDestroy(){
+//        super.onDestroy();
+//        if ( progressDialog!=null && progressDialog.isShowing() ){
+//            progressDialog.cancel();
+//        }
+//    }
 }
