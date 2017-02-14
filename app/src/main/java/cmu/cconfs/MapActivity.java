@@ -4,6 +4,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -27,7 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import cmu.cconfs.utils.AccountUtils;
 
 
-public class MapActivity extends Activity {
+public class MapActivity extends Activity implements OnMapReadyCallback {
 
     static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
     static final int REQUEST_CODE_PICK_ACCOUNT = 1002;
@@ -40,7 +42,6 @@ public class MapActivity extends Activity {
     private double lon = -122.401890;
 
     private LocationManager locationManager;
-    private GoogleMap googleMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +58,10 @@ public class MapActivity extends Activity {
 
 //        super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_map);
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
 
-
+        mapFragment.getMapAsync(this);
     }
 
     @Override
@@ -136,9 +139,9 @@ public class MapActivity extends Activity {
     }
 
     // Route Button
-    public void goGoogleMaps(View v) throws SecurityException{
+    public void goGoogleMaps(View v) throws SecurityException {
         String destination = "Millennium Broadway Hotel 145 West 44th Street, New York, NY 10036";
-        googleMap.setMyLocationEnabled(true);
+//        googleMap.setMyLocationEnabled(true);
         //Location userLocation = googleMap.getMyLocation();
         Criteria criteria = new Criteria();
         String provider = locationManager.getBestProvider(criteria, false);
@@ -148,7 +151,7 @@ public class MapActivity extends Activity {
                     "error", Toast.LENGTH_SHORT).show();
 //        String directionweburl="http:/a/maps.google.com/maps?"
 //                + "saddr=" + location.getLatitude() + "," + location.getLongitude() + "&daddr=" + destination;
-                String directionweburl="google.navigation:q=37.788019,-122.401890" ;
+        String directionweburl = "google.navigation:q=37.788019,-122.401890";
 //        Toast.makeText(getApplicationContext(),
 //                "lat: "+location.getLatitude()+" lgt: "+location.getLongitude(), Toast.LENGTH_SHORT).show();
 
@@ -156,62 +159,77 @@ public class MapActivity extends Activity {
 
         intent.setPackage("com.google.android.apps.maps");
         //intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-       // intent.setClassName("com.google.android.apps.maps", "om.google.android.maps.driveabout.app.NavigationActivity");
+        // intent.setClassName("com.google.android.apps.maps", "om.google.android.maps.driveabout.app.NavigationActivity");
         startActivity(intent);
     }
 
-    private void createMapView() {
-        /**
-         * Catch the null pointer exception that
-         * may be thrown when initialising the map
-         */
-        try {
-            if (null == googleMap) {
-                ((MapFragment) getFragmentManager().findFragmentById(
-                        R.id.map)).getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(GoogleMap map) {
-                        googleMap = map;
-                        System.out.println("Apply value to gooleMap");
-                        // Add a marker in Sydney and move the camera
-                        LatLng TutorialsPoint = new LatLng(21, 57);
-                        googleMap.addMarker(new
-                                MarkerOptions().position(TutorialsPoint).title("Tutorialspoint.com"));
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(TutorialsPoint));
-                        System.out.println("Successfully add marker");
-                    }
-                });
-
-                /**
-                 * If the map is still null after attempted initialisation,
-                 * show an error to the user
-                 */
-//                if (null == googleMap) {
-//                    System.out.println("Got googlemap as null");
-//                    Toast.makeText(getApplicationContext(),
-//                            "Error creating map", Toast.LENGTH_SHORT).show();
-//                }
-            }
-        } catch (NullPointerException exception) {
-            Log.e("mapApp", exception.toString());
-        }
+    @Override
+    public void onMapReady(GoogleMap map) {
+        //DO WHATEVER YOU WANT WITH GOOGLEMAP
+        addMarker(map);
     }
+
+//    private void createMapView() {
+//        /**
+//         * Catch the null pointer exception that
+//         * may be thrown when initialising the map
+//         */
+//        try {
+//            if (null == googleMap) {
+//                ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
+//                    @Override
+//                    public void onMapReady(GoogleMap map) {
+//                        googleMap = map;
+//                        System.out.println("Apply value to gooleMap");
+//                        // Add a marker in Sydney and move the camera
+//                        LatLng TutorialsPoint = new LatLng(21, 57);
+//                        googleMap.addMarker(new
+//                                MarkerOptions().position(TutorialsPoint).title("Tutorialspoint.com"));
+//                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(TutorialsPoint));
+//                        System.out.println("Successfully add marker");
+//                    }
+//                });
+//
+//                /**
+//                 * If the map is still null after attempted initialisation,
+//                 * show an error to the user
+//                 */
+////                if (null == googleMap) {
+////                    System.out.println("Got googlemap as null");
+////                    Toast.makeText(getApplicationContext(),
+////                            "Error creating map", Toast.LENGTH_SHORT).show();
+////                }
+//            }
+//        } catch (NullPointerException exception) {
+//            Log.e("mapApp", exception.toString());
+//        }
+//    }
 
     /**
      * Adds a marker to the map
      */
-    private void addMarker() {
-
+    private void addMarker(GoogleMap map) {
         /** Make sure that the map has been initialised **/
-        if (null != googleMap) {
+        if (null != map) {
             LatLng latlng = new LatLng(lat, lon);
-            googleMap.addMarker(new MarkerOptions()
-                            .position(latlng)
-                            .title("Palace Hotel")
-                            .snippet("to New Montgomery St, San Francisco, CA")
-                            .draggable(true)
+            map.addMarker(new MarkerOptions()
+                    .position(latlng)
+                    .title("Palace Hotel")
+                    .snippet("to New Montgomery St, San Francisco, CA")
+                    .draggable(true)
             );
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            map.setMyLocationEnabled(true);
         }
     }
 
@@ -251,8 +269,8 @@ public class MapActivity extends Activity {
 
         @Override
         protected void onPostExecute(String file_url) {
-            createMapView();
-            addMarker();
+//            createMapView();
+//            addMarker();
             progressDialog.dismiss();
         }
     }
