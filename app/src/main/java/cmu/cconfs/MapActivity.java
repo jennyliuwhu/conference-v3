@@ -34,12 +34,10 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
     static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
     static final int REQUEST_CODE_PICK_ACCOUNT = 1002;
 
-    //progress dialog
-    private ProgressDialog progressDialog;
-
     // location for New Montgomery St, San Francisco, CA
-    private double lat = 37.788019;
-    private double lon = -122.401890;
+    // todo change to your conference place when ready to deploy
+    private final double lat = 37.788019;
+    private final double lon = -122.401890;
 
     private LocationManager locationManager;
 
@@ -49,15 +47,13 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        progressDialog = new ProgressDialog(MapActivity.this);
+        ProgressDialog progressDialog = new ProgressDialog(MapActivity.this);
         progressDialog.setMessage("loading Map");
         progressDialog.setIndeterminate(false);
         progressDialog.setCancelable(false);
 
         new Load(progressDialog).execute();
 
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_map);
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
 
@@ -87,33 +83,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         GooglePlayServicesUtil.getErrorDialog(code, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
     }
 
-   /* private boolean checkUserAccount() {
-        String accountName = AccountUtils.getAccountName(this);
-        if (accountName == null) {
-            // Then the user was not found in the SharedPreferences. Either the
-            // application deliberately removed the account, or the application's
-            // data has been forcefully erased.
-            showAccountPicker();
-            return false;
-        }
-
-        Account account = AccountUtils.getGoogleAccountByName(this, accountName);
-        if (account == null) {
-            // Then the account has since been removed.
-            AccountUtils.removeAccount(this);
-            showAccountPicker();
-            return false;
-        }
-
-        return true;
-    }
-*/
-   /* private void showAccountPicker() {
-        Intent pickAccountIntent = AccountPicker.newChooseAccountIntent(null, null,
-                new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null);
-        startActivityForResult(pickAccountIntent, REQUEST_CODE_PICK_ACCOUNT);
-    }*/
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -140,26 +109,16 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
 
     // Route Button
     public void goGoogleMaps(View v) throws SecurityException {
-        String destination = "Millennium Broadway Hotel 145 West 44th Street, New York, NY 10036";
-//        googleMap.setMyLocationEnabled(true);
-        //Location userLocation = googleMap.getMyLocation();
         Criteria criteria = new Criteria();
         String provider = locationManager.getBestProvider(criteria, false);
         Location location = locationManager.getLastKnownLocation(provider);
         if (location == null)
             Toast.makeText(getApplicationContext(),
                     "error", Toast.LENGTH_SHORT).show();
-//        String directionweburl="http:/a/maps.google.com/maps?"
-//                + "saddr=" + location.getLatitude() + "," + location.getLongitude() + "&daddr=" + destination;
         String directionweburl = "google.navigation:q=37.788019,-122.401890";
-//        Toast.makeText(getApplicationContext(),
-//                "lat: "+location.getLatitude()+" lgt: "+location.getLongitude(), Toast.LENGTH_SHORT).show();
-
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(directionweburl));
 
         intent.setPackage("com.google.android.apps.maps");
-        //intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-        // intent.setClassName("com.google.android.apps.maps", "om.google.android.maps.driveabout.app.NavigationActivity");
         startActivity(intent);
     }
 
@@ -168,42 +127,6 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
         //DO WHATEVER YOU WANT WITH GOOGLEMAP
         addMarker(map);
     }
-
-//    private void createMapView() {
-//        /**
-//         * Catch the null pointer exception that
-//         * may be thrown when initialising the map
-//         */
-//        try {
-//            if (null == googleMap) {
-//                ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(new OnMapReadyCallback() {
-//                    @Override
-//                    public void onMapReady(GoogleMap map) {
-//                        googleMap = map;
-//                        System.out.println("Apply value to gooleMap");
-//                        // Add a marker in Sydney and move the camera
-//                        LatLng TutorialsPoint = new LatLng(21, 57);
-//                        googleMap.addMarker(new
-//                                MarkerOptions().position(TutorialsPoint).title("Tutorialspoint.com"));
-//                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(TutorialsPoint));
-//                        System.out.println("Successfully add marker");
-//                    }
-//                });
-//
-//                /**
-//                 * If the map is still null after attempted initialisation,
-//                 * show an error to the user
-//                 */
-////                if (null == googleMap) {
-////                    System.out.println("Got googlemap as null");
-////                    Toast.makeText(getApplicationContext(),
-////                            "Error creating map", Toast.LENGTH_SHORT).show();
-////                }
-//            }
-//        } catch (NullPointerException exception) {
-//            Log.e("mapApp", exception.toString());
-//        }
-//    }
 
     /**
      * Adds a marker to the map
@@ -219,6 +142,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
                     .draggable(true)
             );
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
+            // permission check to enable my location
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -269,17 +193,7 @@ public class MapActivity extends Activity implements OnMapReadyCallback {
 
         @Override
         protected void onPostExecute(String file_url) {
-//            createMapView();
-//            addMarker();
             progressDialog.dismiss();
         }
     }
-
-//    @Override
-//    public void onDestroy(){
-//        super.onDestroy();
-//        if ( progressDialog!=null && progressDialog.isShowing() ){
-//            progressDialog.cancel();
-//        }
-//    }
 }

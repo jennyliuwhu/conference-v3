@@ -29,7 +29,6 @@ public class FloorPlan extends ParseObject {
     }
 
     public static ParseQuery<FloorPlan> getQuery() {
-        ParseQuery<FloorPlan> floorPlanParseQuery= ParseQuery.getQuery(FloorPlan.class);
-        return floorPlanParseQuery;
+        return ParseQuery.getQuery(FloorPlan.class);
     }
 }

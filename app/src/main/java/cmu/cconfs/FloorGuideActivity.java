@@ -28,6 +28,7 @@ public class FloorGuideActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_floor_guide);
 
+        System.out.println("Hey there");
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setBackgroundColor(0xFF000000);
 
@@ -67,7 +68,7 @@ public class FloorGuideActivity extends FragmentActivity {
         }
 
         mPager.setAdapter(mAdapter);
-
+        System.out.println("It reaches here!");
     }
 
     @Override
