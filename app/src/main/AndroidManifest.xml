@@ -136,6 +136,8 @@
         <activity
             android:name=".MapActivity"
             android:label="@string/title_activity_map"/>
+        <activity android:name=".TravelAdvisorActivity"
+            android:label="@string/title_activity_travel"/>
         <activity
             android:name=".NotificationActivity"
             android:label="@string/title_activity_notification"/>

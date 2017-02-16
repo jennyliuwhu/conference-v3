@@ -85,6 +85,7 @@
     <string name="title_activity_paper">PaperActivity</string>
     <string name="title_activity_floor_guide">FloorGuide</string>
     <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_travel">TravelAdvisorActivity</string>
     <string name="title_activity_notification">NotificationActivity</string>
     <string name="title_activity_sponsor">SponsorActivity</string>
     <string name="title_activity_about">AboutActivity</string>
