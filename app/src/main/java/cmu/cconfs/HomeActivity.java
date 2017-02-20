@@ -147,14 +147,14 @@ public class HomeActivity extends AppCompatActivity {
                         intent.setClass(getApplicationContext(), NetworkingActivity.class);
                         startActivity(intent);
                         break;
-                    // schedule data import/export
-                    case 14:
-                        intent.setClass(getApplicationContext(), TransferActivity.class);
-                        startActivity(intent);
-                        break;
                     // travel
                     case 13:
                         intent.setClass(getApplicationContext(), TravelAdvisorActivity.class);
+                        startActivity(intent);
+                        break;
+                    // schedule data import/export, only admin user can see it
+                    case 14:
+                        intent.setClass(getApplicationContext(), TransferActivity.class);
                         startActivity(intent);
                         break;
                     default:
