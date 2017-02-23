@@ -1,171 +1,163 @@
 package cmu.cconfs;
 
+import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.MenuItem;
-import android.webkit.WebView;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.parse.ParseException;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-import cmu.cconfs.parseUtils.helper.LoadingUtils;
-import cmu.cconfs.utils.PreferencesManager;
-
+import java.io.IOException;
+import java.util.List;
 /**
  * @author jialingliu
  */
-public class TravelAdvisorActivity extends AppCompatActivity {
-    private WebView webView;
-    public static PreferencesManager mPreferencesManager;
+public class TravelAdvisorActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    // set up drawer
-    private static final String TAG = TravelAdvisorActivity.class.getName();
-    public final static int REQUEST_SIGN_IN = 1;
+    static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
+    private GoogleMap mMap;
+    private LocationManager locationManager;
 
-    private DrawerLayout mDrawerLayout;
-    private Toolbar toolbar;
-    private NavigationView mNavigationView;
-    private ActionBarDrawerToggle mDrawerToggle;
+    // location for New Montgomery St, San Francisco, CA
+    // todo change to your conference place when ready to deploy
+    private final double lat = 37.788019;
+    private final double lon = -122.401890;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel);
-        mPreferencesManager = new PreferencesManager(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowHomeEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
-        actionBar.setTitle("Travel Advisor");
+        ProgressDialog progressDialog = new ProgressDialog(TravelAdvisorActivity.this);
+        progressDialog.setMessage("loading Map");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setCancelable(false);
 
-        webView = (WebView) findViewById(R.id.webView1);
-//        webView.getSettings().setJavaScriptEnabled(true);
-
-        webView.loadDataWithBaseURL(null, "<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "<body>\n" +
-                "    <p>I'm your travel advisor</p>\n" +
-                "</body>\n" +
-                "</html>", "text/html", "utf-8", null);
-        // setup drawer
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.nvView);
-        mDrawerToggle = setupDrawerToggle();
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-
-        setupNavigationView(mNavigationView);
+        new Load(progressDialog).execute();
+        // setup googlemaps
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
-    private void setupNavigationView(NavigationView navView) {
-        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                selectDrawerItem(menuItem);
-                return true;
-            }
-        });
+    public void onMapSearch(View view) {
+        EditText locationSearch = (EditText) findViewById(R.id.editText);
+        System.out.println(locationSearch);
+        String location = locationSearch.getText().toString().trim();
+        List<Address> addressList = null;
+        if(location.isEmpty() || location.length() == 0 || location.equals("") || location == null) {
+            return;
+        }
+        Geocoder geocoder = new Geocoder(this);
+        try {
+            addressList = geocoder.getFromLocationName(location, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Address address = addressList.get(0);
+        LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
-    private void selectDrawerItem(MenuItem menuItem) {
-        Intent i = new Intent();
-        switch (menuItem.getItemId()) {
-            case R.id.nav_dash_board:
-                Toast.makeText(getApplicationContext(), "dash board clicked", Toast.LENGTH_SHORT).show();
-                i.setClass(this, HomeActivity.class);
-                startActivity(i);
-                break;
-            case R.id.nav_my_schedule:
-                Toast.makeText(getApplicationContext(), "my schedule clicked", Toast.LENGTH_SHORT).show();
-                i.setClass(getApplicationContext(), ScheduleActivity.class);
-                startActivity(i);
-                break;
-            case R.id.nav_my_profile:
-                Toast.makeText(getApplicationContext(), "my profile clicked", Toast.LENGTH_SHORT).show();
-                i = getLoginStatusIntent(ProfileActivity.class, LoginActivity.class);
-                startActivityForResult(i, REQUEST_SIGN_IN);
-                break;
-            case R.id.nav_my_to_do_list:
-                Toast.makeText(getApplicationContext(), "my todo list clicked", Toast.LENGTH_SHORT).show();
-                i.setClass(this, TodoListActivity.class);
-                startActivity(i);
-                break;
-            case R.id.nav_sync_data:
-                syncScheduleData(this);
-                break;
-            case R.id.nav_log_in:
-                i = getLoginStatusIntent(UserActivity.class, LoginActivity.class);
-                startActivityForResult(i, REQUEST_SIGN_IN);
-                break;
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        initMap();
+    }
+
+    private void initMap() {
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        // Add a marker in Sydney and move the camera
+        LatLng latLng = new LatLng(lat, lon);
+        mMap.addMarker(new MarkerOptions().position(latLng).title("New Montgomery St, San Francisco, CA"));
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        // permission check to enable my location
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+    class Load extends AsyncTask<String, String, String> {
+        private ProgressDialog progressDialog;
+
+        Load(ProgressDialog progressDialog) {
+            this.progressDialog = progressDialog;
         }
 
-        menuItem.setCheckable(true);
-        setTitle(menuItem.getTitle());
-        mDrawerLayout.closeDrawers();
-    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
-    private ActionBarDrawerToggle setupDrawerToggle() {
-        return new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open,  R.string.drawer_close);
-    }
+            progressDialog.show();
 
-    private Intent getLoginStatusIntent(Class loginTarget, Class notLoginTarget) {
-        boolean loggedIn = mPreferencesManager.getBooleanPreference("LoggedIn",false);
-        Toast .makeText(this, loggedIn + "", Toast.LENGTH_SHORT).show();
-        Intent i = new Intent();
-        if(!loggedIn) {
-            i.setClass(getApplicationContext(), notLoginTarget);
-        } else {
-            i.setClass(getApplicationContext(), loginTarget);
         }
-        return i;
+
+        @Override
+        protected String doInBackground(String... params) {
+            // test initialization
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            boolean enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            // check if enabled and if not send user to the GSP settings
+            // Better solution would be to display a dialog and suggesting to
+            // go to the settings
+            if (!enabled) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+            checkPlayServices();
+
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            progressDialog.dismiss();
+        }
+    }
+    private boolean checkPlayServices() {
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (status != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(status)) {
+                showErrorDialog(status);
+            } else {
+                Toast.makeText(this, "This device is not supported.", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
-    private void syncScheduleData(final Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
-        builder.setTitle("Sync Data");
-        builder.setMessage("You sure want to reload the backend data?");
-        builder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                final ProgressDialog pd = new ProgressDialog(context);
-                String st = "Syncing data...";
-                pd.setMessage(st);
-                pd.setCanceledOnTouchOutside(false);
-                pd.show();
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        try {
-                            LoadingUtils.loadFromParse();
-                            LoadingUtils.populateDataProvider();
-                            LoadingUtils.populateRoomProvider();
-                        } catch (ParseException e) {
-                            Log.e(TAG, e.getMessage());
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        pd.dismiss();
-                    }
-                }.execute();
-            }
-        });
-        builder.setNegativeButton(getString(android.R.string.cancel), null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    void showErrorDialog(int code) {
+        GooglePlayServicesUtil.getErrorDialog(code, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
     }
 }

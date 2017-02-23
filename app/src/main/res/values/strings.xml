@@ -488,5 +488,6 @@
     <string name="calendar_key">sync_calendar</string>
     <string name="calendar_title">Sync Calendar</string>
     <string name="calendar_summary">Sync your schedule with device calendar</string>
+    <string name="search_address">Search Address</string>
 
 </resources>
