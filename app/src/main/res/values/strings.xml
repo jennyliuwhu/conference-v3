@@ -489,5 +489,6 @@
     <string name="calendar_title">Sync Calendar</string>
     <string name="calendar_summary">Sync your schedule with device calendar</string>
     <string name="search_address">Search Address</string>
+    <string name="clear_points">Clear Points</string>
 
 </resources>

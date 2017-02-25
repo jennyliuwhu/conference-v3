@@ -97,7 +97,7 @@ dependencies {
     compile 'com.parse:parseinterceptors:0.0.2'
     // for logging API calls to LogCat
     //    // google service for useful apis
-    //    compile 'com.google.android.gms:play-services-drive:8.4.0'
+//    compile 'com.google.android.gms:play-services-drive:9.4.0'
 
     // morphing progressive button
     compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56' // commit hash
@@ -116,6 +116,7 @@ dependencies {
     compile "com.daimajia.swipelayout:library:1.2.0@aar"
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.androidanimations:library:1.1.2@aar'
+//    compile 'com.akexorcist:googledirectionlibrary:1.0.5'
 }
 
 
