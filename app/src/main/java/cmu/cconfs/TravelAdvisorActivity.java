@@ -239,23 +239,28 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     // Add new marker to the Google Map Android API V2
                     mMap.addMarker(options);
 
-                    // Checks, whether start and end locations are captured
-                    if(markerPoints.size() >= 2){
-                        LatLng origin = markerPoints.get(0);
-                        LatLng dest = markerPoints.get(1);
-
-                        // Getting URL to the Google Directions API
-                        String url = getDirectionsUrl(origin, dest);
-
-                        DownloadTask downloadTask = new DownloadTask();
-
-                        // Start downloading json data from Google Directions API
-                        downloadTask.execute(url);
-                        isCleared = false;
-                    }
+                    drawPolyLine();
                 }
             });
         }
+    }
+
+    private void drawPolyLine() {
+        // Checks, whether start and end locations are captured
+        if (markerPoints.size() < 2) {
+            return;
+        }
+        LatLng origin = markerPoints.get(0);
+        LatLng dest = markerPoints.get(1);
+
+        // Getting URL to the Google Directions API
+        String url = getDirectionsUrl(origin, dest);
+
+        DownloadTask downloadTask = new DownloadTask();
+
+        // Start downloading json data from Google Directions API
+        downloadTask.execute(url);
+        isCleared = false;
     }
 
     private void initMap() {
@@ -533,7 +538,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
     @Override
     public void onLocationChanged(Location location) {
-
+        System.out.println();
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -548,6 +553,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         } else if (markerPoints.isEmpty()) {
             markerPoints.add(currentLatLng);
         }
+
+        drawPolyLine();
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentLatLng);
         markerOptions.title("Current Position");
