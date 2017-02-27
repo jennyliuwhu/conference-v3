@@ -54,6 +54,9 @@ import java.util.List;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
 
 /**
+ * todo refer to http://wptrafficanalyzer.in/blog/driving-distance-and-travel-time-duration-between-two-locations-in-google-map-android-api-v2/
+ * to add duration and distance features
+ *
  * @author jialingliu
  */
 public class TravelAdvisorActivity extends FragmentActivity implements OnMapReadyCallback,
