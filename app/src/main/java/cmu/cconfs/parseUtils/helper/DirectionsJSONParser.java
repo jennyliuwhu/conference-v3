@@ -21,6 +21,10 @@ public class DirectionsJSONParser {
         JSONArray jLegs;
         JSONArray jSteps;
 
+        // distance
+        JSONObject jDistance;
+        JSONObject jDuration;
+
         try {
 
             jRoutes = jObject.getJSONArray("routes");
@@ -28,10 +32,26 @@ public class DirectionsJSONParser {
             /** Traversing all routes */
             for(int i=0;i<jRoutes.length();i++){
                 jLegs = ( (JSONObject)jRoutes.get(i)).getJSONArray("legs");
-                List<HashMap<String, String>> path = new ArrayList<HashMap<String, String>>();
+                List<HashMap<String, String>> path = new ArrayList<>();
 
                 /** Traversing all legs */
                 for(int j=0;j<jLegs.length();j++){
+                    /** Getting distance from the json data */
+                    jDistance = ((JSONObject) jLegs.get(j)).getJSONObject("distance");
+                    HashMap<String, String> hmDistance = new HashMap<String, String>();
+                    hmDistance.put("distance", jDistance.getString("text"));
+
+                    /** Getting duration from the json data */
+                    jDuration = ((JSONObject) jLegs.get(j)).getJSONObject("duration");
+                    HashMap<String, String> hmDuration = new HashMap<String, String>();
+                    hmDuration.put("duration", jDuration.getString("text"));
+
+                    /** Adding distance object to the path */
+                    path.add(hmDistance);
+
+                    /** Adding duration object to the path */
+                    path.add(hmDuration);
+
                     jSteps = ( (JSONObject)jLegs.get(j)).getJSONArray("steps");
 
                     /** Traversing all steps */
@@ -54,7 +74,7 @@ public class DirectionsJSONParser {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }catch (Exception e){
+        }catch (Exception ignored){
         }
 
         return routes;

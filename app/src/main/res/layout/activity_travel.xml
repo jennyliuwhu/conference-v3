@@ -4,6 +4,17 @@
     android:layout_height="match_parent"
     tools:context="cmu.cconfs.TravelAdvisorActivity" >
     <TextView
+        android:id="@+id/distance_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hello_world"
+        android:layout_below="@+id/search_button"
+        android:layout_alignLeft="@+id/editText"
+        android:layout_alignStart="@+id/editText"
+        android:layout_alignBottom="@+id/points_clear"
+        android:layout_toLeftOf="@+id/search_button"
+        android:layout_toStartOf="@+id/search_button" />
+    <TextView
         android:id="@+id/my_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

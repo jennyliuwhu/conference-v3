@@ -21,6 +21,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -73,10 +74,14 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     LocationRequest mLocationRequest;
     LatLng currentLatLng;
 
+    // text view for distance and duration
+    TextView tvDistanceDuration;
+
     // location for New Montgomery St, San Francisco, CA
     // todo change to your conference place when ready to deploy
     private final double lat = 37.788019;
     private final double lon = -122.401890;
+
     private Marker destinationMarker;
     ArrayList<LatLng> markerPoints;
     private boolean isCleared = true;
@@ -86,6 +91,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel);
 
+        tvDistanceDuration = (TextView) findViewById(R.id.distance_duration);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -207,12 +213,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
                 @Override
                 public void onMapClick(LatLng point) {
-
-                    // Already two locations
-//                    if(markerPoints.size()>1) {
-//                        markerPoints.clear();
-//                        mMap.clear();
-//                    }
                     System.out.println("markerPoints size: " + markerPoints.size());
                     if (!isCleared) {
                         return;
@@ -500,9 +500,15 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         // Executes in UI thread, after the parsing process
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
+            ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
+            String distance = "";
+            String duration = "";
+
+            if(result.size()<1){
+                Toast.makeText(getBaseContext(), "No Points", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             // Traversing through all the routes
             for(int i=0;i<result.size();i++){
@@ -515,6 +521,14 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 // Fetching all the points in i-th route
                 for(int j=0;j<path.size();j++){
                     HashMap<String,String> point = path.get(j);
+
+                    if(j==0){    // Get distance from the list
+                        distance = (String)point.get("distance");
+                        continue;
+                    }else if(j==1){ // Get duration from the list
+                        duration = (String)point.get("duration");
+                        continue;
+                    }
 
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
@@ -535,6 +549,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 Toast.makeText(getApplicationContext(),
                         "Invalid starting point or destination", Toast.LENGTH_SHORT).show();
             } else {
+                tvDistanceDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                System.out.println("Got distance and duration successfully");
+                System.out.println("Distance:"+distance + ", Duration:"+duration);
+                tvDistanceDuration.bringToFront();
                 mMap.addPolyline(lineOptions);
             }
         }
