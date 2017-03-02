@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -55,8 +56,8 @@ import java.util.List;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
 
 /**
- * todo refer to http://wptrafficanalyzer.in/blog/driving-distance-and-travel-time-duration-between-two-locations-in-google-map-android-api-v2/
- * to add duration and distance features
+ * todo refer to https://developer.android.com/reference/android/widget/PopupWindow.html
+ * to to display weather information
  *
  * @author jialingliu
  */
@@ -156,11 +157,16 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         System.out.println(locationSearch);
         String location = locationSearch.getText().toString().trim();
         List<Address> addressList = null;
+
         if (location.isEmpty() || location.length() == 0 || location.equals("")) {
             return;
         }
         Geocoder geocoder = new Geocoder(this);
         try {
+            List<Address> addresses = geocoder.getFromLocation(40.730610, -73.935242, 1);
+            System.out.println("new york should be: " + addresses.get(0).getLocality());
+            System.out.println("United States should be: " + addresses.get(0).getCountryName());
+
             addressList = geocoder.getFromLocationName(location, 1);
         } catch (IOException e) {
             e.printStackTrace();
@@ -169,8 +175,13 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         LatLng latLng = new LatLng(lat, lon); // default location: conference location
         if (addressList != null) {
             address = addressList.get(0);
+            String countryName = address.getCountryName();
+            System.out.println("countryName: " + countryName);
+            System.out.println("locality: " + address.getLocality());
             latLng = new LatLng(address.getLatitude(), address.getLongitude());
         }
+
+
         destinationMarker.remove();
         destinationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -549,14 +560,16 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 Toast.makeText(getApplicationContext(),
                         "Invalid starting point or destination", Toast.LENGTH_SHORT).show();
             } else {
-                tvDistanceDuration.setText("Distance:"+distance + ", Duration:"+duration);
+                tvDistanceDuration.setText("Distance:"+distance + "\nDuration:"+duration);
                 System.out.println("Got distance and duration successfully");
                 System.out.println("Distance:"+distance + ", Duration:"+duration);
                 tvDistanceDuration.bringToFront();
+                tvDistanceDuration.setTypeface(null, Typeface.BOLD);
                 mMap.addPolyline(lineOptions);
             }
         }
     }
+
     @Override
     public void onLocationChanged(Location location) {
         System.out.println();
