@@ -24,6 +24,7 @@ public class WeatherHttpClient {
 
         try {
             // todo init apiKey
+            // http://crunchify.com/how-to-read-json-object-from-file-in-java/
             String link = String.format(BASE_URL, location, apiKey);
             System.out.println(link);
             con = (HttpURLConnection)(new URL(link).openConnection());
