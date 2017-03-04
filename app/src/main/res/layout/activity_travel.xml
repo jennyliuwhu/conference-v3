@@ -149,4 +149,14 @@
         android:layout_toRightOf="@id/windSpeed"
         android:layout_marginLeft="4dp"
         style="@style/valData"/>
+    <Button
+        android:id="@+id/openpopup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Open Popup Window"
+        android:layout_alignBaseline="@+id/map"
+        android:layout_alignBottom="@+id/map"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

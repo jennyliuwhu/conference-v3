@@ -1,6 +1,7 @@
 package cmu.cconfs;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,11 +23,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.ViewGroup.LayoutParams;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -93,7 +98,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private Marker destinationMarker;
     ArrayList<LatLng> markerPoints;
     private boolean isCleared = true;
-
+    private Marker currentWeatherInfoMaker;
 
     // weather view
     private TextView cityText;
@@ -106,10 +111,15 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private TextView hum;
     private ImageView imgView;
 
+    String city;
+
+    Geocoder geocoder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel);
+        geocoder = new Geocoder(this);
 
         tvDistanceDuration = (TextView) findViewById(R.id.distance_duration);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -129,7 +139,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         mapFragment.getMapAsync(this);
         markerPoints = new ArrayList<>();
 
-        String city = "London,UK";
+        city = "Mountain View, United States";
 
         cityText = (TextView) findViewById(R.id.cityText);
         condDescr = (TextView) findViewById(R.id.condDescr);
@@ -140,8 +150,32 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         windDeg = (TextView) findViewById(R.id.windDeg);
         imgView = (ImageView) findViewById(R.id.condIcon);
 
-        JSONWeatherTask task = new JSONWeatherTask();
-        task.execute(new String[]{city});
+        final Button btnOpenPopup = (Button)findViewById(R.id.openpopup);
+        btnOpenPopup.setOnClickListener(new Button.OnClickListener(){
+
+            @Override
+            public void onClick(View arg0) {
+                LayoutInflater layoutInflater
+                        = (LayoutInflater)getBaseContext()
+                        .getSystemService(LAYOUT_INFLATER_SERVICE);
+                View popupView = layoutInflater.inflate(R.layout.popup, null);
+                final PopupWindow popupWindow = new PopupWindow(
+                        popupView,
+                        LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT);
+
+                Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
+                btnDismiss.setOnClickListener(new Button.OnClickListener(){
+
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        popupWindow.dismiss();
+                    }});
+
+                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
+
+            }});
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -194,11 +228,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         if (location.isEmpty() || location.length() == 0 || location.equals("")) {
             return;
         }
-        Geocoder geocoder = new Geocoder(this);
         try {
-            List<Address> addresses = geocoder.getFromLocation(40.730610, -73.935242, 1);
-            System.out.println("new york should be: " + addresses.get(0).getLocality());
-            System.out.println("United States should be: " + addresses.get(0).getCountryName());
+//            List<Address> addresses = geocoder.getFromLocation(40.730610, -73.935242, 1);
+//            System.out.println("new york should be: " + addresses.get(0).getLocality());
+//            System.out.println("United States should be: " + addresses.get(0).getCountryName());
 
             addressList = geocoder.getFromLocationName(location, 1);
         } catch (IOException e) {
@@ -213,10 +246,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             System.out.println("locality: " + address.getLocality());
             latLng = new LatLng(address.getLatitude(), address.getLongitude());
         }
-
-
         destinationMarker.remove();
-        destinationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+        destinationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("destinationMarker"));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
@@ -240,18 +271,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
-//            // Enable MyLocation Button in the Map
-//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                // TODO: Consider calling
-//                //    ActivityCompat#requestPermissions
-//                // here to request the missing permissions, and then overriding
-//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                //                                          int[] grantResults)
-//                // to handle the case where the user grants the permission. See the documentation
-//                // for ActivityCompat#requestPermissions for more details.
-//                return;
-//            }
-//            mMap.setMyLocationEnabled(true);
+            // Enable MyLocation Button in the Map
             // Setting onclick event listener for the map
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -259,6 +279,26 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 public void onMapClick(LatLng point) {
                     System.out.println("markerPoints size: " + markerPoints.size());
                     if (!isCleared) {
+                        // TODO: 3/3/17 weather information pop-up window
+                        try {
+                            List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
+                            String cityName = addresses.get(0).getLocality();
+                            String countryName= addresses.get(0).getCountryName();
+                            city = cityName + ", " + countryName;
+                            System.out.println("city should be: " + cityName);
+                            System.out.println("country should be: " + countryName);
+                            JSONWeatherTask task = new JSONWeatherTask();
+                            task.execute(city);
+
+                            if (currentWeatherInfoMaker != null) {
+                                currentWeatherInfoMaker.remove();
+                            }
+                            currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.latitude, point.longitude)).title(city));
+
+                        } catch (IOException e) {
+                            System.out.println("Failed to get address for this point");
+                        }
+
                         return;
                     }
 
@@ -421,7 +461,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         GooglePlayServicesUtil.getErrorDialog(code, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
     }
 
-
     private String getDirectionsUrl(LatLng origin,LatLng dest){
 
         // Origin of route
@@ -567,10 +606,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     HashMap<String,String> point = path.get(j);
 
                     if(j==0){    // Get distance from the list
-                        distance = (String)point.get("distance");
+                        distance = point.get("distance");
                         continue;
                     }else if(j==1){ // Get duration from the list
-                        duration = (String)point.get("duration");
+                        duration = point.get("duration");
                         continue;
                     }
 
@@ -688,9 +727,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
         }
 
-
-
-
         @Override
         protected void onPostExecute(Weather weather) {
             super.onPostExecute(weather);
@@ -708,5 +744,40 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             windSpeed.setText("" + weather.wind.getSpeed() + " mps");
             windDeg.setText("" + weather.wind.getDeg() + "�");
         }
+    }
+}
+
+class AndroidPopupWindowActivity extends Activity {
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_travel);
+
+        final Button btnOpenPopup = (Button)findViewById(R.id.openpopup);
+        btnOpenPopup.setOnClickListener(new Button.OnClickListener(){
+
+            @Override
+            public void onClick(View arg0) {
+                LayoutInflater layoutInflater
+                        = (LayoutInflater)getBaseContext()
+                        .getSystemService(LAYOUT_INFLATER_SERVICE);
+                View popupView = layoutInflater.inflate(R.layout.popup, null);
+                final PopupWindow popupWindow = new PopupWindow(
+                        popupView,
+                        LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT);
+
+                Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
+                btnDismiss.setOnClickListener(new Button.OnClickListener(){
+
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        popupWindow.dismiss();
+                    }});
+
+                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
+            }});
     }
 }
