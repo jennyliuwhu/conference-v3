@@ -1,7 +1,6 @@
 package cmu.cconfs;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,15 +22,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.ViewGroup.LayoutParams;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -66,6 +61,64 @@ import cmu.cconfs.model.parseModel.Weather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
 import cmu.cconfs.parseUtils.helper.JSONWeatherParser;
 import cmu.cconfs.service.WeatherHttpClient;
+
+//class AndroidPopupWindowActivity extends Activity {
+//    /**
+//     * Called when the activity is first created.
+//     */
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_travel);
+//        final Button btnOpenPopup = (Button) findViewById(R.id.openpopup);
+//        btnOpenPopup.setOnClickListener(new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View arg0) {
+//                LayoutInflater layoutInflater
+//                        = (LayoutInflater) getBaseContext()
+//                        .getSystemService(LAYOUT_INFLATER_SERVICE);
+//                View popupView = layoutInflater.inflate(R.layout.popup, null);
+//                final PopupWindow popupWindow = new PopupWindow(
+//                        popupView,
+//                        LayoutParams.WRAP_CONTENT,
+//                        LayoutParams.WRAP_CONTENT);
+//
+//                Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
+//                btnDismiss.setOnClickListener(new Button.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(View v) {
+//                        // TODO Auto-generated method stub
+//                        popupWindow.dismiss();
+//                    }
+//                });
+//
+//                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
+//
+//                popupView.setOnTouchListener(new OnTouchListener() {
+//                    int orgX, orgY;
+//                    int offsetX, offsetY;
+//
+//                    @Override
+//                    public boolean onTouch(View v, MotionEvent event) {
+//                        switch (event.getAction()) {
+//                            case MotionEvent.ACTION_DOWN:
+//                                orgX = (int) event.getX();
+//                                orgY = (int) event.getY();
+//                                break;
+//                            case MotionEvent.ACTION_MOVE:
+//                                offsetX = (int) event.getRawX() - orgX;
+//                                offsetY = (int) event.getRawY() - orgY;
+//                                popupWindow.update(offsetX, offsetY, -1, -1, true);
+//                                break;
+//                        }
+//                        return true;
+//                    }
+//                });
+//            }
+//        });
+//    }
+//}
 
 /**
  * todo refer to https://developer.android.com/reference/android/widget/PopupWindow.html
@@ -115,6 +168,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     Geocoder geocoder;
 
+    Location location;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,36 +205,37 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         windDeg = (TextView) findViewById(R.id.windDeg);
         imgView = (ImageView) findViewById(R.id.condIcon);
 
-        final Button btnOpenPopup = (Button)findViewById(R.id.openpopup);
-        btnOpenPopup.setOnClickListener(new Button.OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                LayoutInflater layoutInflater
-                        = (LayoutInflater)getBaseContext()
-                        .getSystemService(LAYOUT_INFLATER_SERVICE);
-                View popupView = layoutInflater.inflate(R.layout.popup, null);
-                final PopupWindow popupWindow = new PopupWindow(
-                        popupView,
-                        LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT);
-
-                Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
-                btnDismiss.setOnClickListener(new Button.OnClickListener(){
-
-                    @Override
-                    public void onClick(View v) {
-                        // TODO Auto-generated method stub
-                        popupWindow.dismiss();
-                    }});
-
-                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
-
-            }});
+//        final Button btnOpenPopup = (Button)findViewById(R.id.openpopup);
+//        btnOpenPopup.setOnClickListener(new Button.OnClickListener(){
+//
+//            @Override
+//            public void onClick(View arg0) {
+//                LayoutInflater layoutInflater
+//                        = (LayoutInflater)getBaseContext()
+//                        .getSystemService(LAYOUT_INFLATER_SERVICE);
+//                View popupView = layoutInflater.inflate(R.layout.popup, null);
+//                final PopupWindow popupWindow = new PopupWindow(
+//                        popupView,
+//                        LayoutParams.WRAP_CONTENT,
+//                        LayoutParams.WRAP_CONTENT);
+//
+//                Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
+//                btnDismiss.setOnClickListener(new Button.OnClickListener(){
+//
+//                    @Override
+//                    public void onClick(View v) {
+//                        // TODO Auto-generated method stub
+//                        popupWindow.dismiss();
+//                    }});
+//
+//                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
+//
+//            }});
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
+
+    public boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -229,10 +285,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             return;
         }
         try {
-//            List<Address> addresses = geocoder.getFromLocation(40.730610, -73.935242, 1);
-//            System.out.println("new york should be: " + addresses.get(0).getLocality());
-//            System.out.println("United States should be: " + addresses.get(0).getCountryName());
-
             addressList = geocoder.getFromLocationName(location, 1);
         } catch (IOException e) {
             e.printStackTrace();
@@ -266,8 +318,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     buildGoogleApiClient();
                     mMap.setMyLocationEnabled(true);
                 }
-            }
-            else {
+            } else {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
@@ -278,6 +329,26 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 @Override
                 public void onMapClick(LatLng point) {
                     System.out.println("markerPoints size: " + markerPoints.size());
+                    if (markerPoints.isEmpty()) {
+                        if (locationManager != null) {
+                            checkLocationPermission();
+                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                markerPoints.add(currentLatLng);
+                                MarkerOptions markerOptions = new MarkerOptions();
+                                markerOptions.position(currentLatLng);
+                                markerOptions.title("Current Position");
+                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+                                mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+                            } else {
+                                System.out.println("location is null");
+                            }
+                        } else {
+                            System.out.println("locationManager is null");
+                        }
+                    }
                     if (!isCleared) {
                         // TODO: 3/3/17 weather information pop-up window
                         try {
@@ -674,6 +745,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         }
     }
 
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
@@ -735,49 +808,14 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
                 imgView.setImageBitmap(img);
             }
-
             cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
             condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
-            temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "�C");
+            temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "°C");
             hum.setText("" + weather.currentCondition.getHumidity() + "%");
             press.setText("" + weather.currentCondition.getPressure() + " hPa");
             windSpeed.setText("" + weather.wind.getSpeed() + " mps");
-            windDeg.setText("" + weather.wind.getDeg() + "�");
+            windDeg.setText("" + weather.wind.getDeg());
         }
     }
 }
 
-class AndroidPopupWindowActivity extends Activity {
-    /** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_travel);
-
-        final Button btnOpenPopup = (Button)findViewById(R.id.openpopup);
-        btnOpenPopup.setOnClickListener(new Button.OnClickListener(){
-
-            @Override
-            public void onClick(View arg0) {
-                LayoutInflater layoutInflater
-                        = (LayoutInflater)getBaseContext()
-                        .getSystemService(LAYOUT_INFLATER_SERVICE);
-                View popupView = layoutInflater.inflate(R.layout.popup, null);
-                final PopupWindow popupWindow = new PopupWindow(
-                        popupView,
-                        LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT);
-
-                Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
-                btnDismiss.setOnClickListener(new Button.OnClickListener(){
-
-                    @Override
-                    public void onClick(View v) {
-                        // TODO Auto-generated method stub
-                        popupWindow.dismiss();
-                    }});
-
-                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
-            }});
-    }
-}
