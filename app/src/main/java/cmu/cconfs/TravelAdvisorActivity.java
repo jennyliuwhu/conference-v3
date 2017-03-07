@@ -1,7 +1,9 @@
 package cmu.cconfs;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,6 +25,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -130,6 +133,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
+    final Context context = this;
     static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
     private GoogleMap mMap;
     private LocationManager locationManager;
@@ -170,6 +174,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     Location location;
 
+    private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,6 +236,35 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 //                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
 //
 //            }});
+
+        button = (Button) findViewById(R.id.buttonShowCustomDialog);
+
+        // add button listener
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // custom dialog
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.custom);
+                dialog.setTitle("Title...");
+
+                // set the custom dialog components - text, image and button
+                TextView text = (TextView) dialog.findViewById(R.id.text);
+                text.setText("Android custom dialog example!");
+                ImageView image = (ImageView) dialog.findViewById(R.id.image);
+                image.setImageResource(R.drawable.ic_launcher);
+
+                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+                // if button is clicked, close the custom dialog
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
