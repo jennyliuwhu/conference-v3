@@ -6,8 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Address;
@@ -59,6 +57,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cmu.cconfs.model.parseModel.Weather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
@@ -175,6 +174,14 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     Location location;
 
     private Button button;
+
+    /**
+     * duration[0] = x days,
+     * duration[1] = y hours,
+     * duration[2] = z mins
+     */
+    private int[] duration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -251,8 +258,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 // set the custom dialog components - text, image and button
                 TextView text = (TextView) dialog.findViewById(R.id.text);
                 text.setText("Android custom dialog example!");
-                ImageView image = (ImageView) dialog.findViewById(R.id.image);
-                image.setImageResource(R.drawable.ic_launcher);
+//                ImageView image = (ImageView) dialog.findViewById(R.id.image);
+//                image.setImageResource(R.drawable.ic_launcher);
 
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
                 // if button is clicked, close the custom dialog
@@ -385,6 +392,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     }
                     if (!isCleared) {
                         // TODO: 3/3/17 weather information pop-up window
+                        // TODO: 3/20/17 weather forecasting
                         try {
                             List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                             String cityName = addresses.get(0).getLocality();
@@ -631,7 +639,111 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         return data;
     }
 
+    /**
+     * http://apidev.accuweather.com/locations/v1/search?q=mountain%20view,United%20States&apikey=hoArfRosT1215
+     * http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/337169?apikey=2HbZMIUw4YGYi1GQ9km1jEuLpxtFdtrK&details=true&metric=true
+     * http://developer.accuweather.com/
+     */
+    private class DownloadTask2 extends AsyncTask<String, Void, String>{
+
+        // Downloading data in non-ui thread
+        @Override
+        protected String doInBackground(String... url) {
+
+            // For storing data from web service
+            String data = "";
+
+            try{
+                // Fetching the data from web service
+                data = downloadUrl(url[0]);
+            }catch(Exception e){
+                Log.d("Background Task",e.toString());
+            }
+            return data;
+        }
+
+        // Executes in UI thread, after the execution of
+        // doInBackground()
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            ParserTask parserTask = new ParserTask();
+
+            // Invokes the thread for parsing the JSON data
+            parserTask.execute(result);
+        }
+    }
+
+    /** A class to parse the Google Places in JSON format to get duration **/
+    private class ParserTask2 extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+
+        // Parsing the data in non-ui thread
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try{
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+
+                // Starts parsing data
+                routes = parser.parse(jObject);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        // Executes in UI thread, after the parsing process
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            String rawDuration = "";
+
+            // Traversing through all the routes
+            for(int i=0;i<result.size();i++){
+                // Fetching i-th route
+                List<HashMap<String, String>> path = result.get(i);
+                // Fetching all the points in i-th route
+                for(int j=0;j<path.size();j++){
+                    if (j != 1) {
+                        continue;
+                    }
+                    HashMap<String,String> point = path.get(j);
+                    // Get duration from the list
+                    rawDuration = point.get("duration");
+                }
+            }
+            parseDuration(rawDuration);
+        }
+
+        private void parseDuration(String rawDuration) {
+            String[] myArr = rawDuration.split("\\s+");
+            int[] myIntArr = new int[3];
+            for (int i = 0; i < myArr.length; i++) {
+                switch (myArr[i]) {
+                    case "day":
+                    case "days":
+                        myIntArr[0] = Integer.parseInt(myArr[i - 1]);
+                        break;
+                    case "hour":
+                    case "hours":
+                        myIntArr[1] = Integer.parseInt(myArr[i - 1]);
+                        break;
+                    case "min":
+                    case "mins":
+                        myIntArr[2] = Integer.parseInt(myArr[i - 1]);
+                        break;
+                }
+            }
+            duration = myIntArr;
+        }
+    }
+
     // Fetches data from url passed
+    // for poly line drawing
     private class DownloadTask extends AsyncTask<String, Void, String>{
 
         // Downloading data in non-ui thread
@@ -709,6 +821,11 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 // Fetching all the points in i-th route
                 for(int j=0;j<path.size();j++){
                     HashMap<String,String> point = path.get(j);
+
+//                    System.out.println("start printing points");
+//                    for (Map.Entry<String, String> entry : point.entrySet()) {
+//                        System.out.println(entry.getKey()+" : "+entry.getValue());
+//                    }
 
                     if(j==0){    // Get distance from the list
                         distance = point.get("distance");
@@ -838,10 +955,11 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         protected void onPostExecute(Weather weather) {
             super.onPostExecute(weather);
 
-            if (weather.iconData != null && weather.iconData.length > 0) {
-                Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
-                imgView.setImageBitmap(img);
-            }
+            // // TODO: 3/7/17 replace textViews with dialog and display weather information
+//            if (weather.iconData != null && weather.iconData.length > 0) {
+//                Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
+//                imgView.setImageBitmap(img);
+//            }
             cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
             condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
             temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "°C");
