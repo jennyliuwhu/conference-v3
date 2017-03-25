@@ -59,7 +59,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cmu.cconfs.model.parseModel.Weather;
+import cmu.cconfs.model.parseModel.FutureWeather;
+//import cmu.cconfs.model.parseModel.Weather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
 import cmu.cconfs.parseUtils.helper.JSONWeatherParser;
 import cmu.cconfs.service.WeatherHttpClient;
@@ -180,7 +181,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
      * duration[1] = y hours,
      * duration[2] = z mins
      */
-    private int[] duration;
+    private long durationInMs = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -400,8 +401,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                             city = cityName + ", " + countryName;
                             System.out.println("city should be: " + cityName);
                             System.out.println("country should be: " + countryName);
-                            JSONWeatherTask task = new JSONWeatherTask();
-                            task.execute(city);
+//                            JSONWeatherTask task = new JSONWeatherTask();
+//                            task.execute(city);
+                            // TODO: 3/23/17 execute FutureWeatherTask
 
                             if (currentWeatherInfoMaker != null) {
                                 currentWeatherInfoMaker.remove();
@@ -668,10 +670,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            ParserTask parserTask = new ParserTask();
+            ParserTask2 parserTask2 = new ParserTask2();
 
             // Invokes the thread for parsing the JSON data
-            parserTask.execute(result);
+            parserTask2.execute(result);
         }
     }
 
@@ -738,7 +740,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                         break;
                 }
             }
-            duration = myIntArr;
+            durationInMs = (long)86400000 * myIntArr[0] + (long)3600000 * myIntArr[1] + (long)60000 * myIntArr[2];
+            // TODO: 3/22/17 start weather forecast task 
         }
     }
 
@@ -930,44 +933,49 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         }
     }
 
-    // weather task
-    private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
-
-        @Override
-        protected Weather doInBackground(String... params) {
-            Weather weather = new Weather();
-            String data = ( (new WeatherHttpClient()).getWeatherData(params[0]));
-
-            try {
-                weather = JSONWeatherParser.getWeather(data);
-
-                // Let's retrieve the icon
-                weather.iconData = ( (new WeatherHttpClient()).getImage(weather.currentCondition.getIcon()));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return weather;
-
-        }
-
-        @Override
-        protected void onPostExecute(Weather weather) {
-            super.onPostExecute(weather);
-
-            // // TODO: 3/7/17 replace textViews with dialog and display weather information
-//            if (weather.iconData != null && weather.iconData.length > 0) {
-//                Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
-//                imgView.setImageBitmap(img);
+    // future weather task
+//    private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
+//
+//    }
+    
+    // current weather task
+//    private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
+//
+//        @Override
+//        protected Weather doInBackground(String... params) {
+//            Weather weather = new Weather();
+//            String data = ( (new WeatherHttpClient()).getWeatherData(params[0]));
+//
+//            try {
+//                weather = JSONWeatherParser.getWeather(data);
+//
+//                // Let's retrieve the icon
+//                weather.iconData = ( (new WeatherHttpClient()).getImage(weather.currentCondition.getIcon()));
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
 //            }
-            cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
-            condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
-            temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "°C");
-            hum.setText("" + weather.currentCondition.getHumidity() + "%");
-            press.setText("" + weather.currentCondition.getPressure() + " hPa");
-            windSpeed.setText("" + weather.wind.getSpeed() + " mps");
-            windDeg.setText("" + weather.wind.getDeg());
-        }
-    }
+//            return weather;
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Weather weather) {
+//            super.onPostExecute(weather);
+//
+//            // // TODO: 3/7/17 replace textViews with dialog and display weather information
+////            if (weather.iconData != null && weather.iconData.length > 0) {
+////                Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
+////                imgView.setImageBitmap(img);
+////            }
+//            cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
+//            condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
+//            temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "°C");
+//            hum.setText("" + weather.currentCondition.getHumidity() + "%");
+//            press.setText("" + weather.currentCondition.getPressure() + " hPa");
+//            windSpeed.setText("" + weather.wind.getSpeed() + " mps");
+//            windDeg.setText("" + weather.wind.getDegree());
+//        }
+//    }
 }
 

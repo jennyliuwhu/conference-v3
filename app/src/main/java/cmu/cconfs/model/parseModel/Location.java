@@ -8,8 +8,8 @@ public class Location implements Serializable {
 
     private float longitude;
     private float latitude;
-    private long sunset;
-    private long sunrise;
+//    private long sunset;
+//    private long sunrise;
     private String country;
     private String city;
 
@@ -25,18 +25,18 @@ public class Location implements Serializable {
     public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
-    public long getSunset() {
-        return sunset;
-    }
-    public void setSunset(long sunset) {
-        this.sunset = sunset;
-    }
-    public long getSunrise() {
-        return sunrise;
-    }
-    public void setSunrise(long sunrise) {
-        this.sunrise = sunrise;
-    }
+//    public long getSunset() {
+//        return sunset;
+//    }
+//    public void setSunset(long sunset) {
+//        this.sunset = sunset;
+//    }
+//    public long getSunrise() {
+//        return sunrise;
+//    }
+//    public void setSunrise(long sunrise) {
+//        this.sunrise = sunrise;
+//    }
     public String getCountry() {
         return country;
     }
