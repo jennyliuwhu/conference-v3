@@ -41,6 +41,7 @@ public class LocationParser {
                 System.out.println("get locationKey failed");
             }
         }
+        // default value san jose, CA
         return "347630";
     }
 }
