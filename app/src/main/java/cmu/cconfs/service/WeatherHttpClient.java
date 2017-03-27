@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import cmu.cconfs.model.parseModel.FutureWeather;
+import cmu.cconfs.parseUtils.helper.JSONFutureWeatherParser;
 import cmu.cconfs.parseUtils.helper.LocationParser;
 
 /**
@@ -18,7 +20,7 @@ public class WeatherHttpClient {
     private static final String GET_KEY_URL = "http://apidev.accuweather.com/locations/v1/search?q=%s&apikey=hoArfRosT1215";
     private static final String BASE_URL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/%s?apikey=%s&details=true&metric=true";
     private static final String apiKey = "7a24439eb20d658c0c7067e12531b46c";
-    public String getWeatherData(String location) {
+    public FutureWeather getWeatherData(String location, long durationInS) {
         String locationKey = getLocationKey(location);
         System.out.println("location is " + location);
         System.out.println("location key is + " + locationKey);
@@ -39,10 +41,11 @@ public class WeatherHttpClient {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = br.readLine()) != null) buffer.append(line).append("\r\n");
-
             is.close();
             con.disconnect();
-            return buffer.toString();
+            System.out.println(buffer.toString());
+            JSONFutureWeatherParser jsonFutureWeatherParser = new JSONFutureWeatherParser();
+            return jsonFutureWeatherParser.getFutureWeather(buffer.toString(), durationInS);
         } catch(Throwable t) {
             t.printStackTrace();
         } finally {
@@ -80,6 +83,7 @@ public class WeatherHttpClient {
             is.close();
             con.disconnect();
             System.out.println(buffer.toString());
+
             LocationParser locationParser = new LocationParser();
             return locationParser.getLocationKey(buffer.toString());
         } catch(Throwable t) {

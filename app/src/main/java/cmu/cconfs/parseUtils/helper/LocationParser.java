@@ -27,7 +27,7 @@ public class LocationParser {
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(jsonArray.get(0).getAsString());
+            jsonObject = new JSONObject(jsonArray.get(0).toString());
         } catch (JSONException e) {
             e.printStackTrace();
             System.out.println("json transform failed");
