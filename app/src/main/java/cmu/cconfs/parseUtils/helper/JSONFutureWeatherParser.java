@@ -13,13 +13,10 @@ import cmu.cconfs.model.parseModel.FutureWeather;
  * @author jialingliu
  */
 public class JSONFutureWeatherParser {
-    public static FutureWeather getFutureWeather(@NonNull String data,
-                                                 long durationInMs) {
+    public static String getFutureWeather(@NonNull String data,
+                                                 long durationInS) {
         // TODO: 3/24/17 parse futureWeather from response
         // response.json
-        long now = System.currentTimeMillis();
-        long future = now + durationInMs;
-
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(data);
         JsonArray weathers = jsonElement.getAsJsonArray();
@@ -28,6 +25,6 @@ public class JSONFutureWeatherParser {
         for (int i = 0; i < weathers.size(); i++) {
 
         }
-        return null;
+        return weathers.toString();
     }
 }

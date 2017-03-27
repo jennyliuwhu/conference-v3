@@ -45,7 +45,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -57,13 +56,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import cmu.cconfs.model.parseModel.FutureWeather;
 //import cmu.cconfs.model.parseModel.Weather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
-import cmu.cconfs.parseUtils.helper.JSONWeatherParser;
-import cmu.cconfs.service.WeatherHttpClient;
 
 //class AndroidPopupWindowActivity extends Activity {
 //    /**
@@ -181,7 +176,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
      * duration[1] = y hours,
      * duration[2] = z mins
      */
-    private long durationInMs = 0;
+    private long durationInS = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -740,7 +735,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                         break;
                 }
             }
-            durationInMs = (long)86400000 * myIntArr[0] + (long)3600000 * myIntArr[1] + (long)60000 * myIntArr[2];
+            durationInS = (long)86400 * myIntArr[0] + (long)3600 * myIntArr[1] + (long)60 * myIntArr[2];
+            durationInS += System.currentTimeMillis() / 1000;
             // TODO: 3/22/17 start weather forecast task 
         }
     }
