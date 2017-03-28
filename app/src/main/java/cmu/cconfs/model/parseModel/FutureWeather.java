@@ -6,7 +6,7 @@ package cmu.cconfs.model.parseModel;
 public class FutureWeather {
 
     public Location location = new Location();
-    public String DateTime = "";
+    public String dateTime = "";
     public long epochDateTime = 0;
 
     public boolean isDayLight = true;
@@ -19,10 +19,109 @@ public class FutureWeather {
     public String link = "";
     public String mobileLink = "";
 
+    public FutureWeather() {}
+
+    // setters and getters
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public String getDateTime() {
+        return this.dateTime;
+    }
+
+    public void setEpochDateTime(long epochDateTime) {
+        this.epochDateTime = epochDateTime;
+    }
+
+    public long getEpochDateTime() {
+        return this.epochDateTime;
+    }
+
+    public void setDayLight(boolean isDayLight) {
+        this.isDayLight = isDayLight;
+    }
+
+    public boolean getDayLight() {
+        return this.isDayLight;
+    }
+
+    public void setTemperature(Temperature temperature) {
+        this.temperature = temperature;
+    }
+
+    public Temperature getTemperature() {
+        return this.temperature;
+    }
+
+    public void setWind(Wind wind) {
+        this.wind = wind;
+    }
+
+    public Wind getWind() {
+        return this.wind;
+    }
+
+    public void setRain(Rain rain) {
+        this.rain = rain;
+    }
+
+    public Rain getRain() {
+        return this.rain;
+    }
+
+    public void setSnow(Snow snow) {
+        this.snow = snow;
+    }
+
+    public Snow getSnow() {
+        return this.snow;
+    }
+
+    public void setIce(Ice ice) {
+        this.ice = ice;
+    }
+
+    public Ice getIce() {
+        return this.ice;
+    }
+
+    public void setCloudCover(int cloudCover) {
+        this.cloudCover = cloudCover;
+    }
+
+    public int getCloudCover() {
+        return this.cloudCover;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public String getLink() {
+        return this.link;
+    }
+
+    public void setMobileLink(String mobileLink) {
+        this.mobileLink = mobileLink;
+    }
+
+    public String getMobileLink() {
+        return this.mobileLink;
+    }
+
     public  class Temperature {
-        private float temp;
-        private float realFeelTemp;
-        private String unit;
+        private float temp = 0;
+        private float realFeelTemp = 0;
+        private String unit = "";
 
         public float getTemp() {
             return temp;
@@ -46,12 +145,12 @@ public class FutureWeather {
 
     public  class Wind {
         // speed
-        private float speed;
-        private String unit;
+        private float speed = 0;
+        private String unit = "";
 
         // direction
-        private float degree;
-        private String localized;
+        private float degree = 0;
+        private String localized = "";
 
         public float getSpeed() {
             return speed;
@@ -81,8 +180,8 @@ public class FutureWeather {
     }
 
     public  class Rain {
-        private int val;
-        private String unit;
+        private int val = 0;
+        private String unit = "";
 
         public int getVal() {
             return val;
@@ -98,8 +197,8 @@ public class FutureWeather {
         }
     }
     public  class Snow {
-        private int val;
-        private String unit;
+        private int val = 0;
+        private String unit = "";
 
         public int getVal() {
             return val;
@@ -115,8 +214,8 @@ public class FutureWeather {
         }
     }
     public  class Ice {
-        private int val;
-        private String unit;
+        private int val = 0;
+        private String unit = "";
 
         public int getVal() {
             return val;

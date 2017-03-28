@@ -17,6 +17,7 @@ import org.json.JSONObject;
 public class LocationParser {
     /**
      * Parse location data, i.e. get location Key from the first element of the json array
+     *
      * @param data from http://apidev.accuweather.com/locations/v1/search?q=san%20jose,United%20States&apikey=hoArfRosT1215
      * @return locationKey
      */
