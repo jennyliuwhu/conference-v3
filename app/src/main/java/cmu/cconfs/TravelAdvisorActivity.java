@@ -57,66 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-//import cmu.cconfs.model.parseModel.Weather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
-
-//class AndroidPopupWindowActivity extends Activity {
-//    /**
-//     * Called when the activity is first created.
-//     */
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_travel);
-//        final Button btnOpenPopup = (Button) findViewById(R.id.openpopup);
-//        btnOpenPopup.setOnClickListener(new Button.OnClickListener() {
-//            @Override
-//            public void onClick(View arg0) {
-//                LayoutInflater layoutInflater
-//                        = (LayoutInflater) getBaseContext()
-//                        .getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View popupView = layoutInflater.inflate(R.layout.popup, null);
-//                final PopupWindow popupWindow = new PopupWindow(
-//                        popupView,
-//                        LayoutParams.WRAP_CONTENT,
-//                        LayoutParams.WRAP_CONTENT);
-//
-//                Button btnDismiss = (Button) popupView.findViewById(R.id.dismiss);
-//                btnDismiss.setOnClickListener(new Button.OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(View v) {
-//                        // TODO Auto-generated method stub
-//                        popupWindow.dismiss();
-//                    }
-//                });
-//
-//                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
-//
-//                popupView.setOnTouchListener(new OnTouchListener() {
-//                    int orgX, orgY;
-//                    int offsetX, offsetY;
-//
-//                    @Override
-//                    public boolean onTouch(View v, MotionEvent event) {
-//                        switch (event.getAction()) {
-//                            case MotionEvent.ACTION_DOWN:
-//                                orgX = (int) event.getX();
-//                                orgY = (int) event.getY();
-//                                break;
-//                            case MotionEvent.ACTION_MOVE:
-//                                offsetX = (int) event.getRawX() - orgX;
-//                                offsetY = (int) event.getRawY() - orgY;
-//                                popupWindow.update(offsetX, offsetY, -1, -1, true);
-//                                break;
-//                        }
-//                        return true;
-//                    }
-//                });
-//            }
-//        });
-//    }
-//}
 
 /**
  * todo refer to https://developer.android.com/reference/android/widget/PopupWindow.html
@@ -212,33 +153,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         windSpeed = (TextView) findViewById(R.id.windSpeed);
         windDeg = (TextView) findViewById(R.id.windDeg);
         imgView = (ImageView) findViewById(R.id.condIcon);
-
-//        final Button btnOpenPopup = (Button)findViewById(R.id.openpopup);
-//        btnOpenPopup.setOnClickListener(new Button.OnClickListener(){
-//
-//            @Override
-//            public void onClick(View arg0) {
-//                LayoutInflater layoutInflater
-//                        = (LayoutInflater)getBaseContext()
-//                        .getSystemService(LAYOUT_INFLATER_SERVICE);
-//                View popupView = layoutInflater.inflate(R.layout.popup, null);
-//                final PopupWindow popupWindow = new PopupWindow(
-//                        popupView,
-//                        LayoutParams.WRAP_CONTENT,
-//                        LayoutParams.WRAP_CONTENT);
-//
-//                Button btnDismiss = (Button)popupView.findViewById(R.id.dismiss);
-//                btnDismiss.setOnClickListener(new Button.OnClickListener(){
-//
-//                    @Override
-//                    public void onClick(View v) {
-//                        // TODO Auto-generated method stub
-//                        popupWindow.dismiss();
-//                    }});
-//
-//                popupWindow.showAsDropDown(btnOpenPopup, 50, -30);
-//
-//            }});
 
         button = (Button) findViewById(R.id.buttonShowCustomDialog);
 
@@ -366,26 +280,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 @Override
                 public void onMapClick(LatLng point) {
                     System.out.println("markerPoints size: " + markerPoints.size());
-                    if (markerPoints.isEmpty()) {
-                        if (locationManager != null) {
-                            checkLocationPermission();
-                            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                markerPoints.add(currentLatLng);
-                                MarkerOptions markerOptions = new MarkerOptions();
-                                markerOptions.position(currentLatLng);
-                                markerOptions.title("Current Position");
-                                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                                mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-                            } else {
-                                System.out.println("location is null");
-                            }
-                        } else {
-                            System.out.println("locationManager is null");
-                        }
-                    }
+                    System.out.println("isCleared = " + isCleared);
                     if (!isCleared) {
                         // TODO: 3/3/17 weather information pop-up window
                         // TODO: 3/20/17 weather forecasting
@@ -408,10 +303,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                         } catch (IOException e) {
                             System.out.println("Failed to get address for this point");
                         }
-
                         return;
                     }
-
                     destinationMarker.remove();
 
                     // Adding new item to the ArrayList
@@ -427,16 +320,16 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                      * For the start location, the color of marker is BLUE and
                      * for the end location, the color of marker is RED.
                      */
+                    System.out.println("before draw poly line: markerPoints size = " + markerPoints.size());
                     if(markerPoints.size()==1){
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
                     }else if(markerPoints.size()==2){
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        drawPolyLine();
                     }
 
                     // Add new marker to the Google Map Android API V2
                     mMap.addMarker(options);
-
-                    drawPolyLine();
                 }
             });
         }
@@ -485,8 +378,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         System.out.println("points clear button clicked");
         // clear the map
         mMap.clear();
+        markerPoints.clear();
         // clear destination
-        markerPoints.remove(1);
+//        markerPoints.remove(1);
         isCleared = true;
     }
 

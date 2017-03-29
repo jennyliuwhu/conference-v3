@@ -14,12 +14,10 @@ import cmu.cconfs.parseUtils.helper.LocationParser;
  * @author jialingliu
  */
 public class WeatherHttpClient {
-    //    private static final String BASE_URL = "http://api.openweathermap.org/data/2.5/weather?q=%s&APPID=%s";
-//    private static final String apiKey = "7a24439eb20d658c0c7067e12531b46c";
-//    private static final String IMG_URL = "http://openweathermap.org/img/w/";
     private static final String GET_KEY_URL = "http://apidev.accuweather.com/locations/v1/search?q=%s&apikey=hoArfRosT1215";
     private static final String BASE_URL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/%s?apikey=%s&details=true&metric=true";
     private static final String apiKey = "7a24439eb20d658c0c7067e12531b46c";
+
     public FutureWeather getWeatherData(String location, long durationInS) {
         String locationKey = getLocationKey(location);
         System.out.println("location is " + location);
@@ -102,41 +100,4 @@ public class WeatherHttpClient {
         }
         return "347630";
     }
-
-//    public byte[] getImage(String code) {
-//        HttpURLConnection con = null ;
-//        InputStream is = null;
-//        try {
-//            con = (HttpURLConnection) ( new URL(IMG_URL + code + ".png")).openConnection();
-//            con.setRequestMethod("GET");
-////            con.setDoInput(true);
-////            con.setDoOutput(true);
-//            con.connect();
-//
-//            // Let's read the response
-//            is = con.getInputStream();
-//            byte[] buffer = new byte[1024];
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//            while ( is.read(buffer) != -1) {
-//                baos.write(buffer);
-//            }
-//
-//            return baos.toByteArray();
-//        } catch(Throwable t) {
-//            t.printStackTrace();
-//        } finally {
-//            try {
-//                if (is != null) {
-//                    is.close();
-//                }
-//            } catch(Exception ignored) {}
-//            try {
-//                if (con != null) {
-//                    con.disconnect();
-//                }
-//            } catch(Throwable ignored) {}
-//        }
-//        return null;
-//    }
 }
