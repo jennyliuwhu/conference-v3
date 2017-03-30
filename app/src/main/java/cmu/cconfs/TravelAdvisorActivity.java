@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import cmu.cconfs.model.parseModel.FutureWeather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
 
 /**
@@ -294,6 +295,12 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 //                            JSONWeatherTask task = new JSONWeatherTask();
 //                            task.execute(city);
                             // TODO: 3/23/17 execute FutureWeatherTask
+                            LatLng origin = markerPoints.get(0);
+
+                            // Getting URL to the Google Directions API
+                            String url = getDirectionsUrl(origin, point);
+                            DownloadTask2 downloadTask2 = new DownloadTask2();
+                            downloadTask2.execute(url);
 
                             if (currentWeatherInfoMaker != null) {
                                 currentWeatherInfoMaker.remove();
@@ -607,7 +614,11 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     rawDuration = point.get("duration");
                 }
             }
+            System.out.println("rawDuration is: " + rawDuration);
             parseDuration(rawDuration);
+            System.out.println("durationInS is: " + durationInS);
+            // TODO: 3/29/17 Start JsonWeatherTask
+
         }
 
         private void parseDuration(String rawDuration) {
@@ -825,7 +836,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     // future weather task
 //    private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
-//
+        // TODO: 3/29/17 future weather task
 //    }
     
     // current weather task

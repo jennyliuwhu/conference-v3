@@ -9,8 +9,12 @@ public class FutureWeather {
     public String dateTime = "";
     public long epochDateTime = 0;
 
+    public String iconPhrase = "";
     public boolean isDayLight = true;
     public Temperature temperature = new Temperature();
+
+    public Probability probability = new Probability();
+
     public Wind wind = new Wind();
     public Rain rain = new Rain();
     public Snow snow = new Snow();
@@ -46,6 +50,13 @@ public class FutureWeather {
         return this.epochDateTime;
     }
 
+    public void setIconPhrase(String iconPhrase) {
+        this.iconPhrase = iconPhrase;
+    }
+
+    public String getIconPhrase() {
+        return this.iconPhrase;
+    }
     public void setDayLight(boolean isDayLight) {
         this.isDayLight = isDayLight;
     }
@@ -54,40 +65,24 @@ public class FutureWeather {
         return this.isDayLight;
     }
 
-    public void setTemperature(Temperature temperature) {
-        this.temperature = temperature;
-    }
-
     public Temperature getTemperature() {
         return this.temperature;
-    }
-
-    public void setWind(Wind wind) {
-        this.wind = wind;
     }
 
     public Wind getWind() {
         return this.wind;
     }
 
-    public void setRain(Rain rain) {
-        this.rain = rain;
+    public Probability getProbability() {
+        return this.probability;
     }
 
     public Rain getRain() {
         return this.rain;
     }
 
-    public void setSnow(Snow snow) {
-        this.snow = snow;
-    }
-
     public Snow getSnow() {
         return this.snow;
-    }
-
-    public void setIce(Ice ice) {
-        this.ice = ice;
     }
 
     public Ice getIce() {
@@ -118,21 +113,29 @@ public class FutureWeather {
         return this.mobileLink;
     }
 
-    public  class Temperature {
-        private float temp = 0;
-        private float realFeelTemp = 0;
+    public class Temperature {
+        private double temp = 0;
+        private double realFeelTemp = 0;
         private String unit = "";
 
-        public float getTemp() {
+        public Temperature() {
+
+        }
+        public Temperature(double temp, double realFeelTemp, String unit) {
+            this.temp = temp;
+            this.realFeelTemp = realFeelTemp;
+            this.unit = unit;
+        }
+        public double getTemp() {
             return temp;
         }
-        public void setTemp(float temp) {
+        public void setTemp(double temp) {
             this.temp = temp;
         }
-        public float getRealFeelTemp() {
+        public double getRealFeelTemp() {
             return realFeelTemp;
         }
-        public void setRealFeelTemp(float realFeelTemp) {
+        public void setRealFeelTemp(double realFeelTemp) {
             this.realFeelTemp = realFeelTemp;
         }
         public String getUnit() {
@@ -143,19 +146,19 @@ public class FutureWeather {
         }
     }
 
-    public  class Wind {
+    public class Wind {
         // speed
-        private float speed = 0;
+        private double speed = 0;
         private String unit = "";
 
         // direction
-        private float degree = 0;
+        private double degree = 0;
         private String localized = "";
 
-        public float getSpeed() {
+        public double getSpeed() {
             return speed;
         }
-        public void setSpeed(float speed) {
+        public void setSpeed(double speed) {
             this.speed = speed;
         }
         public String getUnit() {
@@ -165,10 +168,10 @@ public class FutureWeather {
             this.unit = unit;
         }
 
-        public float getDegree() {
+        public double getDegree() {
             return degree;
         }
-        public void setDegree(float degree) {
+        public void setDegree(double degree) {
             this.degree = degree;
         }
         public String getLocalized() {
@@ -179,7 +182,46 @@ public class FutureWeather {
         }
     }
 
-    public  class Rain {
+    public class Probability {
+        private double precipitationProbability = 0;
+        private double rainProbability = 0;
+        private double snowProbability = 0;
+        private double iceProbability = 0;
+
+        public void setPrecipitationProbability(double precipitationProbability) {
+            this.precipitationProbability = precipitationProbability;
+        }
+
+        public double getPrecipitationProbability() {
+            return this.precipitationProbability;
+        }
+
+        public void setRainProbability(double rainProbability) {
+            this.rainProbability = rainProbability;
+        }
+
+        public double getRainProbability() {
+            return this.rainProbability;
+        }
+
+        public void setSnowProbability(double snowProbability) {
+            this.snowProbability = snowProbability;
+        }
+
+        public double getSnowProbability() {
+            return this.snowProbability;
+        }
+
+        public void setIceProbability(double iceProbability) {
+            this.iceProbability = iceProbability;
+        }
+
+        public double getIceProbability() {
+            return this.iceProbability;
+        }
+    }
+
+    public class Rain {
         private int val = 0;
         private String unit = "";
 
@@ -196,7 +238,7 @@ public class FutureWeather {
             this.unit = unit;
         }
     }
-    public  class Snow {
+    public class Snow {
         private int val = 0;
         private String unit = "";
 
@@ -213,7 +255,7 @@ public class FutureWeather {
             this.unit = unit;
         }
     }
-    public  class Ice {
+    public class Ice {
         private int val = 0;
         private String unit = "";
 

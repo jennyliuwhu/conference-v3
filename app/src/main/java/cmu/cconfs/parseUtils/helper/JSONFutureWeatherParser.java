@@ -2,7 +2,9 @@ package cmu.cconfs.parseUtils.helper;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,9 +58,46 @@ public class JSONFutureWeatherParser {
                                           long durationInS) {
         // TODO: 3/24/17 parse futureWeather from response
         JSONObject jsonObject = getJsonFutureWeather(data, durationInS);
+        FutureWeather futureWeather = new FutureWeather();
         if (jsonObject == null) {
-
+            return futureWeather;
         }
-        return null;
+        try {
+            futureWeather.setDateTime(jsonObject.getString("DateTime"));
+            futureWeather.setEpochDateTime(jsonObject.getLong("EpochDateTime"));
+            futureWeather.setIconPhrase(jsonObject.getString("IconPhrase"));
+            futureWeather.setDayLight(jsonObject.getBoolean("IsDaylight"));
+
+            futureWeather.temperature.setTemp(jsonObject.getJSONObject("Temperature").getDouble("Value"));
+            futureWeather.temperature.setRealFeelTemp(jsonObject.getJSONObject("RealFeelTemperature").getDouble("Value"));
+            futureWeather.temperature.setUnit(jsonObject.getJSONObject("Temperature").getString("Unit"));
+
+            futureWeather.wind.setSpeed(jsonObject.getJSONObject("Wind").getJSONObject("Speed").getDouble("Value"));
+            futureWeather.wind.setUnit(jsonObject.getJSONObject("Wind").getJSONObject("Speed").getString("Unit"));
+            futureWeather.wind.setDegree(jsonObject.getJSONObject("Wind").getJSONObject("Direction").getDouble("Degrees"));
+            futureWeather.wind.setLocalized(jsonObject.getJSONObject("Wind").getJSONObject("Direction").getString("Localized"));
+
+            futureWeather.probability.setPrecipitationProbability(jsonObject.getDouble("PrecipitationProbability"));
+            futureWeather.probability.setRainProbability(jsonObject.getDouble("RainProbability"));
+            futureWeather.probability.setSnowProbability(jsonObject.getDouble("SnowProbability"));
+            futureWeather.probability.setIceProbability(jsonObject.getDouble("IceProbability"));
+
+            futureWeather.rain.setVal(jsonObject.getJSONObject("Rain").getInt("Value"));
+            futureWeather.rain.setUnit(jsonObject.getJSONObject("Rain").getString("Unit"));
+
+            futureWeather.snow.setVal(jsonObject.getJSONObject("Snow").getInt("Value"));
+            futureWeather.snow.setUnit(jsonObject.getJSONObject("Snow").getString("Unit"));
+
+            futureWeather.ice.setVal(jsonObject.getJSONObject("Ice").getInt("Value"));
+            futureWeather.ice.setUnit(jsonObject.getJSONObject("Ice").getString("Unit"));
+
+            futureWeather.setCloudCover(jsonObject.getInt("CloudCover"));
+            futureWeather.setLink(jsonObject.getString("Link"));
+            futureWeather.setMobileLink(jsonObject.getString("MobileLink"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.out.println("field does not exist");
+        }
+        return futureWeather;
     }
 }
