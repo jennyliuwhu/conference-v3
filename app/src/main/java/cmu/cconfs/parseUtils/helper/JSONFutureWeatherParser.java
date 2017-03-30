@@ -16,7 +16,10 @@ import cmu.cconfs.model.parseModel.FutureWeather;
  */
 public class JSONFutureWeatherParser {
     private JSONObject getJsonFutureWeather(@NonNull String data,
-                                            long durationInS) {
+                                            String durationInString) {
+        System.out.println("data: ");
+        System.out.println(data);
+        long durationInS = Long.parseLong(durationInString);
         // response.json
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(data);
@@ -55,9 +58,9 @@ public class JSONFutureWeatherParser {
 
     }
     public FutureWeather getFutureWeather(@NonNull String data,
-                                          long durationInS) {
+                                          String durationInString) {
         // TODO: 3/24/17 parse futureWeather from response
-        JSONObject jsonObject = getJsonFutureWeather(data, durationInS);
+        JSONObject jsonObject = getJsonFutureWeather(data, durationInString);
         FutureWeather futureWeather = new FutureWeather();
         if (jsonObject == null) {
             return futureWeather;

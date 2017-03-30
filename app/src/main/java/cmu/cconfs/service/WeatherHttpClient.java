@@ -16,9 +16,9 @@ import cmu.cconfs.parseUtils.helper.LocationParser;
 public class WeatherHttpClient {
     private static final String GET_KEY_URL = "http://apidev.accuweather.com/locations/v1/search?q=%s&apikey=hoArfRosT1215";
     private static final String BASE_URL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/%s?apikey=%s&details=true&metric=true";
-    private static final String apiKey = "7a24439eb20d658c0c7067e12531b46c";
+    private static final String apiKey = "2HbZMIUw4YGYi1GQ9km1jEuLpxtFdtrK";
 
-    public FutureWeather getWeatherData(String location, long durationInS) {
+    public FutureWeather getWeatherData(String location, String durationInS) {
         String locationKey = getLocationKey(location);
         System.out.println("location is " + location);
         System.out.println("location key is + " + locationKey);

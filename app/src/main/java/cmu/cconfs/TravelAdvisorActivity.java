@@ -59,6 +59,7 @@ import java.util.List;
 
 import cmu.cconfs.model.parseModel.FutureWeather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
+import cmu.cconfs.service.WeatherHttpClient;
 
 /**
  * todo refer to https://developer.android.com/reference/android/widget/PopupWindow.html
@@ -617,7 +618,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             System.out.println("rawDuration is: " + rawDuration);
             parseDuration(rawDuration);
             System.out.println("durationInS is: " + durationInS);
-            // TODO: 3/29/17 Start JsonWeatherTask
+            // TODO: 3/29/17 Start JsonFutureWeatherTask
+            JsonFutureWeatherTask jsonFutureWeatherTask = new JsonFutureWeatherTask();
+            jsonFutureWeatherTask.execute(city, Long.toString(durationInS));
 
         }
 
@@ -835,9 +838,27 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
 
     // future weather task
-//    private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
+    private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
         // TODO: 3/29/17 future weather task
-//    }
+        @Override
+        protected FutureWeather doInBackground(String... params) {
+            FutureWeather futureWeather = new FutureWeather();
+            // TODO: 3/30/17 get future weather from client
+            System.out.println("first param: " + params[0]);
+            System.out.println("second param: " + params[1]);
+            futureWeather = (new WeatherHttpClient()).getWeatherData(params[0], params[1]);
+            return futureWeather;
+        }
+        
+        @Override
+        protected void onPostExecute(FutureWeather futureWeather) {
+            super.onPostExecute(futureWeather);
+            // TODO: 3/30/17 display future weather
+            System.out.println("executing JsonFutureWeatherTask");
+            System.out.println(futureWeather);
+            System.out.println("got weather successfully");
+        }
+    }
     
     // current weather task
 //    private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {

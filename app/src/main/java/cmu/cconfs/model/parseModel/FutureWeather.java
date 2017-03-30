@@ -113,6 +113,24 @@ public class FutureWeather {
         return this.mobileLink;
     }
 
+    @Override
+    public String toString() {
+        return "[" + getLocation().getCity() + "\t" + getLocation().getCountry() + "\n" +
+                getDateTime() + "\n" +
+                getEpochDateTime() + "\n" +
+                getIconPhrase() + "\n" +
+                "isDayLight: " + this.getDayLight() + "\n" +
+                getTemperature() + "\n" +
+                getProbability() + "\n" +
+                getWind() + "\n" +
+                getRain() + "\n" +
+                getSnow() + "\n" +
+                getIce() + "\n" +
+                "cloudCover" + getCloudCover() + "\n" +
+                "link: " + getLink() + "\n" +
+                "mobileLink" + getMobileLink() + "]";
+    }
+
     public class Temperature {
         private double temp = 0;
         private double realFeelTemp = 0;
@@ -143,6 +161,11 @@ public class FutureWeather {
         }
         public void setUnit(String unit) {
             this.unit = unit;
+        }
+
+        @Override
+        public String toString() {
+            return "realFeelTemperature: " + this.getRealFeelTemp() + this.getUnit() + "\t" + ("temperature: ") + this.getTemp() + this.getUnit();
         }
     }
 
@@ -179,6 +202,11 @@ public class FutureWeather {
         }
         public void setLocalized(String localized) {
             this.localized = localized;
+        }
+
+        @Override
+        public String toString() {
+            return getSpeed() + getUnit() + ", " + getDegree() + getLocation();
         }
     }
 
@@ -219,6 +247,21 @@ public class FutureWeather {
         public double getIceProbability() {
             return this.iceProbability;
         }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (getRainProbability() != 0) {
+                sb.append(getRainProbability()).append("% ").append("rain");
+            }
+            if (getSnowProbability() != 0) {
+                sb.append(getSnowProbability()).append("% ").append("snow");
+            }
+            if (getIceProbability() != 0) {
+                sb.append(getIceProbability()).append("% ").append("ice");
+            }
+            return sb.toString();
+        }
     }
 
     public class Rain {
@@ -237,6 +280,11 @@ public class FutureWeather {
         public void setUnit(String unit) {
             this.unit = unit;
         }
+
+        @Override
+        public String toString() {
+            return getVal() + getUnit() + "rain";
+        }
     }
     public class Snow {
         private int val = 0;
@@ -254,6 +302,11 @@ public class FutureWeather {
         public void setUnit(String unit) {
             this.unit = unit;
         }
+
+        @Override
+        public String toString() {
+            return getVal() + getUnit() + "snow";
+        }
     }
     public class Ice {
         private int val = 0;
@@ -270,6 +323,11 @@ public class FutureWeather {
         }
         public void setUnit(String unit) {
             this.unit = unit;
+        }
+
+        @Override
+        public String toString() {
+            return getVal() + getUnit() + "ice";
         }
     }
 }
