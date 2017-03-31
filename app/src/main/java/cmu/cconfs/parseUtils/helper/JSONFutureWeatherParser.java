@@ -24,7 +24,6 @@ public class JSONFutureWeatherParser {
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(data);
         JsonArray weathers = jsonElement.getAsJsonArray();
-        System.out.println(weathers);
         long lowerTmp = Long.MAX_VALUE;
         JSONObject prev = null;
         try {
@@ -33,8 +32,8 @@ public class JSONFutureWeatherParser {
                 // it will throw UnsupportedOperationException
                 JSONObject jsonObject = new JSONObject(weathers.get(i).toString());
                 long epochDateTime = jsonObject.getLong("EpochDateTime");
-                if ((i == 0 && epochDateTime < durationInS)
-                        || i == weathers.size() - 1 && epochDateTime > durationInS){
+                if ((i == 0 && epochDateTime > durationInS)
+                        || i == weathers.size() - 1 && epochDateTime < durationInS){
                     return jsonObject;
                 }
                 if (durationInS > lowerTmp && durationInS < epochDateTime) {

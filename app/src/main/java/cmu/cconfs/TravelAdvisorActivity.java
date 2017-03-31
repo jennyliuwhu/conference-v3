@@ -95,22 +95,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private boolean isCleared = true;
     private Marker currentWeatherInfoMaker;
 
-    // weather view
-    private TextView cityText;
-    private TextView condDescr;
-    private TextView temp;
-    private TextView press;
-    private TextView windSpeed;
-    private TextView windDeg;
-
-    private TextView hum;
-    private ImageView imgView;
-
     String city;
 
     Geocoder geocoder;
-
-    Location location;
 
     private Button button;
 
@@ -147,15 +134,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
         city = "Mountain View, United States";
 
-        cityText = (TextView) findViewById(R.id.cityText);
-        condDescr = (TextView) findViewById(R.id.condDescr);
-        temp = (TextView) findViewById(R.id.temp);
-        hum = (TextView) findViewById(R.id.hum);
-        press = (TextView) findViewById(R.id.press);
-        windSpeed = (TextView) findViewById(R.id.windSpeed);
-        windDeg = (TextView) findViewById(R.id.windDeg);
-        imgView = (ImageView) findViewById(R.id.condIcon);
-
         button = (Button) findViewById(R.id.buttonShowCustomDialog);
 
         // add button listener
@@ -165,14 +143,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 // custom dialog
                 final Dialog dialog = new Dialog(context);
                 dialog.setContentView(R.layout.custom);
-                dialog.setTitle("Title...");
-
+                dialog.setTitle("Weather");
                 // set the custom dialog components - text, image and button
                 TextView text = (TextView) dialog.findViewById(R.id.text);
                 text.setText("Android custom dialog example!");
-//                ImageView image = (ImageView) dialog.findViewById(R.id.image);
-//                image.setImageResource(R.drawable.ic_launcher);
-
                 Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
                 // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -262,7 +236,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         initMap();
 
         if (mMap != null) {
-
             //Initialize Google Play Services
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (ContextCompat.checkSelfPermission(this,
@@ -293,9 +266,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                             city = cityName + ", " + countryName;
                             System.out.println("city should be: " + cityName);
                             System.out.println("country should be: " + countryName);
-//                            JSONWeatherTask task = new JSONWeatherTask();
-//                            task.execute(city);
-                            // TODO: 3/23/17 execute FutureWeatherTask
                             LatLng origin = markerPoints.get(0);
 
                             // Getting URL to the Google Directions API
@@ -728,12 +698,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 // Fetching all the points in i-th route
                 for(int j=0;j<path.size();j++){
                     HashMap<String,String> point = path.get(j);
-
-//                    System.out.println("start printing points");
-//                    for (Map.Entry<String, String> entry : point.entrySet()) {
-//                        System.out.println(entry.getKey()+" : "+entry.getValue());
-//                    }
-
                     if(j==0){    // Get distance from the list
                         distance = point.get("distance");
                         continue;
@@ -839,65 +803,37 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     // future weather task
     private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
-        // TODO: 3/29/17 future weather task
         @Override
         protected FutureWeather doInBackground(String... params) {
-            FutureWeather futureWeather = new FutureWeather();
-            // TODO: 3/30/17 get future weather from client
+            FutureWeather futureWeather;
             System.out.println("first param: " + params[0]);
             System.out.println("second param: " + params[1]);
             futureWeather = (new WeatherHttpClient()).getWeatherData(params[0], params[1]);
             return futureWeather;
         }
-        
+
         @Override
         protected void onPostExecute(FutureWeather futureWeather) {
             super.onPostExecute(futureWeather);
-            // TODO: 3/30/17 display future weather
             System.out.println("executing JsonFutureWeatherTask");
             System.out.println(futureWeather);
             System.out.println("got weather successfully");
+            // custom dialog
+            final Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.custom);
+            dialog.setTitle("Weather");
+            // set the custom dialog components - text, image and button
+            TextView text = (TextView) dialog.findViewById(R.id.text);
+            text.setText(futureWeather.toString());
+            Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+            // if button is clicked, close the custom dialog
+            dialogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
         }
     }
-    
-    // current weather task
-//    private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
-//
-//        @Override
-//        protected Weather doInBackground(String... params) {
-//            Weather weather = new Weather();
-//            String data = ( (new WeatherHttpClient()).getWeatherData(params[0]));
-//
-//            try {
-//                weather = JSONWeatherParser.getWeather(data);
-//
-//                // Let's retrieve the icon
-//                weather.iconData = ( (new WeatherHttpClient()).getImage(weather.currentCondition.getIcon()));
-//
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//            return weather;
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Weather weather) {
-//            super.onPostExecute(weather);
-//
-//            // // TODO: 3/7/17 replace textViews with dialog and display weather information
-////            if (weather.iconData != null && weather.iconData.length > 0) {
-////                Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
-////                imgView.setImageBitmap(img);
-////            }
-//            cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
-//            condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
-//            temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "°C");
-//            hum.setText("" + weather.currentCondition.getHumidity() + "%");
-//            press.setText("" + weather.currentCondition.getPressure() + " hPa");
-//            windSpeed.setText("" + weather.wind.getSpeed() + " mps");
-//            windDeg.setText("" + weather.wind.getDegree());
-//        }
-//    }
 }
-

@@ -30,7 +30,6 @@ public class WeatherHttpClient {
             con = (HttpURLConnection)(new URL(link).openConnection());
             con.setRequestMethod("GET");
             con.setDoInput(true);
-            con.setDoOutput(true);
             con.connect();
 
             // Let's read the response
@@ -43,7 +42,11 @@ public class WeatherHttpClient {
             con.disconnect();
             System.out.println(buffer.toString());
             JSONFutureWeatherParser jsonFutureWeatherParser = new JSONFutureWeatherParser();
-            return jsonFutureWeatherParser.getFutureWeather(buffer.toString(), durationInS);
+            FutureWeather futureWeather = jsonFutureWeatherParser.getFutureWeather(buffer.toString(), durationInS);
+            futureWeather.getLocation().setCity(location.split(", ")[0]);
+            futureWeather.getLocation().setCountry(location.split(", ")[1]);
+            futureWeather.getLocation().setLocationKey(locationKey);
+            return futureWeather;
         } catch(Throwable t) {
             t.printStackTrace();
         } finally {
@@ -65,12 +68,11 @@ public class WeatherHttpClient {
         HttpURLConnection con = null;
         InputStream is = null;
         try {
-            String link = String.format(GET_KEY_URL, location);
+            String link = String.format(GET_KEY_URL, location).replaceAll(" +", "%20");
             System.out.println(link);
             con = (HttpURLConnection)(new URL(link).openConnection());
             con.setRequestMethod("GET");
             con.setDoInput(true);
-            con.setDoOutput(true);
             con.connect();
             // Let's read the response
             StringBuilder buffer = new StringBuilder();
@@ -83,6 +85,7 @@ public class WeatherHttpClient {
             System.out.println(buffer.toString());
 
             LocationParser locationParser = new LocationParser();
+            System.out.println("got locationKey successfully");
             return locationParser.getLocationKey(buffer.toString());
         } catch(Throwable t) {
             t.printStackTrace();
@@ -98,6 +101,7 @@ public class WeatherHttpClient {
                 }
             } catch(Throwable ignored) {}
         }
+        System.out.println("did not get locationKey");
         return "347630";
     }
 }

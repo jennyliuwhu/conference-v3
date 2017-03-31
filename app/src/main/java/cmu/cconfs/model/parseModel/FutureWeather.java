@@ -126,9 +126,9 @@ public class FutureWeather {
                 getRain() + "\n" +
                 getSnow() + "\n" +
                 getIce() + "\n" +
-                "cloudCover" + getCloudCover() + "\n" +
+                "cloudCover: " + getCloudCover() + "\n" +
                 "link: " + getLink() + "\n" +
-                "mobileLink" + getMobileLink() + "]";
+                "mobileLink: " + getMobileLink() + "]";
     }
 
     public class Temperature {
@@ -206,7 +206,7 @@ public class FutureWeather {
 
         @Override
         public String toString() {
-            return getSpeed() + getUnit() + ", " + getDegree() + getLocation();
+            return getSpeed() + getUnit() + ", " + getDegree() + getLocalized();
         }
     }
 
@@ -260,6 +260,9 @@ public class FutureWeather {
             if (getIceProbability() != 0) {
                 sb.append(getIceProbability()).append("% ").append("ice");
             }
+            if (sb.length() == 0) {
+                sb.append("No probability of rain, snow or ice");
+            }
             return sb.toString();
         }
     }
@@ -283,7 +286,7 @@ public class FutureWeather {
 
         @Override
         public String toString() {
-            return getVal() + getUnit() + "rain";
+            return getVal() + getUnit() + " rain";
         }
     }
     public class Snow {
@@ -305,7 +308,7 @@ public class FutureWeather {
 
         @Override
         public String toString() {
-            return getVal() + getUnit() + "snow";
+            return getVal() + getUnit() + " snow";
         }
     }
     public class Ice {
@@ -327,7 +330,7 @@ public class FutureWeather {
 
         @Override
         public String toString() {
-            return getVal() + getUnit() + "ice";
+            return getVal() + getUnit() + " ice";
         }
     }
 }
