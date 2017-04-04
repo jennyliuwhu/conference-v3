@@ -67,6 +67,7 @@ public class JSONFutureWeatherParser {
         try {
             futureWeather.setDateTime(jsonObject.getString("DateTime"));
             futureWeather.setEpochDateTime(jsonObject.getLong("EpochDateTime"));
+            futureWeather.setWeatherIcon(jsonObject.getInt("WeatherIcon"));
             futureWeather.setIconPhrase(jsonObject.getString("IconPhrase"));
             futureWeather.setDayLight(jsonObject.getBoolean("IsDaylight"));
 

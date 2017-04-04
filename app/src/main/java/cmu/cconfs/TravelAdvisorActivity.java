@@ -6,6 +6,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Address;
@@ -76,6 +78,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private GoogleMap mMap;
     private LocationManager locationManager;
 
+    // TODO: 4/3/17 display img 
+    private String IMAGE_URL = "https://apidev.accuweather.com/developers/Media/Default/WeatherIcons/%s-s.png";
+
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
@@ -99,7 +104,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     Geocoder geocoder;
 
-    private Button button;
+    private ImageView mImageView;
+//    private Button button;
 
     /**
      * duration[0] = x days,
@@ -107,6 +113,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
      * duration[2] = z mins
      */
     private long durationInS = 0;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,30 +142,30 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
         city = "Mountain View, United States";
 
-        button = (Button) findViewById(R.id.buttonShowCustomDialog);
-
-        // add button listener
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                // custom dialog
-                final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.custom);
-                dialog.setTitle("Weather");
-                // set the custom dialog components - text, image and button
-                TextView text = (TextView) dialog.findViewById(R.id.text);
-                text.setText("Android custom dialog example!");
-                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
-                // if button is clicked, close the custom dialog
-                dialogButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-            }
-        });
+//        button = (Button) findViewById(R.id.buttonShowCustomDialog);
+//
+//        // add button listener
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View arg0) {
+//                // custom dialog
+//                final Dialog dialog = new Dialog(context);
+//                dialog.setContentView(R.layout.custom);
+//                dialog.setTitle("Weather");
+//                // set the custom dialog components - text, image and button
+//                TextView text = (TextView) dialog.findViewById(R.id.text);
+//                text.setText("Android custom dialog example!");
+//                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
+//                // if button is clicked, close the custom dialog
+//                dialogButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        dialog.dismiss();
+//                    }
+//                });
+//                dialog.show();
+//            }
+//        });
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -802,7 +810,18 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
 
     // future weather task
-    private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
+    private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> implements LoadImageTask.Listener {
+        @Override
+        public void onImageLoaded(Bitmap bitmap) {
+
+            mImageView.setImageBitmap(bitmap);
+        }
+
+        @Override
+        public void onError() {
+            Toast.makeText(getApplicationContext(), "Error Loading Image !", Toast.LENGTH_SHORT).show();
+        }
+
         @Override
         protected FutureWeather doInBackground(String... params) {
             FutureWeather futureWeather;
@@ -819,6 +838,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             System.out.println(futureWeather);
             System.out.println("got weather successfully");
             // custom dialog
+            mImageView = (ImageView) findViewById(R.id.image);
+            new LoadImageTask(this).execute(IMAGE_URL);
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.custom);
             dialog.setTitle("Weather");
@@ -834,6 +855,47 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 }
             });
             dialog.show();
+        }
+    }
+}
+
+class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+    public LoadImageTask(Listener listener) {
+
+        mListener = listener;
+    }
+
+    public interface Listener{
+
+        void onImageLoaded(Bitmap bitmap);
+        void onError();
+    }
+
+    private Listener mListener;
+    @Override
+    protected Bitmap doInBackground(String... args) {
+
+        try {
+
+            return BitmapFactory.decodeStream((InputStream)new URL(args[0]).getContent());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+
+        if (bitmap != null) {
+
+            mListener.onImageLoaded(bitmap);
+
+        } else {
+
+            mListener.onError();
         }
     }
 }

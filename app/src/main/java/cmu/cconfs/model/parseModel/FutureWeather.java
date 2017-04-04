@@ -10,6 +10,7 @@ public class FutureWeather {
     public long epochDateTime = 0;
 
     public String iconPhrase = "";
+    public int weatherIcon = 0;
     public boolean isDayLight = true;
     public Temperature temperature = new Temperature();
 
@@ -57,8 +58,17 @@ public class FutureWeather {
     public String getIconPhrase() {
         return this.iconPhrase;
     }
+
     public void setDayLight(boolean isDayLight) {
         this.isDayLight = isDayLight;
+    }
+
+    public void setWeatherIcon(int weatherIcon) {
+        this.weatherIcon = weatherIcon;
+    }
+
+    public int getWeatherIcon() {
+        return this.weatherIcon;
     }
 
     public boolean getDayLight() {
@@ -118,6 +128,7 @@ public class FutureWeather {
         return "[" + getLocation().getCity() + "\t" + getLocation().getCountry() + "\n" +
                 getDateTime() + "\n" +
                 getEpochDateTime() + "\n" +
+                "weatherIcon: " + getWeatherIcon() + "\n" +
                 getIconPhrase() + "\n" +
                 "isDayLight: " + this.getDayLight() + "\n" +
                 getTemperature() + "\n" +
@@ -331,6 +342,27 @@ public class FutureWeather {
         @Override
         public String toString() {
             return getVal() + getUnit() + " ice";
+        }
+
+        public String display() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("The weather will be: ").append(getIconPhrase()).append("\n");
+            sb.append(getProbability()).append("\n");
+            if (!getProbability().toString().substring(0, 3).toLowerCase().equals("no")) {
+                if (getRain().getVal() != 0) {
+                    sb.append(getRain()).append(", ");
+                }
+                if (getIce().getVal() != 0) {
+                    sb.append(getIce()).append(", ");
+                }
+                if (getSnow().getVal() != 0) {
+                    sb.append(getSnow());
+                }
+                sb.append("\n");
+            }
+            sb.append("Wind: ").append(getWind()).append("\n");
+            sb.append("Mobile link: ").append(getMobileLink());
+            return sb.toString();
         }
     }
 }
