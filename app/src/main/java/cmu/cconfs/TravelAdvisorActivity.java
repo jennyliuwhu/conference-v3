@@ -71,9 +71,6 @@ import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
 import cmu.cconfs.service.WeatherHttpClient;
 
 /**
- * todo refer to https://developer.android.com/reference/android/widget/PopupWindow.html
- * to to display weather information
- *
  * @author jialingliu
  */
 public class TravelAdvisorActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -85,7 +82,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private GoogleMap mMap;
     private LocationManager locationManager;
 
-    // TODO: 4/3/17 display img 
     private String IMAGE_URL = "https://apidev.accuweather.com/developers/Media/Default/WeatherIcons/%s-s.png";
 
     GoogleApiClient mGoogleApiClient;
@@ -112,7 +108,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     Geocoder geocoder;
 
     private ImageView mImageView;
-//    private Button button;
 
     /**
      * duration[0] = x days,
@@ -247,8 +242,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     System.out.println("markerPoints size: " + markerPoints.size());
                     System.out.println("isCleared = " + isCleared);
                     if (!isCleared) {
-                        // TODO: 3/3/17 weather information pop-up window
-                        // TODO: 3/20/17 weather forecasting
                         try {
                             List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                             String cityName = addresses.get(0).getLocality();
@@ -578,7 +571,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             System.out.println("rawDuration is: " + rawDuration);
             parseDuration(rawDuration);
             System.out.println("durationInS is: " + durationInS);
-            // TODO: 3/29/17 Start JsonFutureWeatherTask
             JsonFutureWeatherTask jsonFutureWeatherTask = new JsonFutureWeatherTask();
             jsonFutureWeatherTask.execute(city, Long.toString(durationInS));
 
@@ -755,8 +747,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
     }
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
