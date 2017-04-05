@@ -10,7 +10,7 @@ public class FutureWeather {
     public long epochDateTime = 0;
 
     public String iconPhrase = "";
-    public int weatherIcon = 0;
+    public String weatherIcon = "";
     public boolean isDayLight = true;
     public Temperature temperature = new Temperature();
 
@@ -63,11 +63,11 @@ public class FutureWeather {
         this.isDayLight = isDayLight;
     }
 
-    public void setWeatherIcon(int weatherIcon) {
+    public void setWeatherIcon(String weatherIcon) {
         this.weatherIcon = weatherIcon;
     }
 
-    public int getWeatherIcon() {
+    public String getWeatherIcon() {
         return this.weatherIcon;
     }
 
@@ -272,7 +272,7 @@ public class FutureWeather {
                 sb.append(getIceProbability()).append("% ").append("ice");
             }
             if (sb.length() == 0) {
-                sb.append("No probability of rain, snow or ice");
+                sb.append("No probability of rain, snow or ice. ");
             }
             return sb.toString();
         }
@@ -343,26 +343,26 @@ public class FutureWeather {
         public String toString() {
             return getVal() + getUnit() + " ice";
         }
-
-        public String display() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("The weather will be: ").append(getIconPhrase()).append("\n");
-            sb.append(getProbability()).append("\n");
-            if (!getProbability().toString().substring(0, 3).toLowerCase().equals("no")) {
-                if (getRain().getVal() != 0) {
-                    sb.append(getRain()).append(", ");
-                }
-                if (getIce().getVal() != 0) {
-                    sb.append(getIce()).append(", ");
-                }
-                if (getSnow().getVal() != 0) {
-                    sb.append(getSnow());
-                }
-                sb.append("\n");
+    }
+    public String display() {
+        StringBuilder sb = new StringBuilder("\n");
+        sb.append(getLocation().getCity()).append("\n");
+        sb.append("The weather will be: ").append(getIconPhrase()).append("\n");
+        sb.append(getProbability());
+        if (!getProbability().toString().substring(0, 3).toLowerCase().equals("no")) {
+            if (getRain().getVal() != 0) {
+                sb.append(getRain()).append(", ");
             }
-            sb.append("Wind: ").append(getWind()).append("\n");
-            sb.append("Mobile link: ").append(getMobileLink());
-            return sb.toString();
+            if (getIce().getVal() != 0) {
+                sb.append(getIce()).append(", ");
+            }
+            if (getSnow().getVal() != 0) {
+                sb.append(getSnow());
+            }
+            sb.append("\n");
         }
+        sb.append("Wind: ").append(getWind()).append("\n");
+        sb.append("Details: ").append(getMobileLink());
+        return sb.toString();
     }
 }

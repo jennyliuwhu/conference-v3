@@ -67,7 +67,14 @@ public class JSONFutureWeatherParser {
         try {
             futureWeather.setDateTime(jsonObject.getString("DateTime"));
             futureWeather.setEpochDateTime(jsonObject.getLong("EpochDateTime"));
-            futureWeather.setWeatherIcon(jsonObject.getInt("WeatherIcon"));
+            int weatherIcon = jsonObject.getInt("WeatherIcon");
+            StringBuilder sb = new StringBuilder();
+            if (weatherIcon < 10) {
+                sb.append(0).append(weatherIcon);
+            } else {
+                sb.append(weatherIcon);
+            }
+            futureWeather.setWeatherIcon(sb.toString());
             futureWeather.setIconPhrase(jsonObject.getString("IconPhrase"));
             futureWeather.setDayLight(jsonObject.getBoolean("IsDaylight"));
 
@@ -95,8 +102,12 @@ public class JSONFutureWeatherParser {
             futureWeather.ice.setUnit(jsonObject.getJSONObject("Ice").getString("Unit"));
 
             futureWeather.setCloudCover(jsonObject.getInt("CloudCover"));
-            futureWeather.setLink(jsonObject.getString("Link"));
-            futureWeather.setMobileLink(jsonObject.getString("MobileLink"));
+            String link = jsonObject.getString("Link");
+//            futureWeather.setLink("<a href=\"" + link + "\">" + link + "</a>");
+            futureWeather.setLink(link);
+            String mobileLink = jsonObject.getString("MobileLink");
+//            futureWeather.setMobileLink("<a href=\"" + mobileLink + "\">Click for details</a>");
+            futureWeather.setMobileLink(mobileLink);
         } catch (JSONException e) {
             e.printStackTrace();
             System.out.println("field does not exist");

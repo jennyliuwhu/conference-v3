@@ -57,7 +57,7 @@ public class ShowBigImage extends IMBaseActivity {
 		setContentView(R.layout.activity_show_big_image);
 		super.onCreate(savedInstanceState);
 
-		image = (PhotoView) findViewById(R.id.image);
+		image = (PhotoView) findViewById(R.id.weatherimg);
 		loadLocalPb = (ProgressBar) findViewById(R.id.pb_load_local);
 		default_res = getIntent().getIntExtra("default_image", R.drawable.default_avatar);
 		Uri uri = getIntent().getParcelableExtra("uri");

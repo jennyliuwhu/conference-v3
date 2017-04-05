@@ -27,7 +27,7 @@ public class FloorGuideFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View v = inflater.inflate(R.layout.fragment_floor_guide, container, false);
-        final ImageView image = (ImageView) v.findViewById(R.id.image);
+        final ImageView image = (ImageView) v.findViewById(R.id.weatherimg);
 
         byte[] bytes = getArguments().getByteArray("image");
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

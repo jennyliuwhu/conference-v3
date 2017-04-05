@@ -1,16 +1,13 @@
 package cmu.cconfs;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -61,7 +58,7 @@ public class NearbyDetailActivity extends AppCompatActivity implements OnConnect
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_detail);
 
-        mPlaceImage = (ImageView) findViewById(R.id.image);
+        mPlaceImage = (ImageView) findViewById(R.id.weatherimg);
         mPlaceNameTv = (TextView) findViewById(R.id.place_name_tv);
         mNumberTv = (TextView) findViewById(R.id.place_phone_number);
         mLocationTv = (TextView) findViewById(R.id.place_location);

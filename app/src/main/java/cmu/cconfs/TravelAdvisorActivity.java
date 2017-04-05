@@ -23,6 +23,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,9 +57,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import cmu.cconfs.model.parseModel.FutureWeather;
 import cmu.cconfs.parseUtils.helper.DirectionsJSONParser;
@@ -141,31 +148,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         markerPoints = new ArrayList<>();
 
         city = "Mountain View, United States";
-
-//        button = (Button) findViewById(R.id.buttonShowCustomDialog);
-//
-//        // add button listener
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View arg0) {
-//                // custom dialog
-//                final Dialog dialog = new Dialog(context);
-//                dialog.setContentView(R.layout.custom);
-//                dialog.setTitle("Weather");
-//                // set the custom dialog components - text, image and button
-//                TextView text = (TextView) dialog.findViewById(R.id.text);
-//                text.setText("Android custom dialog example!");
-//                Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
-//                // if button is clicked, close the custom dialog
-//                dialogButton.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//                dialog.show();
-//            }
-//        });
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -623,7 +605,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             }
             durationInS = (long)86400 * myIntArr[0] + (long)3600 * myIntArr[1] + (long)60 * myIntArr[2];
             durationInS += System.currentTimeMillis() / 1000;
-            // TODO: 3/22/17 start weather forecast task 
         }
     }
 
@@ -813,7 +794,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> implements LoadImageTask.Listener {
         @Override
         public void onImageLoaded(Bitmap bitmap) {
-
+            System.out.println(mImageView);
             mImageView.setImageBitmap(bitmap);
         }
 
@@ -838,14 +819,27 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             System.out.println(futureWeather);
             System.out.println("got weather successfully");
             // custom dialog
-            mImageView = (ImageView) findViewById(R.id.image);
-            new LoadImageTask(this).execute(IMAGE_URL);
+
+            String imgURL = String.format(IMAGE_URL, futureWeather.getWeatherIcon());
+            System.out.println("image url is: " + imgURL);
+            new LoadImageTask(this).execute(imgURL);
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.custom);
             dialog.setTitle("Weather");
+
+            Date date = new Date(durationInS * 1000L);
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+            format.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
+            String formatted = format.format(date);
+            formatted = "Estimated arrival time: " + formatted;
+            System.out.println(formatted);
+
             // set the custom dialog components - text, image and button
             TextView text = (TextView) dialog.findViewById(R.id.text);
-            text.setText(futureWeather.toString());
+            text.setMovementMethod(LinkMovementMethod.getInstance());
+            mImageView = (ImageView) dialog.findViewById(R.id.weatherimg);
+//            text.setText(Html.fromHtml(formatted + futureWeather.display()));
+            text.setText(formatted + futureWeather.display());
             Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom dialog
             dialogButton.setOnClickListener(new View.OnClickListener() {
@@ -894,7 +888,6 @@ class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
             mListener.onImageLoaded(bitmap);
 
         } else {
-
             mListener.onError();
         }
     }

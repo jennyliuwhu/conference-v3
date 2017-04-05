@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            android:id="@+id/image"
+            android:id="@+id/weatherimg"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:contentDescription="Image of a cat"

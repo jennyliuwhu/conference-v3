@@ -44,7 +44,7 @@
             android:visibility="gone" />
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/weatherimg"
             android:layout_width="160dp"
             android:layout_height="160dp"
             android:scaleType="fitCenter"

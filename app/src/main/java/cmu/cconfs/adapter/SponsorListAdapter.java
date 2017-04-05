@@ -41,7 +41,7 @@ public class SponsorListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             titleView = (TextView) v.findViewById(R.id.name);
             authorView = (TextView) v.findViewById(R.id.link);
-            imageView = (SimpleDraweeView) v.findViewById(R.id.image);
+            imageView = (SimpleDraweeView) v.findViewById(R.id.weatherimg);
         }
 
         public View getView() {

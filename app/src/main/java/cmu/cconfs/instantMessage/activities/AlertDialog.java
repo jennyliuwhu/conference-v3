@@ -45,7 +45,7 @@ public class AlertDialog extends IMBaseActivity {
 		setContentView(R.layout.alert_dialog);
 		mTextView = (TextView) findViewById(R.id.title);
 		mButton = (Button) findViewById(R.id.btn_cancel);
-		imageView = (ImageView) findViewById(R.id.image);
+		imageView = (ImageView) findViewById(R.id.weatherimg);
 		editText = (EditText) findViewById(R.id.edit);
 		//提示内容
 		String msg = getIntent().getStringExtra("msg");

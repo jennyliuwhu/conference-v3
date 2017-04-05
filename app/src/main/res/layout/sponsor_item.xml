@@ -13,7 +13,7 @@
         android:padding="@dimen/item_padding">
 
         <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/image"
+            android:id="@+id/weatherimg"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginRight="10dp"
@@ -24,7 +24,7 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/image"
+            android:layout_toRightOf="@+id/weatherimg"
             android:singleLine="true"
             android:textSize="16dp"
             android:textStyle="bold" />

@@ -32,7 +32,7 @@ public class FloorGuideActivity extends FragmentActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setBackgroundColor(0xFF000000);
 
-        ParallaxPagerTransformer pt = new ParallaxPagerTransformer(R.id.image);
+        ParallaxPagerTransformer pt = new ParallaxPagerTransformer(R.id.weatherimg);
         pt.setBorder(20);
         // pt.setSpeed(0.8f);
 
