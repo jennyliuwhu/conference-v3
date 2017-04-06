@@ -67,14 +67,15 @@ public class JSONFutureWeatherParser {
         try {
             futureWeather.setDateTime(jsonObject.getString("DateTime"));
             futureWeather.setEpochDateTime(jsonObject.getLong("EpochDateTime"));
-            int weatherIcon = jsonObject.getInt("WeatherIcon");
-            StringBuilder sb = new StringBuilder();
-            if (weatherIcon < 10) {
-                sb.append(0).append(weatherIcon);
-            } else {
-                sb.append(weatherIcon);
-            }
-            futureWeather.setWeatherIcon(sb.toString());
+//            int weatherIcon = jsonObject.getInt("WeatherIcon");
+//            StringBuilder sb = new StringBuilder();
+//            if (weatherIcon < 10) {
+//                sb.append(0).append(weatherIcon);
+//            } else {
+//                sb.append(weatherIcon);
+//            }
+//            futureWeather.setWeatherIcon(sb.toString());
+            futureWeather.setWeatherIcon(Integer.toString(jsonObject.getInt("WeatherIcon")));
             futureWeather.setIconPhrase(jsonObject.getString("IconPhrase"));
             futureWeather.setDayLight(jsonObject.getBoolean("IsDaylight"));
 
