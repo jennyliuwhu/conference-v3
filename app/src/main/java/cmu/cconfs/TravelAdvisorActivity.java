@@ -844,6 +844,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             dialog.show();
             // TODO: 4/5/17 https://developers.google.com/maps/documentation/android-api/infowindows 
             // TODO: 4/5/17 show weather information summary
+            // TODO: 4/6/17 https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/MarkerDemoActivity.java 
+            // TODO: 4/6/17 http://androidfreakers.blogspot.com/2013/08/display-custom-info-window-with.html
         }
     }
     private void setImgView(FutureWeather futureWeather) {
