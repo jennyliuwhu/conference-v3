@@ -93,6 +93,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     // text view for distance and duration
     TextView tvDistanceDuration;
 
+    private boolean firstTime = true;
     // location for New Montgomery St, San Francisco, CA
     // todo change to your conference place when ready to deploy
     private final double lat = 37.788019;
@@ -718,23 +719,26 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println();
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-
-        //Place current location marker
+        System.out.println("your current location changed");
+//        mLastLocation = location;
+//        if (mCurrLocationMarker != null) {
+//            mCurrLocationMarker.remove();
+//        }
+//
+//        //Place current location marker
         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        if (markerPoints.size() == 2) {
-            // update current latLng in list
-            markerPoints.remove(0);
-            markerPoints.add(0, currentLatLng);
-        } else if (markerPoints.isEmpty()) {
-            markerPoints.add(currentLatLng);
+        if (firstTime) {
+            if (markerPoints.size() == 2) {
+                // update current latLng in list
+                markerPoints.remove(0);
+                markerPoints.add(0, currentLatLng);
+            } else if (markerPoints.isEmpty()) {
+                markerPoints.add(currentLatLng);
+            }
         }
-
-        drawPolyLine();
+        firstTime = false;
+//
+//        drawPolyLine();
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentLatLng);
@@ -796,8 +800,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         @Override
         protected FutureWeather doInBackground(String... params) {
             FutureWeather futureWeather;
-            System.out.println("first param: " + params[0]);
-            System.out.println("second param: " + params[1]);
             futureWeather = (new WeatherHttpClient()).getWeatherData(params[0], params[1]);
             return futureWeather;
         }
@@ -806,10 +808,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         protected void onPostExecute(FutureWeather futureWeather) {
             super.onPostExecute(futureWeather);
             System.out.println("executing JsonFutureWeatherTask");
-            System.out.println(futureWeather);
+//            System.out.println(futureWeather);
             System.out.println("got weather successfully");
-            // custom dialog
 
+            // custom dialog
             String imgURL = String.format(IMAGE_URL, futureWeather.getWeatherIcon());
             System.out.println("image url is: " + imgURL);
             new LoadImageTask(this).execute(imgURL);
@@ -828,7 +830,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             TextView text = (TextView) dialog.findViewById(R.id.text);
             text.setMovementMethod(LinkMovementMethod.getInstance());
             mImageView = (ImageView) dialog.findViewById(R.id.weatherimg);
-//            text.setText(Html.fromHtml(formatted + futureWeather.display()));
             text.setText(formatted + futureWeather.display());
             Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom dialog
@@ -839,6 +840,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 }
             });
             dialog.show();
+            // TODO: 4/5/17 https://developers.google.com/maps/documentation/android-api/infowindows 
+            // TODO: 4/5/17 show weather information summary
         }
     }
 }
