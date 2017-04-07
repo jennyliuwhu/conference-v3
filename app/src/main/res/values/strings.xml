@@ -491,5 +491,6 @@
     <string name="search_address">Search Address</string>
     <string name="clear_points">Clear Points</string>
     <string name="close">close</string>
+    <string name="weathericon">weatherIcon</string>
 
 </resources>

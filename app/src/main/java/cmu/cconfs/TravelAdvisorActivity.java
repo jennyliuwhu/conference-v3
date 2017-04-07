@@ -6,8 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.location.Address;
@@ -23,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -81,7 +78,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
     private GoogleMap mMap;
     private LocationManager locationManager;
-
+    private FutureWeather futureWeather;
     private String IMAGE_URL = "https://apidev.accuweather.com/developers/Media/Default/WeatherIcons/%s-s.png";
 
     GoogleApiClient mGoogleApiClient;
@@ -103,6 +100,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     ArrayList<LatLng> markerPoints;
     private boolean isCleared = true;
     private Marker currentWeatherInfoMaker;
+    private LatLng point;
 
     String city;
 
@@ -234,12 +232,14 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
+            mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
             // Enable MyLocation Button in the Map
             // Setting onclick event listener for the map
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
                 @Override
-                public void onMapClick(LatLng point) {
+                public void onMapClick(LatLng point1) {
+                    point = point1;
                     System.out.println("markerPoints size: " + markerPoints.size());
                     System.out.println("isCleared = " + isCleared);
                     if (!isCleared) {
@@ -260,9 +260,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 //                            if (currentWeatherInfoMaker != null) {
 //                                currentWeatherInfoMaker.remove();
 //                            }
-                            currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.latitude, point.longitude)));
-                            currentWeatherInfoMaker.setTitle(city);
-                            currentWeatherInfoMaker.showInfoWindow();
                         } catch (IOException e) {
                             System.out.println("Failed to get address for this point");
                         }
@@ -800,13 +797,12 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
         @Override
         protected FutureWeather doInBackground(String... params) {
-            FutureWeather futureWeather;
             futureWeather = (new WeatherHttpClient()).getWeatherData(params[0], params[1]);
             return futureWeather;
         }
 
         @Override
-        protected void onPostExecute(FutureWeather futureWeather) {
+        protected void onPostExecute(FutureWeather futureWeather1) {
             super.onPostExecute(futureWeather);
             System.out.println("executing JsonFutureWeatherTask");
 //            System.out.println(futureWeather);
@@ -831,7 +827,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             TextView text = (TextView) dialog.findViewById(R.id.text);
             text.setMovementMethod(LinkMovementMethod.getInstance());
             mImageView = (ImageView) dialog.findViewById(R.id.weatherimg);
-            setImgView(futureWeather);
+            setImgView(mImageView);
             text.setText(formatted + futureWeather.display());
             Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom dialog
@@ -846,132 +842,153 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             // TODO: 4/5/17 show weather information summary
             // TODO: 4/6/17 https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/MarkerDemoActivity.java 
             // TODO: 4/6/17 http://androidfreakers.blogspot.com/2013/08/display-custom-info-window-with.html
+            currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.latitude, point.longitude)));
+            currentWeatherInfoMaker.setTitle(city);
+            currentWeatherInfoMaker.showInfoWindow();
         }
     }
-    private void setImgView(FutureWeather futureWeather) {
+    private void setImgView(ImageView imageView) {
         switch (futureWeather.getWeatherIcon()) {
             case "1":
-                mImageView.setImageResource(R.drawable.one);
+                imageView.setImageResource(R.drawable.one);
                 return;
             case "2":
-                mImageView.setImageResource(R.drawable.two);
+                imageView.setImageResource(R.drawable.two);
                 return;
             case "3":
-                mImageView.setImageResource(R.drawable.three);
+                imageView.setImageResource(R.drawable.three);
                 return;
             case "4":
-                mImageView.setImageResource(R.drawable.four);
+                imageView.setImageResource(R.drawable.four);
                 return;
             case "5":
-                mImageView.setImageResource(R.drawable.five);
+                imageView.setImageResource(R.drawable.five);
                 return;
             case "6":
-                mImageView.setImageResource(R.drawable.six);
+                imageView.setImageResource(R.drawable.six);
                 return;
             case "7":
-                mImageView.setImageResource(R.drawable.seven);
+                imageView.setImageResource(R.drawable.seven);
                 return;
             case "8":
-                mImageView.setImageResource(R.drawable.eight);
+                imageView.setImageResource(R.drawable.eight);
                 return;
             case "11":
-                mImageView.setImageResource(R.drawable.eleven);
+                imageView.setImageResource(R.drawable.eleven);
                 return;
             case "12":
-                mImageView.setImageResource(R.drawable.twelve);
+                imageView.setImageResource(R.drawable.twelve);
                 return;
             case "13":
-                mImageView.setImageResource(R.drawable.thirteen);
+                imageView.setImageResource(R.drawable.thirteen);
                 return;
             case "14":
-                mImageView.setImageResource(R.drawable.fourteen);
+                imageView.setImageResource(R.drawable.fourteen);
                 return;
             case "15":
-                mImageView.setImageResource(R.drawable.fifteen);
+                imageView.setImageResource(R.drawable.fifteen);
                 return;
             case "16":
-                mImageView.setImageResource(R.drawable.sixteen);
+                imageView.setImageResource(R.drawable.sixteen);
                 return;
             case "17":
-                mImageView.setImageResource(R.drawable.seventeen);
+                imageView.setImageResource(R.drawable.seventeen);
                 return;
             case "18":
-                mImageView.setImageResource(R.drawable.eighteen);
+                imageView.setImageResource(R.drawable.eighteen);
                 return;
             case "19":
-                mImageView.setImageResource(R.drawable.nineteen);
+                imageView.setImageResource(R.drawable.nineteen);
                 return;
             case "20":
-                mImageView.setImageResource(R.drawable.twenty);
+                imageView.setImageResource(R.drawable.twenty);
                 return;
             case "21":
-                mImageView.setImageResource(R.drawable.twenty_one);
+                imageView.setImageResource(R.drawable.twenty_one);
                 return;
             case "22":
-                mImageView.setImageResource(R.drawable.twenty_two);
+                imageView.setImageResource(R.drawable.twenty_two);
                 return;
             case "23":
-                mImageView.setImageResource(R.drawable.twenty_three);
+                imageView.setImageResource(R.drawable.twenty_three);
                 return;
             case "24":
-                mImageView.setImageResource(R.drawable.twenty_four);
+                imageView.setImageResource(R.drawable.twenty_four);
                 return;
             case "25":
-                mImageView.setImageResource(R.drawable.twenty_five);
+                imageView.setImageResource(R.drawable.twenty_five);
                 return;
             case "26":
-                mImageView.setImageResource(R.drawable.twenty_six);
+                imageView.setImageResource(R.drawable.twenty_six);
                 return;
             case "29":
-                mImageView.setImageResource(R.drawable.twenty_nine);
+                imageView.setImageResource(R.drawable.twenty_nine);
                 return;
             case "30":
-                mImageView.setImageResource(R.drawable.thirty);
+                imageView.setImageResource(R.drawable.thirty);
                 return;
             case "31":
-                mImageView.setImageResource(R.drawable.thirty_one);
+                imageView.setImageResource(R.drawable.thirty_one);
                 return;
             case "32":
-                mImageView.setImageResource(R.drawable.thirty_two);
+                imageView.setImageResource(R.drawable.thirty_two);
                 return;
             case "33":
-                mImageView.setImageResource(R.drawable.thirty_three);
+                imageView.setImageResource(R.drawable.thirty_three);
                 return;
             case "34":
-                mImageView.setImageResource(R.drawable.thirty_four);
+                imageView.setImageResource(R.drawable.thirty_four);
                 return;
             case "35":
-                mImageView.setImageResource(R.drawable.thirty_five);
+                imageView.setImageResource(R.drawable.thirty_five);
                 return;
             case "36":
-                mImageView.setImageResource(R.drawable.thirty_six);
+                imageView.setImageResource(R.drawable.thirty_six);
                 return;
             case "37":
-                mImageView.setImageResource(R.drawable.thirty_seven);
+                imageView.setImageResource(R.drawable.thirty_seven);
                 return;
             case "38":
-                mImageView.setImageResource(R.drawable.thirty_eight);
+                imageView.setImageResource(R.drawable.thirty_eight);
                 return;
             case "39":
-                mImageView.setImageResource(R.drawable.thirty_nine);
+                imageView.setImageResource(R.drawable.thirty_nine);
                 return;
             case "40":
-                mImageView.setImageResource(R.drawable.forty);
+                imageView.setImageResource(R.drawable.forty);
                 return;
             case "41":
-                mImageView.setImageResource(R.drawable.forty_one);
+                imageView.setImageResource(R.drawable.forty_one);
                 return;
             case "42":
-                mImageView.setImageResource(R.drawable.forty_two);
+                imageView.setImageResource(R.drawable.forty_two);
                 return;
             case "43":
-                mImageView.setImageResource(R.drawable.forty_three);
+                imageView.setImageResource(R.drawable.forty_three);
                 return;
             case "44":
-                mImageView.setImageResource(R.drawable.forty_four);
+                imageView.setImageResource(R.drawable.forty_four);
                 return;
             default:
-                mImageView.setImageResource(R.drawable.one);
+                imageView.setImageResource(R.drawable.one);
+        }
+    }
+    class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+        private View view;
+        CustomInfoWindowAdapter() {
+            view = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+        }
+        @Override
+        public View getInfoWindow(Marker marker) {
+            ImageView imageView = ((ImageView) view.findViewById(R.id.badge));
+//            imageView.setBackgroundColor(Color.rgb(255, 255, 255));
+            setImgView(imageView);
+            return view;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            return null;
         }
     }
 }
@@ -1017,3 +1034,4 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 //        }
 //    }
 //}
+
