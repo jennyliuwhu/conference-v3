@@ -489,8 +489,10 @@
     <string name="calendar_title">Sync Calendar</string>
     <string name="calendar_summary">Sync your schedule with device calendar</string>
     <string name="search_address">Search Address</string>
-    <string name="clear_points">Clear Points</string>
+    <string name="clear_points">Clear Path</string>
     <string name="close">close</string>
     <string name="weathericon">weatherIcon</string>
+    <string name="depart_at">Depart at</string>
+    <string name="now">Now</string>
 
 </resources>

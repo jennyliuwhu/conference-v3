@@ -1,8 +1,10 @@
 package cmu.cconfs;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,9 +27,11 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -55,12 +59,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import cmu.cconfs.model.parseModel.FutureWeather;
@@ -73,20 +80,20 @@ import cmu.cconfs.service.WeatherHttpClient;
 public class TravelAdvisorActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        View.OnClickListener {
     final Context context = this;
     static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
     private GoogleMap mMap;
     private LocationManager locationManager;
     private FutureWeather futureWeather;
-    private String IMAGE_URL = "https://apidev.accuweather.com/developers/Media/Default/WeatherIcons/%s-s.png";
 
     GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
     LatLng currentLatLng;
 
+    Map<Marker, String> markerWeatherIconMap;
     // text view for distance and duration
     TextView tvDistanceDuration;
 
@@ -99,7 +106,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     private Marker destinationMarker;
     ArrayList<LatLng> markerPoints;
     private boolean isCleared = true;
-    private Marker currentWeatherInfoMaker;
     private LatLng point;
 
     String city;
@@ -115,13 +121,24 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
      */
     private long durationInS = 0;
 
+    /**
+     * time pickers
+     */
+    Button btnDatePicker;
+    EditText txtDate;
+    private int mYear, mMonth, mDay, mHour, mMinute;
+    private String departInS;
+    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
+    long forecastPeriod = 12 * 60 * 60;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel);
         geocoder = new Geocoder(this);
+
+        markerWeatherIconMap = new HashMap<>();
 
         tvDistanceDuration = (TextView) findViewById(R.id.distance_duration);
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -142,6 +159,13 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         markerPoints = new ArrayList<>();
 
         city = "Mountain View, United States";
+
+        // pickers
+        btnDatePicker=(Button)findViewById(R.id.btn_date);
+        txtDate=(EditText)findViewById(R.id.in_time);
+
+        btnDatePicker.setOnClickListener(this);
+        txtDate.bringToFront();
     }
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -154,7 +178,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             // Asking user if explanation is needed
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
@@ -256,10 +279,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                             String url = getDirectionsUrl(origin, point);
                             DownloadTask2 downloadTask2 = new DownloadTask2();
                             downloadTask2.execute(url);
-
-//                            if (currentWeatherInfoMaker != null) {
-//                                currentWeatherInfoMaker.remove();
-//                            }
                         } catch (IOException e) {
                             System.out.println("Failed to get address for this point");
                         }
@@ -418,8 +437,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         }
         return true;
     }
-
-
 
     void showErrorDialog(int code) {
         GooglePlayServicesUtil.getErrorDialog(code, this, REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
@@ -817,7 +834,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             dialog.setTitle("Weather");
 
             Date date = new Date(durationInS * 1000L);
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+
             format.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
             String formatted = format.format(date);
             formatted = "Estimated arrival time: " + formatted;
@@ -827,7 +844,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             TextView text = (TextView) dialog.findViewById(R.id.text);
             text.setMovementMethod(LinkMovementMethod.getInstance());
             mImageView = (ImageView) dialog.findViewById(R.id.weatherimg);
-            setImgView(mImageView);
+
             text.setText(formatted + futureWeather.display());
             Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom dialog
@@ -838,17 +855,20 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 }
             });
             dialog.show();
-            // TODO: 4/5/17 https://developers.google.com/maps/documentation/android-api/infowindows 
-            // TODO: 4/5/17 show weather information summary
-            // TODO: 4/6/17 https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/MarkerDemoActivity.java 
-            // TODO: 4/6/17 http://androidfreakers.blogspot.com/2013/08/display-custom-info-window-with.html
-            currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.latitude, point.longitude)));
+
+            Marker currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.latitude, point.longitude)));
             currentWeatherInfoMaker.setTitle(city);
+            markerWeatherIconMap.put(currentWeatherInfoMaker, futureWeather.getWeatherIcon());
+            setImgView(mImageView, currentWeatherInfoMaker);
             currentWeatherInfoMaker.showInfoWindow();
         }
     }
-    private void setImgView(ImageView imageView) {
-        switch (futureWeather.getWeatherIcon()) {
+    private void setImgView(ImageView imageView, Marker marker) {
+        if (!markerWeatherIconMap.containsKey(marker)) {
+            return;
+        }
+        String icon = markerWeatherIconMap.get(marker);
+        switch (icon) {
             case "1":
                 imageView.setImageResource(R.drawable.one);
                 return;
@@ -973,6 +993,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 imageView.setImageResource(R.drawable.one);
         }
     }
+
     class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
         private View view;
         CustomInfoWindowAdapter() {
@@ -982,7 +1003,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         public View getInfoWindow(Marker marker) {
             ImageView imageView = ((ImageView) view.findViewById(R.id.badge));
 //            imageView.setBackgroundColor(Color.rgb(255, 255, 255));
-            setImgView(imageView);
+            setImgView(imageView, marker);
             return view;
         }
 
@@ -991,7 +1012,60 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             return null;
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        if (v == btnDatePicker) {
+            // Get Current Date
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year,
+                                      int monthOfYear, int dayOfMonth) {
+                    final String dateString = Integer.toString(year) + "-" + ((monthOfYear + 1) < 10 ? "0" + (monthOfYear + 1) : (monthOfYear + 1)) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
+                    // Get Current Time
+                    mHour = c.get(Calendar.HOUR_OF_DAY);
+                    mMinute = c.get(Calendar.MINUTE);
+
+                    // Launch Time Picker Dialog
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(context,
+                            new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay,
+                                                      int minute) {
+                                    String departString = dateString + " " + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (minute < 10 ? "0" + minute : minute);
+                                    txtDate.setText(departString);
+                                    departString += ":00";
+                                    Date now = Calendar.getInstance().getTime();
+                                    Date then = null;
+                                    try {
+                                        then = format.parse(departString);
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    if (then != null && (then.getTime() - now.getTime()) / 1000 > forecastPeriod) {
+                                        Toast.makeText(context, "Unable to forecast that long, please choose departure time again", Toast.LENGTH_LONG).show();
+                                        txtDate.setText("Now");
+                                    }
+                                    if (then != null && then.getTime() - now.getTime() < 0) {
+                                        Toast.makeText(context, "Cannot leave at past time", Toast.LENGTH_LONG).show();
+                                        txtDate.setText("Now");
+                                    }
+                                }
+                            }, mHour, mMinute, false);
+                    timePickerDialog.show();
+                }
+            }, mYear, mMonth, mDay);
+            datePickerDialog.show();
+        }
+    }
 }
+
 /**
  * load image from url
  */
