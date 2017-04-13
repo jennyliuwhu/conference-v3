@@ -127,10 +127,12 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     Button btnDatePicker;
     EditText txtDate;
     private int mYear, mMonth, mDay, mHour, mMinute;
-    private String departInS;
+    private long departInS = System.currentTimeMillis() / 1000;
     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
     long forecastPeriod = 12 * 60 * 60;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -611,7 +613,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 }
             }
             durationInS = (long)86400 * myIntArr[0] + (long)3600 * myIntArr[1] + (long)60 * myIntArr[2];
-            durationInS += System.currentTimeMillis() / 1000;
+//            durationInS += System.currentTimeMillis() / 1000;
+            durationInS += departInS;
         }
     }
 
@@ -865,6 +868,8 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
     private void setImgView(ImageView imageView, Marker marker) {
         if (!markerWeatherIconMap.containsKey(marker)) {
+            System.out.println("weather set does not contain this marker");
+            marker.hideInfoWindow();
             return;
         }
         String icon = markerWeatherIconMap.get(marker);
@@ -1047,15 +1052,21 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
-
+                                    assert then != null;
+                                    System.out.println("then is:" + then.getTime());
                                     if (then != null && (then.getTime() - now.getTime()) / 1000 > forecastPeriod) {
-                                        Toast.makeText(context, "Unable to forecast that long, please choose departure time again", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, "Unable to forecast that long\nPlease choose departure time again", Toast.LENGTH_LONG).show();
                                         txtDate.setText("Now");
                                     }
                                     if (then != null && then.getTime() - now.getTime() < 0) {
                                         Toast.makeText(context, "Cannot leave at past time", Toast.LENGTH_LONG).show();
                                         txtDate.setText("Now");
                                     }
+                                    System.out.println("before changing, then = " + departInS);
+                                    if (then != null) {
+                                        departInS = then.getTime() / 1000;
+                                    }
+                                    System.out.println("after changing, then = " + departInS);
                                 }
                             }, mHour, mMinute, false);
                     timePickerDialog.show();
@@ -1108,4 +1119,3 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 //        }
 //    }
 //}
-
