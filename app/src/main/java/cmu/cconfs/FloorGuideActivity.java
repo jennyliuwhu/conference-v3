@@ -17,6 +17,11 @@ import cmu.cconfs.adapter.FloorGuideAdapter;
 import cmu.cconfs.fragment.FloorGuideFragment;
 import cmu.cconfs.model.parseModel.FloorPlan;
 
+/**
+ * todo change to viewPager
+ * http://www.viralandroid.com/2016/04/android-image-slider-tutorial.html
+ * http://www.androhub.com/android-image-slider-using-viewpager/
+ */
 
 public class FloorGuideActivity extends FragmentActivity {
 
