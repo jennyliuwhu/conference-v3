@@ -28,7 +28,7 @@ public class FloorPlan extends ParseObject {
         return getString("photoName");
     }
 
-    public static ParseQuery<FloorPlan> getQuery() {
+    public static ParseQuery<FloorPlan> getQuery()  {
         return ParseQuery.getQuery(FloorPlan.class);
     }
 }
