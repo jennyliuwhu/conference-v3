@@ -64,7 +64,7 @@ public class WeatherHttpClient {
         return null;
     }
 
-    public String getLocationKey(String location) {
+    private String getLocationKey(String location) {
         HttpURLConnection con = null;
         InputStream is = null;
         try {

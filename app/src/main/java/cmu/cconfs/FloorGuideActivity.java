@@ -80,7 +80,7 @@ class AndroidImageAdapter extends PagerAdapter {
         return sliderImagesId.length;
     }
 
-    private int[] sliderImagesId = new int[]{
+    private int[] sliderImagesId = new int[] {
             R.drawable.leve_one, R.drawable.level_two, R.drawable.level_three, R.drawable.level_four,
             R.drawable.leve_one, R.drawable.level_two, R.drawable.level_three, R.drawable.level_four,
     };
