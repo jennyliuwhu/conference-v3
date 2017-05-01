@@ -30,10 +30,12 @@
         android:layout_alignBottom="@+id/points_clear"
         android:layout_toLeftOf="@+id/search_button"
         android:layout_toStartOf="@+id/search_button" />
+
     <TextView
         android:id="@+id/my_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
     <fragment
         android:id="@+id/map"
         android:layout_width="match_parent"
@@ -52,10 +54,11 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="14dp"
-        android:hint="Search Location"
+        android:hint="@string/search_location"
         android:textColor="@android:color/black"
         android:background="@android:color/white" >
     </EditText>
+
     <Button
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
@@ -66,6 +69,7 @@
         android:layout_alignRight="@+id/editText"
         android:onClick="onMapSearch"
         android:text="@string/search_address" />
+
     <Button
         android:id="@+id/points_clear"
         android:layout_width="wrap_content"

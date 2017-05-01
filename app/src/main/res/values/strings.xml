@@ -494,5 +494,6 @@
     <string name="weathericon">weatherIcon</string>
     <string name="depart_at">Depart at</string>
     <string name="now">Now</string>
+    <string name="search_location">Search Location</string>
 
 </resources>

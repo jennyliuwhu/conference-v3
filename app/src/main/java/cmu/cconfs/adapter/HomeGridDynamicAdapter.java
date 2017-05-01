@@ -78,9 +78,11 @@ public class HomeGridDynamicAdapter extends BaseDynamicGridAdapter {
             case 12:
                 imageResource = R.drawable.ic_group_work_black_48dp;
                 break;
+
             case 13:
                 imageResource = R.drawable.ic_explore_black_48dp;
                 break;
+
             case 14:
                 imageResource = R.drawable.ic_cloud_upload_black_48dp;
                 break;

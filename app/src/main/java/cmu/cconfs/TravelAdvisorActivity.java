@@ -84,7 +84,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         View.OnClickListener {
     final Context context = this;
     static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
+
     private GoogleMap mMap;
+
     private LocationManager locationManager;
     private FutureWeather futureWeather;
 
@@ -229,9 +231,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         LatLng latLng = new LatLng(lat, lon); // default location: conference location
         if (addressList != null) {
             address = addressList.get(0);
-            String countryName = address.getCountryName();
-            System.out.println("countryName: " + countryName);
-            System.out.println("locality: " + address.getLocality());
             latLng = new LatLng(address.getLatitude(), address.getLongitude());
         }
         destinationMarker.remove();
@@ -338,18 +337,18 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         mMap.getUiSettings().setZoomControlsEnabled(true);
         // Add a marker in Sydney and move the camera
         LatLng latLng = new LatLng(lat, lon);
-        destinationMarker = mMap.addMarker(new MarkerOptions().position(latLng).title("New Montgomery St, San Francisco, CA"));
+        destinationMarker = mMap.addMarker(
+                new MarkerOptions().position(latLng).title("New Montgomery St, San Francisco, CA"));
         destinationMarker.showInfoWindow();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+
         // permission check to enable my location
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(
+                this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         mMap.setMyLocationEnabled(true);

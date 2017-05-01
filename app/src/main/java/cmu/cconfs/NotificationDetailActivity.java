@@ -1,20 +1,13 @@
 package cmu.cconfs;
 
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-
-import org.w3c.dom.Text;
 
 import java.util.HashMap;
 
@@ -22,8 +15,6 @@ import cmu.cconfs.fragment.SendMessageFragment;
 import cmu.cconfs.model.parseModel.Appointment;
 import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.parseUtils.helper.CloudCodeUtils;
-import cmu.cconfs.service.FCMRegistrationService;
-import cmu.cconfs.utils.PreferencesManager;
 
 public class NotificationDetailActivity extends AppCompatActivity {
     private final static String TAG = NotificationActivity.class.getSimpleName();

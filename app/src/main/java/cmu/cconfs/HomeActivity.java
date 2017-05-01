@@ -36,7 +36,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = HomeActivity.class.getName();
     private DynamicGridView gridView;
-    private String[] titles = {"Agenda", "My Schedule", "Room Schedule","Map", "Floor Guide", "Sponsor", "Notification", "About", "Setting", "Chat", "Nearby", "Authors", "Network", "Travel", "Transfer"};
+
+    private String[] titles = {"Agenda", "My Schedule", "Room Schedule", "Map", "Floor Guide",
+            "Sponsor", "Notification", "About", "Setting", "Chat", "Nearby", "Authors",
+            "Network", "Travel", "Transfer"};
+
     public static PreferencesManager mPreferencesManager;
 
     public final static int REQUEST_SIGN_IN = 1;
@@ -147,11 +151,13 @@ public class HomeActivity extends AppCompatActivity {
                         intent.setClass(getApplicationContext(), NetworkingActivity.class);
                         startActivity(intent);
                         break;
+
                     // travel
                     case 13:
                         intent.setClass(getApplicationContext(), TravelAdvisorActivity.class);
                         startActivity(intent);
                         break;
+
                     // schedule data import/export, only admin user can see it
                     case 14:
                         intent.setClass(getApplicationContext(), TransferActivity.class);
