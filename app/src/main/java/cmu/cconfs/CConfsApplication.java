@@ -19,28 +19,26 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseUser;
-import com.parse.interceptors.ParseLogInterceptor;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import cmu.cconfs.instantMessage.IMHXSDKHelper;
 import cmu.cconfs.model.parseModel.Appointment;
 import cmu.cconfs.model.parseModel.AuthorSession;
-import cmu.cconfs.model.parseModel.Note;
-import cmu.cconfs.model.parseModel.Profile;
-import cmu.cconfs.model.parseModel.SessionImage;
-import cmu.cconfs.model.parseModel.Sponsor;
 import cmu.cconfs.model.parseModel.FloorPlan;
 import cmu.cconfs.model.parseModel.Message;
+import cmu.cconfs.model.parseModel.Note;
 import cmu.cconfs.model.parseModel.Paper;
 import cmu.cconfs.model.parseModel.Photo;
+import cmu.cconfs.model.parseModel.Profile;
 import cmu.cconfs.model.parseModel.Program;
 import cmu.cconfs.model.parseModel.Rate;
 import cmu.cconfs.model.parseModel.Room;
+import cmu.cconfs.model.parseModel.SessionImage;
 import cmu.cconfs.model.parseModel.Session_Room;
 import cmu.cconfs.model.parseModel.Session_Timeslot;
+import cmu.cconfs.model.parseModel.Sponsor;
 import cmu.cconfs.model.parseModel.Timeslot;
 import cmu.cconfs.model.parseModel.Todo;
 import cmu.cconfs.model.parseModel.TodoCached;
@@ -50,6 +48,8 @@ import cmu.cconfs.utils.data.DayTriple;
 import cmu.cconfs.utils.data.RoomDataProvider;
 import cmu.cconfs.utils.data.RoomProvider;
 import cmu.cconfs.utils.data.UnityDataProvider;
+
+//import com.parse.interceptors.ParseLogInterceptor;
 
 /**
  * Created by zmhbh on 8/23/15.
@@ -131,7 +131,7 @@ public class CConfsApplication extends Application {
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId(getString(R.string.parse_app_id))
                 .clientKey(null)
-                .addNetworkInterceptor(new ParseLogInterceptor())
+//                .addNetworkInterceptor(new ParseLogInterceptor())
                 .server(getString(R.string.parse_server_endpoint)).enableLocalDataStore().build());
 
 //        Parse.initialize(this,ParseAppID,ParseClientKey);
