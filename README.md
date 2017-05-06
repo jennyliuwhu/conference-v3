@@ -94,7 +94,7 @@ User can also view the floor plans of the conference center by clicking on the F
 ### Travel Advisor
 User can also plan his/her travel by clicking on the Travel session in app's main dashboard. The Travel session supports features like: search address, pick departing time, pick starting location and destination, view optimized driving route and get to know the forecasted weather information. 
 
-[![video_travel](https://s3.amazonaws.com/jennyliu/Screen+Shot+2017-05-05+at+17.57.19.png)](https://www.youtube.com/watch?v=1thj6cqG0ok&t=12s =250x250)
+[![video_travel](https://s3.amazonaws.com/jennyliu/Screen+Shot+2017-05-05+at+17.57.19.png =250x250)](https://www.youtube.com/watch?v=1thj6cqG0ok&t=12s)
 ## App installation
 
 The installation of the app is easy:
