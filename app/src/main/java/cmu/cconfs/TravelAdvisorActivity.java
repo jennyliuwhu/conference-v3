@@ -256,7 +256,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
             }
+
             mMap.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+
             // Enable MyLocation Button in the Map
             // Setting onclick event listener for the map
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -264,16 +266,12 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                 @Override
                 public void onMapClick(LatLng point1) {
                     point = point1;
-                    System.out.println("markerPoints size: " + markerPoints.size());
-                    System.out.println("isCleared = " + isCleared);
                     if (!isCleared) {
                         try {
                             List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                             String cityName = addresses.get(0).getLocality();
                             String countryName= addresses.get(0).getCountryName();
                             city = cityName + ", " + countryName;
-                            System.out.println("city should be: " + cityName);
-                            System.out.println("country should be: " + countryName);
                             LatLng origin = markerPoints.get(0);
 
                             // Getting URL to the Google Directions API
@@ -295,19 +293,16 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
                     // Setting the position of the marker
                     options.position(point);
-
                     /**
-                     * For the start location, the color of marker is BLUE and
-                     * for the end location, the color of marker is RED.
+                     * For the start location, the color of marker is ROSE and
+                     * for the end location, the color of marker is GREEN.
                      */
-                    System.out.println("before draw poly line: markerPoints size = " + markerPoints.size());
                     if(markerPoints.size()==1){
                         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
                     }else if(markerPoints.size()==2){
                         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                         drawPolyLine();
                     }
-
                     // Add new marker to the Google Map Android API V2
                     mMap.addMarker(options);
                 }
@@ -327,7 +322,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         String url = getDirectionsUrl(origin, dest);
 
         DownloadTask downloadTask = new DownloadTask();
-
         // Start downloading json data from Google Directions API
         downloadTask.execute(url);
         isCleared = false;
@@ -355,12 +349,9 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
 
     public void clear(View view) {
-        System.out.println("points clear button clicked");
         // clear the map
         mMap.clear();
         markerPoints.clear();
-        // clear destination
-//        markerPoints.remove(1);
         isCleared = true;
     }
 
@@ -513,7 +504,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
      * http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/337169?apikey=2HbZMIUw4YGYi1GQ9km1jEuLpxtFdtrK&details=true&metric=true
      * http://developer.accuweather.com/
      */
-    private class DownloadTask2 extends AsyncTask<String, Void, String>{
+    private class DownloadTask2 extends AsyncTask<String, Void, String> {
 
         // Downloading data in non-ui thread
         @Override
@@ -619,7 +610,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     // Fetches data from url passed
     // for poly line drawing
-    private class DownloadTask extends AsyncTask<String, Void, String>{
+    private class DownloadTask extends AsyncTask<String, Void, String> {
 
         // Downloading data in non-ui thread
         @Override
@@ -627,7 +618,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
             // For storing data from web service
             String data = "";
-
             try{
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
@@ -651,7 +641,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
 
     /** A class to parse the Google Places in JSON format */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> > {
 
         // Parsing the data in non-ui thread
         @Override
@@ -735,13 +725,7 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("your current location changed");
-//        mLastLocation = location;
-//        if (mCurrLocationMarker != null) {
-//            mCurrLocationMarker.remove();
-//        }
-//
-//        //Place current location marker
+        //Place current location marker
         currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         if (firstTime) {
             if (markerPoints.size() == 2) {
@@ -753,8 +737,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             }
         }
         firstTime = false;
-//
-//        drawPolyLine();
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentLatLng);
@@ -802,63 +784,36 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
 
     // future weather task
     private class JsonFutureWeatherTask extends AsyncTask<String, Void, FutureWeather> {
-//            implements LoadImageTask.Listener {
-//        @Override
-//        public void onImageLoaded(Bitmap bitmap) {
-//            System.out.println(mImageView);
-//            mImageView.setImageBitmap(bitmap);
-//        }
-//
-//        @Override
-//        public void onError() {
-//            Toast.makeText(getApplicationContext(), "Error Loading Image !", Toast.LENGTH_SHORT).show();
-//        }
-
         @Override
         protected FutureWeather doInBackground(String... params) {
             futureWeather = (new WeatherHttpClient()).getWeatherData(params[0], params[1]);
             return futureWeather;
         }
-
         @Override
         protected void onPostExecute(FutureWeather futureWeather1) {
             super.onPostExecute(futureWeather);
-            System.out.println("executing JsonFutureWeatherTask");
-//            System.out.println(futureWeather);
-            System.out.println("got weather successfully");
-
             // custom dialog
-//            String imgURL = String.format(IMAGE_URL, futureWeather.getWeatherIcon());
-//            System.out.println("image url is: " + imgURL);
-//            new LoadImageTask(this).execute(imgURL);
             final Dialog dialog = new Dialog(context);
             dialog.setContentView(R.layout.custom);
             dialog.setTitle("Weather");
-
             Date date = new Date(durationInS * 1000L);
-
             format.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"));
             String formatted = format.format(date);
             formatted = "Estimated arrival time: " + formatted;
-            System.out.println(formatted);
-
             // set the custom dialog components - text, image and button
             TextView text = (TextView) dialog.findViewById(R.id.text);
             text.setMovementMethod(LinkMovementMethod.getInstance());
             mImageView = (ImageView) dialog.findViewById(R.id.weatherimg);
-
             text.setText(formatted + futureWeather.display());
             Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom dialog
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
+                public void onClick(View v) { dialog.dismiss();}
             });
             dialog.show();
-
-            Marker currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(new LatLng(point.latitude, point.longitude)));
+            Marker currentWeatherInfoMaker = mMap.addMarker(new MarkerOptions().position(
+                    new LatLng(point.latitude, point.longitude)));
             currentWeatherInfoMaker.setTitle(city);
             markerWeatherIconMap.put(currentWeatherInfoMaker, futureWeather.getWeatherIcon());
             setImgView(mImageView, currentWeatherInfoMaker);
@@ -867,7 +822,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
     }
     private void setImgView(ImageView imageView, Marker marker) {
         if (!markerWeatherIconMap.containsKey(marker)) {
-            System.out.println("weather set does not contain this marker");
             marker.hideInfoWindow();
             return;
         }
@@ -1006,7 +960,6 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
         @Override
         public View getInfoWindow(Marker marker) {
             ImageView imageView = ((ImageView) view.findViewById(R.id.badge));
-//            imageView.setBackgroundColor(Color.rgb(255, 255, 255));
             setImgView(imageView, marker);
             return view;
         }
@@ -1026,11 +979,14 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
             mMonth = c.get(Calendar.MONTH);
             mDay = c.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year,
                                       int monthOfYear, int dayOfMonth) {
-                    final String dateString = Integer.toString(year) + "-" + ((monthOfYear + 1) < 10 ? "0" + (monthOfYear + 1) : (monthOfYear + 1)) + "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
+                    final String dateString = Integer.toString(year) + "-" +
+                            ((monthOfYear + 1) < 10 ? "0" + (monthOfYear + 1) : (monthOfYear + 1)) +
+                            "-" + (dayOfMonth < 10 ? "0" + dayOfMonth : dayOfMonth);
                     // Get Current Time
                     mHour = c.get(Calendar.HOUR_OF_DAY);
                     mMinute = c.get(Calendar.MINUTE);
@@ -1039,9 +995,10 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                     TimePickerDialog timePickerDialog = new TimePickerDialog(context,
                             new TimePickerDialog.OnTimeSetListener() {
                                 @Override
-                                public void onTimeSet(TimePicker view, int hourOfDay,
-                                                      int minute) {
-                                    String departString = dateString + " " + (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" + (minute < 10 ? "0" + minute : minute);
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    String departString = dateString + " " +
+                                            (hourOfDay < 10 ? "0" + hourOfDay : hourOfDay) + ":" +
+                                            (minute < 10 ? "0" + minute : minute);
                                     txtDate.setText(departString);
                                     departString += ":00";
                                     Date now = Calendar.getInstance().getTime();
@@ -1053,19 +1010,20 @@ public class TravelAdvisorActivity extends FragmentActivity implements OnMapRead
                                     }
                                     assert then != null;
                                     System.out.println("then is:" + then.getTime());
-                                    if (then != null && (then.getTime() - now.getTime()) / 1000 > forecastPeriod) {
-                                        Toast.makeText(context, "Unable to forecast that long\nPlease choose departure time again", Toast.LENGTH_LONG).show();
+                                    if ((then.getTime() - now.getTime()) / 1000 > forecastPeriod) {
+                                        Toast.makeText(context,
+                                                "Unable to forecast that long\n" +
+                                                        "Please choose departure time again",
+                                                Toast.LENGTH_LONG).show();
                                         txtDate.setText("Now");
                                     }
-                                    if (then != null && then.getTime() - now.getTime() < 0) {
-                                        Toast.makeText(context, "Cannot leave at past time", Toast.LENGTH_LONG).show();
+                                    if (then.getTime() - now.getTime() < 0) {
+                                        Toast.makeText(context,
+                                                "Cannot leave at past time",
+                                                Toast.LENGTH_LONG).show();
                                         txtDate.setText("Now");
                                     }
-                                    System.out.println("before changing, then = " + departInS);
-                                    if (then != null) {
-                                        departInS = then.getTime() / 1000;
-                                    }
-                                    System.out.println("after changing, then = " + departInS);
+                                    departInS = then.getTime() / 1000;
                                 }
                             }, mHour, mMinute, false);
                     timePickerDialog.show();

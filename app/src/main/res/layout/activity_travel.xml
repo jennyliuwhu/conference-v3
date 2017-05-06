@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cmu.cconfs.TravelAdvisorActivity" >
+
     <Button
         android:id="@+id/btn_date"
         android:layout_width="wrap_content"
@@ -18,7 +19,8 @@
         android:textColor="@android:color/black"
         android:layout_alignBaseline="@+id/points_clear"
         android:layout_toRightOf="@+id/btn_date"
-        android:text="@string/now"/>
+        android:text="@string/now"
+        android:inputType="text" />
 
     <TextView
         android:id="@+id/distance_duration"

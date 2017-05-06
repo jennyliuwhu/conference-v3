@@ -2,13 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content" >
-
     <ImageView
         android:id="@+id/weatherimg"
         android:layout_centerHorizontal="true"
         android:layout_width="120dp"
         android:layout_height="120dp"/>
-
     <TextView
         android:id="@+id/text"
         android:layout_marginLeft="10dp"
@@ -19,7 +17,6 @@
         android:textColor="#000000"
         android:autoLink="web"
         android:layout_below="@+id/weatherimg"/>
-
     <Button
         android:id="@+id/dialogButtonOK"
         android:layout_width="wrap_content"
@@ -29,5 +26,5 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="500dp" />
-
 </RelativeLayout>
+

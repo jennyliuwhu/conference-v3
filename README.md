@@ -86,6 +86,11 @@ User can also explore the places around them by clicking on the Nearby session i
 
 ![](http://i.giphy.com/26xBSCNcNwwl1KdEs.gif) ![](http://i.giphy.com/l3q2L2ppFHeRevN3W.gif) ![](http://i.giphy.com/l3q2E28NgGNg0pZYc.gif)
 
+### Floor Guide
+User can also view the floor plans of the conference center by clicking on the Floor Guide session in app's main dashboard. 
+
+![](https://s3.amazonaws.com/jennyliu/floorguide.gif) ![](https://s3.amazonaws.com/jennyliu/floorguide.gif) ![](https://s3.amazonaws.com/jennyliu/floorguide.gif)
+
 ## App installation
 
 The installation of the app is easy:
