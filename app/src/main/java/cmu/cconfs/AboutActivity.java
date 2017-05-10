@@ -35,8 +35,7 @@ public class AboutActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private Toolbar toolbar;
-    private NavigationView mNavigationView;
-    private ActionBarDrawerToggle mDrawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +45,7 @@ public class AboutActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -55,6 +55,7 @@ public class AboutActivity extends AppCompatActivity {
         webView.getSettings().setJavaScriptEnabled(true);
 
         String link = getIntent().getExtras().getString("link");
+        assert link != null;
         if (!link.equals("about")) {
             actionBar.setTitle(getIntent().getExtras().getString("name"));
             webView.loadUrl(link);
@@ -256,8 +257,8 @@ public class AboutActivity extends AppCompatActivity {
         }
         // setup drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mNavigationView = (NavigationView) findViewById(R.id.nvView);
-        mDrawerToggle = setupDrawerToggle();
+        NavigationView mNavigationView = (NavigationView) findViewById(R.id.nvView);
+        ActionBarDrawerToggle mDrawerToggle = setupDrawerToggle();
         mDrawerLayout.addDrawerListener(mDrawerToggle);
 
         setupNavigationView(mNavigationView);
