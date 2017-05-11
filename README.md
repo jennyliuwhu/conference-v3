@@ -107,7 +107,10 @@ The installation of the app is easy:
 
 4. Our app use several Google Play Serivces so you would need to install the it before being able to use some app features. Fortuanately, the app will automatically detect whether Google Play Service is available and if not it will direct you to a website to download the services during the first time installation.
 
+## Acknowledgement
+Thank to Professor Jia Zhang's guidance. She is pretty patient with students and proficient in knowledge transfer. 
 
+If you want to contribute to this project, feel free to reach out to [Professor Jia](https://www.cmu.edu/silicon-valley/faculty-staff/zhang-jia.html). 
 
 
 
